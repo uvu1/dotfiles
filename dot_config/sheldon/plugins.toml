@@ -1,0 +1,55 @@
+shell = "zsh"
+
+[templates]
+defer = "{% for file in files %}zsh-defer source \"{{ file }}\"\n{% endfor %}"
+
+[plugins]
+[plugins.zsh-defer]
+github = "romkatv/zsh-defer"
+apply = ["source"]
+
+[plugins.compinit]
+inline = "autoload -Uz compinit; zsh-defer compinit"
+
+[plugins.async]
+local = "~/.config/sheldon/async"
+use = ["*.zsh"]
+apply = ["defer"]
+
+[plugins.sync]
+local = "~/.config/sheldon/sync"
+use = ["*.zsh"]
+apply = ["source"]
+
+[plugins.zsh-completions]
+github = "zsh-users/zsh-completions"
+apply = ["defer"]
+
+[plugins.zsh-autosuggestions]
+github = 'zsh-users/zsh-autosuggestions'
+apply = ["defer"]
+
+[plugins.zsh-history-substring-search]
+github = "zsh-users/zsh-history-substring-search"
+apply = ["defer"]
+
+[plugins.fast-syntax-highlighting]
+github = "zdharma/fast-syntax-highlighting"
+apply = ["defer"]
+
+[plugins.fzf-tab]
+github = "Aloxaf/fzf-tab"
+apply = ["defer"]
+
+[plugins.fzf-ghq]
+github = "migutw42/zsh-fzf-ghq"
+apply = ["defer"]
+
+[plugins.fzf-zsh]
+github = "junegunn/fzf"
+apply = ["defer"]
+
+[plugins.extract]
+github = "thetic/extract"
+apply = ["defer"]
+

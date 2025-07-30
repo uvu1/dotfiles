@@ -1,0 +1,13 @@
+--engine=auto
+--color=auto
+--max-columns=128
+--max-columns-preview
+--no-heading
+--trim
+--multiline-dotall
+--search-zip
+--max-filesize=30M
+--one-file-system
+--type-not=minified
+--no-require-git
+--line-number

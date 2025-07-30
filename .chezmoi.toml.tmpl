@@ -1,0 +1,6 @@
+{{- $username := promptStringOnce . "username" "What is your username" -}}
+[data]
+    username = {{ $username | quote }}
+[edit]
+    command = "nvim"
+
