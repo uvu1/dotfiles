@@ -1,6 +1,6 @@
 {{ if ne .chezmoi.os "windows" }}
 .wslconfig
-.chezmoiscripts/run_once_init_powershell.ps1
+.config/powershell
 {{ end }}
 
 {{ if eq .chezmoi.os "windows" }}
