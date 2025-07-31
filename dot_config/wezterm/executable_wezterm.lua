@@ -21,6 +21,7 @@ local appearence = require("appearence")
 appearence.apply_config(config)
 
 config.mux_enable_ssh_agent = false
+config.hide_tab_bar_if_only_one_tab = true
 
 local os_name = wezterm.target_triple
 if string.find(os_name, "darwin") then

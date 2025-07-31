@@ -6,6 +6,9 @@ Invoke-Expression (& { (starship init powershell | Out-String) })
 Invoke-Expression (& { (zoxide init powershell | Out-String) })
 (&mise activate pwsh) | Out-String | Invoke-Expression
 
+Import-Module PSReadLine
+
+Set-PSReadLineOption -EditMode Emacs
 Set-PSReadLineKeyHandler -Key Tab -Function MenuComplete
 Set-Alias -Name grep -Value rg
 Set-Alias -Name which -Value Get-Command
