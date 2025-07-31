@@ -6,9 +6,13 @@ local function file_exists(path)
    if f~=nil then io.close(f) return true else return false end
 end
 
-
 config.automatically_reload_config = true
 config.use_ime = true
+
+wezterm.on("gui-startup", function(cmd)
+    local _, _, window = wezterm.mux.spawn_window(cmd or {})
+    window:gui_window():maximize()
+end)
 
 local keybind = require("keybind")
 keybind.apply_config(config)
