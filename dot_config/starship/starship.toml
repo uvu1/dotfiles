@@ -2,7 +2,7 @@
 add_newline = true
 
 format = """
-$hostname$os$root_indicator in $directory$git_branch$git_status$git_state$python$nodejs$rust$golang$lua$cpp$cmd_duration
+$os in $directory$git_branch$git_status$git_state$python$nodejs$rust$golang$lua$cpp$cmd_duration
 $character
 """
 
