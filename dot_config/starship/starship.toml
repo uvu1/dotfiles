@@ -3,8 +3,7 @@ add_newline = true
 
 format = """
 $os in $directory$git_branch$git_status$git_state$python$nodejs$rust$golang$lua$cpp$cmd_duration
-$character
-"""
+$character"""
 
 [os]
 disabled = false
@@ -15,10 +14,6 @@ format = "$symbol "
 Windows = ""
 Arch = "󰣇"
 Macos = ""
-
-[root_indicator]
-format = "[⚡](bold red) "
-disabled = false
 
 [directory]
 style = "blue"
