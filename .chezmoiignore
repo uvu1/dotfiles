@@ -1,8 +1,17 @@
-{{- if ne .chezmoi.os "windows" }}
+{{ if ne .chezmoi.os "windows" }}
 .wslconfig
-{{- end}}
+.chezmoiscripts/run_once_init_powershell.ps1
+{{ end }}
 
-{{- if eq .chezmoi.os "windows" }}
-.ripgreprc
+{{ if eq .chezmoi.os "windows" }}
 .zshrc
-{{- end}}
+.config/sheldon
+.hammerspoon
+{{ end }}
+
+{{ if eq .chezmoi.os "linux" }}
+{{   if (.chezmoi.kernel.osrelease | lower | contains "microsoft") }}
+.config/wezterm
+.hammerspoon
+{{   end }}
+{{ end }}
