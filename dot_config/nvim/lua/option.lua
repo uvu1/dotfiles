@@ -13,7 +13,7 @@ vim.opt.showcmd = true
 vim.opt.hlsearch = true
 vim.opt.hidden = true
 vim.opt.backup = true
-vim.opt.backupdir = os.getenv("HOME") .. '/.vim/backup'
+vim.opt.backupdir = '~/.vim/backup'
 vim.opt.autoindent = true
 vim.opt.smartindent = true
 

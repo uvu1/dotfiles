@@ -14,9 +14,6 @@ function module.apply_config(config)
         inactive_titlebar_bg = "none",
         active_titlebar_bg = "none",
     }
-    config.window_background_gradient = {
-        colors = { "none" }
-    }
     config.win32_system_backdrop = "Acrylic"
     config.macos_window_background_blur = 20
 end
