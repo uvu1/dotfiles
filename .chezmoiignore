@@ -1,7 +1,6 @@
 {{ if ne .chezmoi.os "windows" }}
 .wslconfig
 .config/powershell
-.chezmoiscripts/**
 {{ end }}
 
 {{ if eq .chezmoi.os "windows" }}
