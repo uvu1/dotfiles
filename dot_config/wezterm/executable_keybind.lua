@@ -82,6 +82,11 @@ function module.apply_config(config)
             mods = "LEADER",
             action = wezterm.action.SplitVertical({domain = "CurrentPaneDomain"})
         },
+        {
+            key = "x",
+            mods = "CTRL|SHIFT",
+            action = wezterm.action.ActivateCopyMode
+        }
     }
     -- Add keybindings for activating tabs
     for i = 1,8 do
