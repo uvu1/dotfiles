@@ -12,8 +12,8 @@ return {
                 update_cwd =true,
             },
             filters = {
-                custom = {".git"},
-                exclude = {".gitignore"},
+                git_ignored = false,
+                custom = { "^\\.git$", "^node_modules$", "^\\.cache$" },
             },
         },
     }
