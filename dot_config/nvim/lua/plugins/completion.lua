@@ -7,11 +7,18 @@ return {
     {
         "mason-org/mason-lspconfig.nvim",
         dependencies = {
-            { "neovim/nvim-lspconfig" },
+            {
+                "neovim/nvim-lspconfig",
+                config = function (_, opts)
+                    vim.diagnostic.config({
+                        virtual_text = true,
+                    })
+                end
+            },
             { "mason-org/mason.nvim" },
         },
         opts = {},
-        event = "VeryLazy"
+        event = "VeryLazy",
     },
     {
         "saghen/blink.cmp",
