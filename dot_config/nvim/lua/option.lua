@@ -13,7 +13,7 @@ vim.opt.hlsearch = true
 vim.opt.hidden = true
 vim.opt.autoindent = true
 vim.opt.smartindent = true
-
+vim.opt.splitright = true
 -- optionally enable 24-bit colour
 vim.opt.termguicolors = true
 vim.g.mapleader = " "
