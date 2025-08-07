@@ -26,6 +26,7 @@ return {
             "rafamadriz/friendly-snippets",
             "L3MON4D3/LuaSnip",
             "fang2hou/blink-copilot",
+            "xzbdmw/colorful-menu.nvim",
         },
         event = "VeryLazy",
         version = "1.*",
@@ -36,7 +37,24 @@ return {
             appearance = {
                 nerd_font_variant = "mono",
             },
-            completion = { documentation = { auto_show = false } },
+            completion = { 
+                documentation = { auto_show = false },
+                menu = {
+                    draw = {
+                        columns = { { "kind_icon" }, { "label", gap = 1 } },
+                        components = {
+                            label = {
+                                text = function (ctx)
+                                    return require("colorful-menu").blink_components_text(ctx)
+                                end,
+                                highlight = function (ctx)
+                                    return require("colorful-menu").blink_components_highlight(ctx)
+                                end
+                            }
+                        }
+                    }
+                }
+            },
             sources = {
                 default = {"lazydev", "lsp", "path", "snippets", "buffer", "copilot"},
                 providers = {
