@@ -1,7 +1,11 @@
 return {
     {
         "zbirenbaum/copilot.lua",
-        opts = {},
+        opts = {
+            suggestion = {
+                enabled = true
+            }
+        },
         event = "InsertEnter",
         cmd = "Copilot",
     },

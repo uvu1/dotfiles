@@ -37,8 +37,14 @@ return {
             appearance = {
                 nerd_font_variant = "mono",
             },
-            completion = { 
-                documentation = { auto_show = false },
+            completion = {
+                ghost_text = {
+                    enabled = true,
+                },
+                documentation = {
+                    auto_show = true,
+                    auto_show_delay_ms = 500,
+                },
                 menu = {
                     draw = {
                         columns = { { "kind_icon" }, { "label", gap = 1 } },
@@ -56,7 +62,7 @@ return {
                 }
             },
             sources = {
-                default = {"lazydev", "lsp", "path", "snippets", "buffer", "copilot"},
+                default = { "lazydev", "lsp", "path", "snippets", "buffer", "copilot"},
                 providers = {
                     lazydev = {
                         name = "LazyDev",
@@ -66,7 +72,7 @@ return {
                     copilot = {
                         name = "copilot",
                         module = "blink-copilot",
-                        score_offset = 100, 
+                        score_offset = 0,
                         async = true,
                     }
                 },
