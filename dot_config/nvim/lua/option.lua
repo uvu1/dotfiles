@@ -21,6 +21,18 @@ vim.g.mapleader = " "
 vim.g.maplocalleader = "\\"
 
 vim.opt.clipboard = "unnamedplus"
+vim.filetype.add({
+    extension = {
+        tf = "terraform",
+        tfvars = "terraform",
+        hcl = "terraform",
+        tfstate = "json",
+        tfstate_backup = "json",
+    },
+    pattern = {
+        ["^%.env.*"] = "dotenv",
+    },
+})
 
 -- if vim.fn.has("wsl") == 1 then
 --     if vim.fn.executable("wl-copy") == 0 then
