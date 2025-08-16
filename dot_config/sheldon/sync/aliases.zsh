@@ -14,6 +14,7 @@ alias fd="fd --color=always --hidden --exclude .git"
 alias find="fd --color=always --hidden --exclude .git"
 alias grep="rg --color=always --line-number --smart-case"
 alias rg="rg --color=always --line-number --smart-case"
+alias op="/mnt/c/Users/uvu/AppData/Local/Microsoft/WinGet/Links/op.exe"
 
 nvim() {
     if ! pidof socat > /dev/null 2>&1; then
