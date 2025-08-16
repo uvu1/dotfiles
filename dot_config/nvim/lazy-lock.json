@@ -18,6 +18,7 @@
   "gitsigns.nvim": { "branch": "main", "commit": "736f51d2bb684c06f39a2032f064d7244f549981" },
   "hlchunk.nvim": { "branch": "main", "commit": "474ec5d0f220158afa83aaefab32402e710d3032" },
   "in-and-out.nvim": { "branch": "master", "commit": "a3019ec58be3c8d7b2272da5cf1c9dc6c9e8542a" },
+  "kubernetes.nvim": { "branch": "main", "commit": "44daf998345628a1a7034e3aaa31f4e05e4dde7c" },
   "lazy.nvim": { "branch": "main", "commit": "6c3bda4aca61a13a9c63f1c1d1b16b9d3be90d7a" },
   "lazydev.nvim": { "branch": "main", "commit": "2367a6c0a01eb9edb0464731cc0fb61ed9ab9d2c" },
   "lazygit.nvim": { "branch": "main", "commit": "cdd3527e251f96eb0527162b156ad839286fcd97" },
