@@ -1,6 +1,3 @@
-alias vim="nvim"
-alias vi="nvim"
-
 alias gst="git status"
 alias gco="git checkout"
 alias gcm="git commit -m"
@@ -29,3 +26,6 @@ nvim() {
         command nvim "$@"
     fi
 }
+
+alias vim="nvim"
+alias vi="nvim"
