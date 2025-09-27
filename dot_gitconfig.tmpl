@@ -13,7 +13,7 @@
     {{- end}}
     {{- if eq .chezmoi.os "linux" }}
     {{      if (.chezmoi.kernel.osrelease | lower | contains "microsoft") }}
-    program = "/mnt/c/Users/{{ .username }}/AppData/Local/1Password/app/8/op-ssh-sign-wsl.exe"
+    program = "/mnt/c/Users/{{ .username }}/AppData/Local/Microsoft/WindowsApps/op-ssh-sign-wsl.exe"
     {{      end}}
     {{- end}}
 [commit]
