@@ -1,6 +1,5 @@
 [tools]
 fzf = "latest"
-lua = "5.1.5"
 neovim = "latest"
 node = "24.4.1"
 python = "3.12.9"
@@ -12,7 +11,10 @@ fd = "latest"
 eza = "latest"
 bat = "latest"
 chezmoi = "latest"
+{{ if ne .chezmoi.os "windows" }}
 lazygit = "latest"
 rust = "latest"
 go = "latest"
 yarn = "latest"
+lua = "5.1.5"
+{{end}}
