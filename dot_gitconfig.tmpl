@@ -20,5 +20,7 @@
     insteadOf = https://github.com
 [ghq]
     root = ~/repo
+{{ if not eq .chezmoi.os "darwin" }}
 [core]
-	sshCommand = ssh.exe
+    sshCommand = ssh.exe
+{{ end }}
