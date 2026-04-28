@@ -1,0 +1,16 @@
+alias ga="git add"
+alias gaa="git add ."
+alias gst="git status"
+alias gcm="git commit -m"
+alias gpl="git pull"
+alias gps="git push"
+
+alias k="kubectl"
+
+alias cat="bat --style=plain --color=always --paging=always"
+alias fd="fd --color=always --hidden --exclude .git"
+alias find="fd --color=always --hidden --exclude .git"
+alias grep="rg --color=always"
+alias -g @f="| fd --color=always --hidden --exclude .git"
+alias -g @g="| rg --color=always"
+alias ls="eza --icons --group-directories-first --color=always"

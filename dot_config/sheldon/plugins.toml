@@ -1,0 +1,56 @@
+shell = "zsh"
+
+[templates]
+defer = "{% for file in files %}zsh-defer source \"{{ file }}\"\n{% endfor %}"
+fzf-source = "source <(fzf --zsh)"
+
+[plugins]
+[plugins.mise]
+inline = 'eval "$(mise activate zsh)"'
+
+[plugins.starship]
+inline = 'eval "$(starship init zsh)"'
+
+[plugins.zsh-defer]
+github = "romkatv/zsh-defer"
+
+[plugins.zsh-autosuggestions]
+github = "zsh-users/zsh-autosuggestions"
+apply = ["defer"]
+
+[plugins.fzf]
+github = "junegunn/fzf"
+apply = ["fzf-source", "defer"]
+
+[plugins.fzf-tab]
+github = "Aloxaf/fzf-tab"
+apply = ["defer"]
+
+[plugins.zsh-syntax-highlighting]
+github = "zsh-users/zsh-syntax-highlighting"
+apply = ["defer"]
+
+[plugins.zsh-completions]
+github = "zsh-users/zsh-completions"
+apply = ["defer"]
+
+# local
+[plugins.aliases]
+local = "~/.config/zsh"
+use = ["aliases.zsh"]
+apply = ["defer"]
+
+[plugins.completion]
+local = "~/.config/zsh"
+use = ["completion.zsh"]
+apply = ["defer"]
+
+[plugins.ghq]
+local = "~/.config/zsh"
+use = ["ghq.zsh"]
+apply = ["defer"]
+
+[plugins.history]
+local = "~/.config/zsh"
+use = ["history.zsh"]
+apply = ["defer"]

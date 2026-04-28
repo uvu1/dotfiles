@@ -1,0 +1,12 @@
+[tools]
+bat = "latest"
+eza = "latest"
+fd = "latest"
+fzf = "latest"
+ghq = "latest"
+helm = "latest"
+jqp = "latest"
+kubectl = "latest"
+neovim = "latest"
+starship = "latest"
+rg = "latest"
