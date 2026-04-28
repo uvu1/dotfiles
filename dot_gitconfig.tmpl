@@ -18,10 +18,11 @@
     gpgsign = true
 [url "git@github.com:"]
     insteadOf = https://github.com
+
 [ghq]
     root = ~/repo
 
-{{ if not eq .chezmoi.os "darwin" }}
+{{ if ne .chezmoi.os "darwin" }}
 [core]
     {{ if eq .chezmoi.os "windows" }}
     sshCommand = "C:/Windows/System32/OpenSSH/ssh.exe"
@@ -29,4 +30,5 @@
     {{   if (.chezmoi.kernel.osrelease | lower | contains "microsoft") }}
     sshCommand = ssh.exe
     {{   end }}
+    {{ end }}
 {{ end }}
