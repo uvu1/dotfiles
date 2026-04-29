@@ -1,3 +1,6 @@
+alias edit="code-insiders"
+alias code="code-insiders"
+
 alias ga="git add"
 alias gaa="git add ."
 alias gst="git status"
