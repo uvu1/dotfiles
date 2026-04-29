@@ -7,12 +7,12 @@
 [gpg "ssh"]
     {{ if eq .chezmoi.os "linux" }}
         {{   if (.chezmoi.kernel.osrelease | lower | contains "microsoft") }}
-        program = "/mnt/c/Users/uvu/AppData/Local/Microsoft/WindowsApps/op-ssh-sign-wsl.exe"
+    program = "/mnt/c/Users/uvu/AppData/Local/Microsoft/WindowsApps/op-ssh-sign-wsl.exe"
         {{   end }}
     {{ else if eq .chezmoi.os "darwin"}}
-        program = "/Applications/1Password.app/Contents/MacOS/op-ssh-sign"
+    program = "/Applications/1Password.app/Contents/MacOS/op-ssh-sign"
     {{ else if eq .chezmoi.os "windows"}}
-        program = "C:\\Users\\uvu\\AppData\\Local\\Microsoft\\WindowsApps\\op-ssh-sign.exe"
+    program = "C:\\Users\\uvu\\AppData\\Local\\Microsoft\\WindowsApps\\op-ssh-sign.exe"
     {{ end }}
 [commit]
     gpgsign = true

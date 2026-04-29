@@ -9,3 +9,7 @@
     .config/wezterm/**
 {{   end }}
 {{ end }}
+
+{{ if ne .chezmoi.os "windows" }}
+    Documents/**
+{{ end }}
