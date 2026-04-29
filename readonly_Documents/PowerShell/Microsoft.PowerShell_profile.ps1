@@ -1,3 +1,4 @@
+$global:ProfileRoot = Split-Path -Parent $PROFILE.CurrentUserCurrentHost
 $profileDir = Join-Path $global:ProfileRoot "profile.d"
 
 if (Test-Path $profileDir) {
