@@ -1,4 +1,3 @@
-Remove-Alias -Name ls, cat
 
 Set-Alias -Name grep -Value rg
 Set-Alias -Name which -Value Get-Command
@@ -20,30 +19,6 @@ function find {
 
 function grep {
     rg --color=always
-}
-
-function gst {
-    git status
-}
-
-function ga {
-    git add $args
-}
-
-function gaa {
-    git add .
-}
-
-function gcm {
-    git commit -m $args
-}
-
-function gps{
-    git push $args
-}
-
-function gpl {
-    git pull $args
 }
 
 function wsl {
