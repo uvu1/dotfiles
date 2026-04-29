@@ -6,5 +6,20 @@ function ghq-fzf() {
   fi
   zle -R -c
 }
+
+function ghq() {
+  if [[ "$1" == "get" ]]; then
+    shift
+    for arg in "$@"; do
+      if [[ "$arg" == "-p" ]]; then
+        command ghq get "$@"
+        return $?
+      fi
+    done
+    command ghq get -p "$@"
+  fi
+    command ghq "$@" 
+}
+
 zle -N ghq-fzf
 bindkey '^g' ghq-fzf
