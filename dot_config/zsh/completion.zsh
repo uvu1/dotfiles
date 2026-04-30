@@ -6,5 +6,4 @@ mkdir -p "${ZSH_COMPDUMP:h}"
 compinit -d "$ZSH_COMPDUMP"
 
 source <(kubectl completion zsh)
-eval "$(starship completions zsh)"
 eval "$(gh completion -s zsh)"
