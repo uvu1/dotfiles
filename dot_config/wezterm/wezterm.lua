@@ -14,7 +14,7 @@ local osName = wezterm.target_triple
 if string.find(osName, "windows") then
     config.default_prog = { "pwsh.exe", "-NoLogo" }
 elseif string.find(osName, "darwin") then
-    config.default_prog = { "/opt/homebrew/bin/zsh", "-l" }
+    config.default_prog = { "/bin/zsh", "-l" }
 elseif string.find(osName, "linux") then
     config.default_prog = { "/usr/bin/zsh", "-l" }
 end
