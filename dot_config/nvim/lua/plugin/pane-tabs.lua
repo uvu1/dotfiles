@@ -1,6 +1,7 @@
 return {
   {
-    dir = "~/repo/github.com/uvu1/pane-tabs.nvim",
+--    dir = "~/repo/github.com/uvu1/pane-tabs.nvim",
+    "uvu1/pane-tabs.nvim",
     name = "pane-tabs.nvim",
     main = "pane-tabs",
     event = "VeryLazy",
