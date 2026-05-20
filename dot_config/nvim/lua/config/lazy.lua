@@ -19,7 +19,6 @@ vim.g.mapleader = " "
 require("lazy").setup({
   spec = {
     { import = "plugin", },
-    { "nvim-tree/nvim-web-devicons", opts = {} },
   },
   defaults = { lazy = true, version = false },
   install = { colorscheme = { "kawaii", } },

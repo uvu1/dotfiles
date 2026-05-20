@@ -1,10 +1,8 @@
 local modules = {
-  "config.keymap.base",
-  "config.keymap.snacks",
-  "config.keymap.ai",
-  "config.keymap.trouble",
+	"config.keymap.base",
+	"config.keymap.utils",
 }
 
 for _, module in ipairs(modules) do
-  require(module)
+	require(module)
 end
