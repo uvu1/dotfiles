@@ -5,10 +5,13 @@ return {
 		opts = {
 			nes = {
 				enabled = true,
-				debounce = 120,
+				debounce = 400,
+				trigger = {
+					events = { "ModeChanged i:n", "User SidekickNesDone" },
+				},
 				diff = {
-					inline = "words",
-					show = "always",
+					inline = false,
+					show = "cursor",
 				},
 				signs = true,
 				jumplist = true,

@@ -8,6 +8,11 @@ return {
     "neovim/nvim-lspconfig",
     lazy = false,
     config = function()
+      local ai_filetypes = {
+        codecompanion = true,
+        ["pane-tabs-ai"] = true,
+      }
+
       vim.lsp.config("lua_ls", {
         settings = {
           Lua = {
@@ -28,6 +33,8 @@ return {
         },
       })
 
+      vim.lsp.config("ts_ls", {})
+
       vim.lsp.config("rust_analyzer", {
         settings = {
           ["rust-analyzer"] = {
@@ -43,10 +50,6 @@ return {
 
       -- for Sidekick NES
       vim.lsp.config("copilot", {})
-      local ai_filetypes = {
-        codecompanion = true,
-        ["pane-tabs-ai"] = true,
-      }
 
       vim.api.nvim_create_autocmd("FileType", {
         group = vim.api.nvim_create_augroup("ai-pane-completion", { clear = true }),

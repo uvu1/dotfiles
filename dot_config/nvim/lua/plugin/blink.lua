@@ -63,13 +63,13 @@ return {
 
       completion = {
         keyword = {
-          range = "full",
+          range = "prefix",
         },
 
         list = {
           selection = {
-            preselect = true,
-            auto_insert = true,
+            preselect = false,
+            auto_insert = false,
           },
         },
 
@@ -82,7 +82,7 @@ return {
         menu = {
           border = "rounded",
           draw = {
-            treesitter = { "lsp" },
+            treesitter = {},
             columns = {
               { "kind_icon" },
               { "label", "label_description", gap = 1 },
@@ -92,15 +92,16 @@ return {
         },
 
         documentation = {
-          auto_show = true,
-          auto_show_delay_ms = 200,
+          auto_show = false,
+          auto_show_delay_ms = 500,
+          treesitter_highlighting = false,
           window = {
             border = "rounded",
           },
         },
 
         ghost_text = {
-          enabled = true,
+          enabled = false,
         },
       },
 
@@ -116,6 +117,7 @@ return {
 
         providers = {
           lsp = {
+            max_items = 80,
             score_offset = 10,
           },
           path = {
