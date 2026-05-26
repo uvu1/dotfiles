@@ -1,7 +1,7 @@
 return {
   {
-    "uvu1/kawaii-theme.nvim",
-    -- dir = vim.fn.expand("~/repo/github.com/uvu/kawaii-theme.nvim"),
+    -- "uvu1/kawaii-theme.nvim",
+    dir = vim.fn.expand("~/repo/github.com/uvu/kawaii-theme.nvim"),
     name = "kawaii-theme.nvim",
     lazy = false,
     priority = 1000,

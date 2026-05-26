@@ -1,7 +1,14 @@
 return {
   {
     "nvim-treesitter/nvim-treesitter-context",
-    opts = {},
-    events = "BufReadPre",
+    opts = {
+      max_lines = 3,
+      mode = "cursor",
+      separator = nil,
+    },
+    event = "BufReadPost",
+    dependencies = {
+      "nvim-treesitter/nvim-treesitter",
+    },
   }
 }

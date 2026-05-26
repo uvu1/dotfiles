@@ -23,6 +23,28 @@ return {
 		})
 	end, utils.opts("Focus or open explorer")),
 
+  utils.keymap.lazy("n", "<leader>gd", function() require("snacks").picker.lsp_definitions() end, utils.opts("Go to definitions")),
+  utils.keymap.lazy("n", "<leader>gr", function() require("snacks").picker.lsp_references() end, utils.opts("Go to references")),
+  utils.keymap.lazy("n", "<leader>gi", function() require("snacks").picker.lsp_implementations() end, utils.opts("Go to implementations")),
+  utils.keymap.lazy("n", "<leader>gy", function() require("snacks").picker.lsp_type_definitions() end, utils.opts("Go to type definitions")),
+  utils.keymap.lazy("n", "<leader>grn", function() require("snacks").lsp.rename() end, utils.opts("Rename symbol")),
+  utils.keymap.lazy("n", "<leader>gci", function() require("snacks").lsp.incoming_calls() end, utils.opts("Incoming calls")),
+  utils.keymap.lazy("n", "<leader>gco", function() require("snacks").lsp.outgoing_calls() end, utils.opts("Outgoing calls")),
+  utils.keymap.lazy("n", "<leader>ss", function() require("snacks").picker.lsp_symbols() end, utils.opts("File symbols")),
+  utils.keymap.lazy("n", "<leader>sS", function() require("snacks").picker.lsp_workspace_symbols() end, utils.opts("Workspace symbols")),
+
+  utils.keymap.lazy("n", "<leader>sf",
+    function()
+      require("snacks").picker.lsp_symbols({
+        title = "Functions",
+        filter = {
+          default = { "Function", "Method", "Constructor" },
+        }
+      })
+    end,
+    utils.opts("File functions")
+  ),
+
 	utils.keymap.lazy("n", "<leader>fe", function() require("snacks").explorer.open() end, utils.opts("Toggle explorer")),
 	utils.keymap.lazy("n", "<leader>E", function() require("snacks").explorer.reveal() end, utils.opts("Reveal current file in explorer")),
 	utils.keymap.lazy("n", "<leader>ff", function() require("snacks").picker.files() end, utils.opts("Find files")),
