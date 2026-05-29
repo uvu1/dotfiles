@@ -2,11 +2,10 @@ shell = "zsh"
 
 [templates]
 defer = "{% for file in files %}zsh-defer source \"{{ file }}\"\n{% endfor %}"
-fzf-source = "source <(fzf --zsh)"
 
 [plugins]
 [plugins.mise]
-inline = 'eval "$(mise activate zsh)"'
+inline = 'eval "$(mise activate --shims zsh)"'
 
 [plugins.starship]
 inline = 'eval "$(starship init zsh)"'
@@ -20,7 +19,7 @@ apply = ["defer"]
 
 [plugins.fzf]
 github = "junegunn/fzf"
-apply = ["fzf-source", "defer"]
+apply = ["defer"]
 
 [plugins.fzf-tab]
 github = "Aloxaf/fzf-tab"
@@ -53,4 +52,9 @@ apply = ["defer"]
 [plugins.history]
 local = "~/.config/zsh"
 use = ["history.zsh"]
+apply = ["defer"]
+
+[plugins.kubernetes]
+local = "~/.config/zsh"
+use = ["kubernetes.zsh"]
 apply = ["defer"]

@@ -1,5 +1,6 @@
-alias edit="code-insiders"
-alias code="code-insiders"
+alias edit="nvim"
+alias code="nvim"
+alias vim="nvim"
 
 alias ga="git add"
 alias gaa="git add ."

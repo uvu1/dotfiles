@@ -1,8 +1,8 @@
-"$schema" = 'https://starship.rs/config-schema.json'
+"$schema" = "https://starship.rs/config-schema.json"
 add_newline = true
 
 format = """
-$os in $directory$username$git_branch$git_status$git_state$python$nodejs$rust$golang$lua$cpp$cmd_duration$time
+$os in $directory$username$kubernetes$git_branch$git_status$git_state$python$nodejs$rust$golang$lua$cpp$cmd_duration$time
 $character"""
 
 [os]
@@ -46,3 +46,8 @@ time_format = "%H:%M"
 [character]
 success_symbol = "[❯](green)"
 error_symbol = "[❯](red)"
+
+[kubernetes]
+disabled = false 
+detect_folders = ["kubernetes", "k8s"]
+symbol = " "
