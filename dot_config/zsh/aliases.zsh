@@ -10,8 +10,7 @@ alias gps="git push"
 
 alias k="kubectl"
 
-alias cat="bat --style=plain --color=always --paging=always"
+alias bat="bat --style=plain --color=always --paging=always"
 alias fd="fd --color=always --hidden --exclude .git"
-alias find="fd --color=always --hidden --exclude .git"
-alias grep="rg --color=always"
+alias rg="rg --color=always"
 alias ls="eza --icons --group-directories-first --color=always"
