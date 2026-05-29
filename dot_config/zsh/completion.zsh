@@ -32,4 +32,11 @@ function _source_cached_completion() {
 _source_cached_completion kubectl kubectl completion zsh
 _source_cached_completion gh gh completion -s zsh
 
+# vault cli
+if (( $+commands[vault] )); then
+  autoload -Uz bashcompinit
+  bashcompinit
+  complete -o nospace -C "$commands[vault]" vault
+fi
+
 unfunction _source_cached_completion
