@@ -7,11 +7,52 @@ return {
   {
     "neovim/nvim-lspconfig",
     lazy = false,
+    dependencies = {
+      "b0o/schemastore.nvim",
+    },
     config = function()
       local ai_filetypes = {
         codecompanion = true,
         ["pane-tabs-ai"] = true,
       }
+
+      local yaml_schemas = require("schemastore").yaml.schemas()
+      yaml_schemas.kubernetes = {
+        "k8s/**/*.yaml",
+        "k8s/**/*.yml",
+        "kubernetes/**/*.yaml",
+        "kubernetes/**/*.yml",
+        "manifests/**/*.yaml",
+        "manifests/**/*.yml",
+        "clusters/**/*.yaml",
+        "clusters/**/*.yml",
+        "applications/**/*.yaml",
+        "applications/**/*.yml",
+        "applicatinsets/**/*.yaml",
+        "applicationsets/**/*.yml",
+      }
+
+      vim.lsp.config("yamlls", {
+        settings = {
+          redhat = {
+            telemetry = {
+              enabled = false,
+            },
+          }
+        },
+        yaml = {
+          validate = true,
+          completion = true,
+          hover = true,
+
+          keyOrdering = false,
+          schemaStore = {
+            enable = false,
+            url = "",
+          },
+          schemas = yaml_schemas,
+        }
+      })
 
       vim.lsp.config("lua_ls", {
         settings = {
@@ -85,7 +126,7 @@ return {
     dependencies = {
       "mason-org/mason.nvim",
       "neovim/nvim-lspconfig",
- },
+     },
     opts = {
       ensure_installed = {
         "copilot",
