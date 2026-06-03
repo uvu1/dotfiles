@@ -1,7 +1,7 @@
 return {
   {
     "nvim-treesitter/nvim-treesitter-textobjects",
-    depencencies = { "nvim-treesitter/nvim-treesitter" },
+    dependencies = { "nvim-treesitter/nvim-treesitter" },
     branch = "main",
     config = function()
       local select = require("nvim-treesitter-textobjects.select")
