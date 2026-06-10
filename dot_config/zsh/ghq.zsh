@@ -17,6 +17,7 @@ function ghq() {
       fi
     done
     command ghq get -p "$@"
+    return $?
   fi
     command ghq "$@" 
 }
