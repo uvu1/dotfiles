@@ -2,22 +2,22 @@ local function executable(path)
   return type(path) == "string" and path ~= "" and vim.fn.executable(path) == 1
 end
 
-local function codex_acp_command()
-  local from_path = vim.fn.exepath("codex-acp")
+local function resolve_acp_command(binary)
+  local from_path = vim.fn.exepath(binary)
 
   if executable(from_path) then
     return { from_path }
   end
 
-  local candidates = vim.fn.glob(vim.fn.expand("~/.local/share/mise/installs/node/*/bin/codex-acp"), false, true)
+  local candidates = vim.fn.glob(vim.fn.expand("~/.local/share/mise/installs/node/*/bin/" .. binary), false, true)
 
   table.sort(candidates, function(a, b)
     return a > b
   end)
 
   vim.list_extend(candidates, {
-    vim.fn.expand("~/.local/share/mise/shims/codex-acp"),
-    vim.fn.expand("~/.local/bin/codex-acp"),
+    vim.fn.expand("~/.local/share/mise/shims/" .. binary),
+    vim.fn.expand("~/.local/bin/" .. binary),
   })
 
   for _, path in ipairs(candidates) do
@@ -26,7 +26,7 @@ local function codex_acp_command()
     end
   end
 
-  return { "codex-acp" }
+  return { binary }
 end
 
 return {
@@ -56,7 +56,7 @@ return {
           codex = function()
             return require("codecompanion.adapters").extend("codex", {
               commands = {
-                default = codex_acp_command(),
+                default = resolve_acp_command("codex-acp"),
               },
               defaults = {
                 auth_method = "chatgpt",
@@ -64,6 +64,13 @@ return {
                   mode = "Full Access",
                   thought_level = "Xhigh",
                 },
+              },
+            })
+          end,
+          claude_code = function()
+            return require("codecompanion.adapters").extend("claude_code", {
+              commands = {
+                default = resolve_acp_command("claude-agent-acp"),
               },
             })
           end,

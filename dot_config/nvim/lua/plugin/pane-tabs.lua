@@ -26,7 +26,7 @@ return {
         enabled = true,
         width = 52,
         default_provider = "copilot",
-        provider_order = { "copilot", "codex" },
+        provider_order = { "copilot", "codex", "claude" },
         providers = {
           copilot = {
             name = "Copilot",
@@ -40,6 +40,13 @@ return {
             label = "󰚩 Codex",
             icon = "󰚩",
             adapter = "codex",
+            command = "CodeCompanionChat",
+          },
+          claude = {
+            name = "Claude",
+            label = "󰛄 Claude",
+            icon = "󰛄",
+            adapter = "claude_code",
             command = "CodeCompanionChat",
           },
         },

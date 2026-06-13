@@ -17,6 +17,10 @@ return {
     require("pane-tabs.pane.ai").open("codex")
   end, utils.opts("AI tab2: Codex")),
 
+  utils.keymap.lazy("n", "<leader>a3", function()
+    require("pane-tabs.pane.ai").open("claude")
+  end, utils.opts("AI tab3: Claude")),
+
   utils.keymap.lazy("n", "<leader>aa", function()
     require("pane-tabs.pane.ai").toggle()
   end, utils.opts("AI toggle chat pane")),
