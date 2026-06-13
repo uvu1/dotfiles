@@ -56,8 +56,8 @@ function module.apply(config)
     { key = "l", mods = "LEADER", action = wezterm.action.ActivatePaneDirection("Right") },
     { key = "j", mods = "LEADER", action = wezterm.action.ActivatePaneDirection("Down") },
     { key = "k", mods = "LEADER", action = wezterm.action.ActivatePaneDirection("Up") },
-    { key = "-", mods = "LEADER", action = wezterm.action.SplitHorizontal({ domain = "CurrentPaneDomain" }) },
-    { key = "/", mods = "LEADER", action = wezterm.action.SplitVertical({ domain = "CurrentPaneDomain" }) },
+    { key = "/", mods = "LEADER", action = wezterm.action.SplitHorizontal({ domain = "CurrentPaneDomain" }) },
+    { key = "-", mods = "LEADER", action = wezterm.action.SplitVertical({ domain = "CurrentPaneDomain" }) },
     { key = "x", mods = "LEADER", action = wezterm.action.CloseCurrentPane({ confirm = false }) },
     -- tab
     { key = "t", mods = "CTRL|SHIFT", action = wezterm.action.SpawnTab("CurrentPaneDomain") },
