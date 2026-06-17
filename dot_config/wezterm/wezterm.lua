@@ -9,6 +9,8 @@ config.automatically_reload_config = true
 config.use_ime = true
 config.mux_enable_ssh_agent = false
 
+config.native_macos_fullscreen_mode = true
+
 -- Set default shell based on the operating system
 local osName = wezterm.target_triple
 if string.find(osName, "windows") then
