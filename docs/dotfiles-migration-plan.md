@@ -48,7 +48,7 @@
 
 - chezmoi の `dot_*`, `readonly_*`, `.tmpl`, `.chezmoiignore.tmpl` を廃止し、通常の repo 配置へ整理する。
 - mise 設定は `mise/mise.toml` をベースにし、環境差分は `mise/mise.darwin.toml`, `mise/mise.linux.toml`, `mise/mise.windows.toml`, `mise/mise.windows-powershell.toml` に分ける。
-- `mise/mise.toml` には全 OS 共通の最小 tools だけを置く。macOS/WSL は環境差分で現行 `[tools]` 全キーを有効化し、Windows は `wezterm / git / nvim` 補助に必要な subset だけを有効化する。
+- `mise/mise.toml` には全 OS 共通の最小 tools だけを置く。macOS/WSL は環境差分で現在のdarwin/linux用toolsetを有効化し、Windows は `wezterm / git / nvim` 補助に必要な subset だけを有効化する。
 - OS 選択は `--config` ではなく mise の global flags を使う。例: `mise -C mise -E darwin dotfiles apply --dry-run`、`mise -C mise -E linux dotfiles status --missing`。
 - `dotfiles.default_mode = "symlink"` を基本にし、Windows の `.gitconfig` や template 生成が必要なファイルは対象ごとに `copy` または `template` を指定する。
 - `nvim`, `zsh`, `sheldon`, `starship`, `mise`, `git` は macOS/WSL 共通体験として管理する。`wezterm` は macOS/Windows に適用し、WSL には適用しない。
@@ -119,11 +119,11 @@
 ### mise / dotfiles
 
 - 各環境で repo の mise 設定内容を確認後、`mise -C mise trust -a` が完了していることを確認する。
-- `mise -C mise -E darwin install` と `mise -C mise -E linux install` を実行し、`mise -C mise -E <env> ls --current` に現行 `[tools]` 全キーの有効バージョンが表示されることを確認する。
+- `mise -C mise -E darwin install` と `mise -C mise -E linux install` を実行し、`mise -C mise -E <env> ls --current` に現在のdarwin/linux用toolsetの有効バージョンが表示されることを確認する。
 - `mise -C mise -E windows install` を実行し、`mise -C mise -E windows ls --current` が Windows subset の tools だけを表示することを確認する。
 - Windows では `$HOME/.config/mise/config.toml` が新しい Windows subset 用 global config に置き換わってから `mise install` されることを確認する。
 - `mise -C mise -E darwin dotfiles status --missing`、`mise -C mise -E linux dotfiles status --missing`、`mise -C mise -E windows dotfiles status --missing` を各環境で確認する。
-- 現行 `dot_config/mise/config.toml` の `[tools]` 全キーが darwin/linux の mise config 合成結果に残り、windows の mise config 合成結果には補助対象 subset だけが残ることを確認する。
+- darwin/linuxのmise config合成結果に現在の各OS用toolsetが残り、windowsのmise config合成結果には補助対象subsetだけが残ることを確認する。
 - 各環境で二回目の `mise -C mise -E <env> dotfiles apply --dry-run --verbose` が差分ゼロになることを確認する。
 
 ### Runtime
