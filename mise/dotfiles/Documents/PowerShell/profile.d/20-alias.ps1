@@ -22,5 +22,5 @@ function grep {
 }
 
 function wsl {
-    wsl.exe --cd /home/uvu @args
+    wsl.exe --cd /home/uvu1 @args
 }

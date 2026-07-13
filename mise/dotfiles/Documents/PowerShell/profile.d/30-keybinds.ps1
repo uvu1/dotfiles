@@ -17,14 +17,18 @@ Set-PSReadLineKeyHandler -Chord Ctrl+r -ScriptBlock {
     Get-HistoryFzf
 }
 
-Set-PSReadLineKeyHandler -Key Tab -ScriptBlock {
-    Invoke-FzfTabCompletion
+if (Get-Command Invoke-FzfTabCompletion -ErrorAction SilentlyContinue) {
+    Set-PSReadLineKeyHandler -Key Tab -ScriptBlock {
+        Invoke-FzfTabCompletion
+    }
 }
 
-Set-PsFzfOption `
-    -PSReadlineChordProvider 'Ctrl+t' `
-    -PSReadlineChordReverseHistory 'Ctrl+r'
+if (Get-Command Set-PsFzfOption -ErrorAction SilentlyContinue) {
+    Set-PsFzfOption `
+        -PSReadlineChordProvider 'Ctrl+t' `
+        -PSReadlineChordReverseHistory 'Ctrl+r'
 
-Set-PsFzfOption -TabExpansion
+    Set-PsFzfOption -TabExpansion
 
-Set-PsFzfOption -TabCompletionPreviewWindow 'hidden|down|right|right:hidden'
+    Set-PsFzfOption -TabCompletionPreviewWindow 'hidden|down|right|right:hidden'
+}

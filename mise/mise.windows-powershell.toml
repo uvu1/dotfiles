@@ -1,0 +1,11 @@
+[tools]
+bat = "latest"
+eza = "latest"
+gh = "latest"
+ghq = "latest"
+kubectl = "latest"
+starship = "latest"
+
+[dotfiles]
+"~/.config/starship.toml" = { source = "dotfiles/.config/starship.toml", mode = "copy" }
+"~/Documents/PowerShell" = { source = "dotfiles/Documents/PowerShell", mode = "copy" }

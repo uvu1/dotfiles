@@ -1,0 +1,12 @@
+[tool_alias]
+git-windows = "github:git-for-windows/git"
+wezterm = "github:wezterm/wezterm"
+
+[tools]
+git-windows = { version = "latest", asset_pattern = "MinGit-*-64-bit.zip", bin_path = "cmd" }
+wezterm = { version = "latest", asset_pattern = "WezTerm-windows-*.zip", filter_bins = ["wezterm.exe", "wezterm-gui.exe"] }
+
+[dotfiles]
+"~/.config/nvim" = { source = "dotfiles/.config/nvim", mode = "copy" }
+"~/.config/mise/config.toml" = { source = "dotfiles/mise/config.windows.toml", mode = "copy" }
+"~/.config/wezterm" = { source = "dotfiles/.config/wezterm", mode = "copy" }

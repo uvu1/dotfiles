@@ -1,0 +1,19 @@
+[settings]
+experimental = true
+
+[tool_alias]
+git-windows = "github:git-for-windows/git"
+wezterm = "github:wezterm/wezterm"
+
+[tools]
+delta = "latest"
+fd = "latest"
+fzf = "latest"
+git-windows = { version = "latest", asset_pattern = "MinGit-*-64-bit.zip", bin_path = "cmd" }
+just = "latest"
+lazygit = "latest"
+neovim = "latest"
+rg = "latest"
+stylua = "latest"
+tree-sitter = "latest"
+wezterm = { version = "latest", asset_pattern = "WezTerm-windows-*.zip", filter_bins = ["wezterm.exe", "wezterm-gui.exe"] }

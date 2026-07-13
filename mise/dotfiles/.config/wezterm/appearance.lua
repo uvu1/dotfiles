@@ -3,23 +3,14 @@ local tabbar = require("tabbar")
 local module = {}
 local background = {}
 
--- Set background image based on the operating system
-local osName = wezterm.target_triple
-if string.find(osName, "windows") then
+local home = os.getenv("USERPROFILE") or os.getenv("HOME")
+
+if home then
   background = {
     {
       source = {
-        File = "C:\\Users\\uvu\\.config\\wezterm\\resources\\background.jpg",
+        File = home .. "/.config/wezterm/resources/background.jpg",
       },
-      opacity = 0.12,
-      vertical_align = "Middle",
-      horizontal_align = "Center",
-    },
-  }
-elseif string.find(osName, "darwin") then
-  background = {
-    {
-      source = { File = "/Users/uvu/.config/wezterm/resources/background.jpg" },
       opacity = 0.12,
       vertical_align = "Middle",
       horizontal_align = "Center",

@@ -1,1 +1,7 @@
 *.log
+.DS_Store
+result
+result-*
+mise/mise.local.toml
+mise/mise.*.local.toml
+.mise-validation/

@@ -1,0 +1,30 @@
+[user]
+    name = uvu1
+    email = 53385458+uvu1@users.noreply.github.com
+    signingkey = ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKBASQWjEFevq1IhdQ2aft+weTImIFDfrjPKKOBiqL8r
+[gpg]
+    format = ssh
+[gpg "ssh"]
+{% if os() == "linux" %}
+    program = "/mnt/c/Users/uvu1/AppData/Local/Microsoft/WindowsApps/op-ssh-sign-wsl.exe"
+{% elif os() == "macos" %}
+    program = "/Applications/1Password.app/Contents/MacOS/op-ssh-sign"
+{% elif os() == "windows" %}
+    program = "C:/Users/uvu1/AppData/Local/Microsoft/WindowsApps/op-ssh-sign.exe"
+{% endif %}
+[commit]
+    gpgsign = true
+[init]
+    defaultBranch = main
+[ghq]
+    root = ~/repo
+
+{% if os() != "macos" %}
+[core]
+{% if os() == "windows" %}
+    sshCommand = "C:/Windows/System32/OpenSSH/ssh.exe"
+{% elif os() == "linux" %}
+    sshCommand = ssh.exe
+{% endif %}
+    pager = delta
+{% endif %}
