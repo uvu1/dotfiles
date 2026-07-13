@@ -124,6 +124,10 @@ bash scripts/cutover-unix.sh linux
 含まれる古い mise ではなく、`flake.lock` で固定した nixpkgs-unstable 版を
 macOS/WSL 共通で利用します。
 
+WSL では blink.cmp の Rust fuzzy matcher をビルドするため、Home Manager が
+GCC と linker も導入します。`linker cc not found` が出た場合は Nix 構成を
+再適用した後、Neovim で blink.cmp を再ビルドします。
+
 ## Windows
 
 PowerShell 7 で mise とこのリポジトリを利用可能にしてから実行します。

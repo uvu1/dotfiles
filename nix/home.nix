@@ -8,6 +8,8 @@
     inputs.nixpkgs-unstable.legacyPackages.${pkgs.stdenv.hostPlatform.system}.mise
     pkgs.sheldon
     pkgs.zsh
+  ] ++ pkgs.lib.optionals pkgs.stdenv.isLinux [
+    pkgs.gcc
   ];
 
   programs.home-manager.enable = true;
