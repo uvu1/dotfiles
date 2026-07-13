@@ -1,6 +1,7 @@
 [CmdletBinding()]
 param(
-    [switch]$IncludePowerShell
+    [switch]$IncludePowerShell,
+    [switch]$Yes
 )
 
 $ErrorActionPreference = "Stop"
@@ -9,6 +10,7 @@ $repoRoot = Split-Path -Parent $PSScriptRoot
 $miseDir = Join-Path $repoRoot "mise"
 $globalMiseConfig = Join-Path $HOME ".config/mise/config.toml"
 $powerShellDotfileTargets = @(
+    $globalMiseConfig,
     (Join-Path $HOME ".config/starship.toml"),
     (Join-Path $HOME "Documents/PowerShell")
 )
@@ -47,7 +49,7 @@ if ($IncludePowerShell) {
 
 Write-Host "The following chezmoi-applied paths will be deleted:"
 $targets | ForEach-Object { Write-Host "  $_" }
-$confirmation = Read-Host "Type delete to continue"
+$confirmation = if ($Yes) { "delete" } else { Read-Host "Type delete to continue" }
 
 if ($confirmation -ne "delete") {
     throw "cancelled"
@@ -132,5 +134,10 @@ if ($IncludePowerShell) {
         "-C", $miseDir,
         "-E", "windows-powershell",
         "dotfiles", "status", "--missing"
+    ) + $powerShellDotfileTargets)
+    Invoke-Mise -MiseArgs (@(
+        "-C", $miseDir,
+        "-E", "windows-powershell",
+        "dotfiles", "status"
     ) + $powerShellDotfileTargets)
 }

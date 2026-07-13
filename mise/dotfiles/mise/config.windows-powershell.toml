@@ -1,0 +1,26 @@
+[settings]
+experimental = true
+
+[tool_alias]
+eza = "github:eza-community/eza"
+git-windows = "github:git-for-windows/git"
+wezterm = "github:wezterm/wezterm"
+
+[tools]
+bat = "latest"
+delta = "latest"
+eza = { version = "latest", asset_pattern = "eza.exe_x86_64-pc-windows-gnu.zip" }
+fd = "latest"
+fzf = "latest"
+gh = "latest"
+ghq = "latest"
+git-windows = { version = "latest", asset_pattern = "MinGit-*-64-bit.zip", bin_path = "cmd" }
+just = "latest"
+kubectl = "latest"
+lazygit = "latest"
+neovim = "latest"
+rg = "latest"
+starship = "latest"
+stylua = "latest"
+tree-sitter = "latest"
+wezterm = { version = "latest", asset_pattern = "WezTerm-windows-*.zip", filter_bins = ["wezterm.exe", "wezterm-gui.exe"] }

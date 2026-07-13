@@ -5,7 +5,7 @@
 - `github.com/uvu1/dotfiles` の `chezmoi-master`（移行前の `master`）の開発体験を維持しつつ、chezmoi から `Nix + Home Manager + nix-darwin + mise dotfiles` へ移行する。
 - 主環境は `macOS` と `WSL ArchLinux`。macOS は nix-darwin + Home Manager、WSL Arch は Home Manager standalone で管理する。
 - 所有範囲を明確に分ける。Nix は OS/system と最小基盤、mise は開発 CLI、mise dotfiles は設定ファイルを管理する。
-- Windows は補助環境として `wezterm / git / nvim` を mise dotfiles で適用し、将来的に PowerShell profile も同じ仕組みで共有できる構造にする。
+- Windows は補助環境として `wezterm / git / nvim` を mise dotfiles で適用する。PowerShell profile を有効にする場合は PowerShell 用 tools と `dotfiles-update` も同じ仕組みで適用する。
 
 ## Key Changes
 
@@ -22,7 +22,7 @@
 - Nix が管理するもの: `flake.lock` で固定した nixpkgs-unstable 版の `mise`、`git`, `zsh`, `sheldon`、Nix/darwin/WSL のネイティブ依存、macOS defaults、WSL bootstrap 用ファイル。
 - mise が管理するもの: 現行 `[tools]` の開発 CLI と言語ランタイム。`starship`, `delta`, `fzf`, `ghq` など現行 mise tools にあるものは mise 側に残し、Nix では重複導入しない。
 - mise dotfiles が管理するもの: `.gitconfig`, `.zshrc`, `.config/nvim`, `.config/mise/config.toml`, `.config/sheldon`, `.config/zsh`, `.config/starship.toml`, `.config/wezterm`, Windows PowerShell profile 候補。
-- Windows では `.config/mise/config.toml` を初期適用対象に含める。既存 global mise 設定を削除した後、Windows subset の global config を先に配置してから `mise install` を実行する。
+- Windows では `.config/mise/config.toml` を初期適用対象に含める。既存 global mise 設定を削除した後、PowerShell profile を有効にしない場合は Windows subset、有効にする場合は Windows + PowerShell subset の global config を配置する。
 - Home Manager では `programs.git`, `programs.zsh`, `programs.starship` などの設定ファイル生成を使わない。必要な場合も package 導入に限定し、dotfiles の出力先と競合させない。
 
 ### macOS / nix-darwin
@@ -105,7 +105,8 @@
 - 旧 global mise 設定とのマージを避けるため、`$HOME/.config/mise` を削除した後、`mise -C mise -E windows dotfiles apply --dry-run --verbose $HOME/.config/mise/config.toml` で対象を確認し、`mise -C mise -E windows dotfiles apply --yes $HOME/.config/mise/config.toml` で Windows subset の global config を先に配置する。
 - `mise -C mise -E windows install` で Windows subset の `[tools]` をインストールし、`mise -C mise -E windows ls --current` で有効バージョンを確認する。
 - `mise -C mise -E windows dotfiles apply --dry-run --verbose` で `mise global config / wezterm / nvim / .gitconfig` のみが対象になることを確認して apply する。
-- PowerShell profile を有効化する場合のみ `mise -C mise -E windows-powershell dotfiles apply --dry-run --verbose` で確認し、`mise -C mise -E windows-powershell dotfiles apply --yes` で適用し、`mise -C mise -E windows-powershell dotfiles status --missing` を確認する。
+- PowerShell profile を有効化する場合のみ `mise -C mise -E windows-powershell dotfiles apply --dry-run --verbose` で確認し、`mise -C mise -E windows-powershell dotfiles apply --yes` で combined global mise config、starship、PowerShell profile を適用し、`mise -C mise -E windows-powershell dotfiles status --missing` と通常 status を確認する。
+- PowerShell profile 適用後は `dotfiles-update` を公開する。固定した `$HOME\migrate-dotfiles` の clean な `master` を `origin/master` へ fast-forwardし、Windows/PowerShell tools と dotfiles を一括適用する。commit、push、stash、reset、削除は行わない。
 
 ## Test Plan
 
@@ -138,4 +139,4 @@
 - ユーザー名は macOS/WSL/Windows すべて `uvu1` を既定にする。
 - Home Manager は mise dotfiles 対象のユーザー設定ファイルを生成せず、dotfiles の出力先と競合させない。macOS defaults や system 設定は nix-darwin が管理する。
 - macOS defaults は nix-darwin に集約し、mise dotfiles では触らない。
-- Windows は主環境ではなく補助対象。PowerShell profile は将来共有可能な構造だけ用意し、初期適用とは分ける。
+- Windows は主環境ではなく補助対象。PowerShell profile は `-IncludePowerShell` で初期適用に含め、それ以降は `dotfiles-update` で Windows 設定と一括更新する。

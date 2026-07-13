@@ -1,11 +1,15 @@
+[tool_alias]
+eza = "github:eza-community/eza"
+
 [tools]
 bat = "latest"
-eza = "latest"
+eza = { version = "latest", asset_pattern = "eza.exe_x86_64-pc-windows-gnu.zip" }
 gh = "latest"
 ghq = "latest"
 kubectl = "latest"
 starship = "latest"
 
 [dotfiles]
+"~/.config/mise/config.toml" = { source = "dotfiles/mise/config.windows-powershell.toml", mode = "copy" }
 "~/.config/starship.toml" = { source = "dotfiles/.config/starship.toml", mode = "copy" }
 "~/Documents/PowerShell" = { source = "dotfiles/Documents/PowerShell", mode = "copy" }
