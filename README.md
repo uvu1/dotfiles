@@ -22,6 +22,20 @@ macOS と WSL では現在のdarwin/linux用toolsetを利用します。Windows 
 Neovim とその周辺 CLI、MinGit、WezTerm の subset を使います。PowerShell
 profile を含める場合は bat、eza、gh、ghq、kubectl、starship も追加します。
 
+`bun` と `uv` はグローバルtoolsetに含めません。必要なプロジェクトのルートで
+それぞれ次を実行し、プロジェクトの `mise.toml` に追加します。
+
+```sh
+mise use bun@latest
+mise use uv@latest
+```
+
+これにより、各toolはそのプロジェクト以下でだけ有効になります。チームで共有しない
+個人用設定にする場合は、`mise use --env local bun@latest` または
+`mise use --env local uv@latest` を使い、生成される `.mise.local.toml` をGitの
+管理対象外にします。グローバル設定から削除しても、miseが既にダウンロードした
+インストール実体は自動では削除されませんが、プロジェクト外では有効になりません。
+
 ## 前提
 
 - macOS と Windows に 1Password があり、SSH signing が有効であること
