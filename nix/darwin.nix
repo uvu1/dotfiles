@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+{ inputs, pkgs, ... }:
 {
   nixpkgs.hostPlatform = "aarch64-darwin";
 
@@ -21,6 +21,7 @@
   ];
 
   home-manager = {
+    extraSpecialArgs = { inherit inputs; };
     useGlobalPkgs = true;
     useUserPackages = true;
     users.uvu1 = {

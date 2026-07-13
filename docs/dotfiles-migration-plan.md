@@ -11,7 +11,7 @@
 
 ### Nix flake
 
-- repo に `flake.nix` と `flake.lock` を追加し、`nixpkgs`, `home-manager`, `nix-darwin` を固定してコミット対象にする。
+- repo に `flake.nix` と `flake.lock` を追加し、`nixpkgs`, `nixpkgs-unstable`, `home-manager`, `nix-darwin` を固定してコミット対象にする。mise は `min_version = "2026.6.14"` を満たす nixpkgs-unstable 版を利用する。
 - outputs は `darwinConfigurations."uvu1-mac"` と `homeConfigurations."uvu1@arch-wsl"` を定義する。
 - `hostPlatform` は macOS を `aarch64-darwin`、WSL Arch を `x86_64-linux` として固定する。Intel Mac を使う場合のみ macOS hostPlatform を `x86_64-darwin` に差し替える。
 - `home.username = "uvu1"`、`home.homeDirectory = "/home/uvu1"` または `/Users/uvu1`、`home.stateVersion`、`system.stateVersion`、`system.primaryUser = "uvu1"` を明示する。
@@ -19,7 +19,7 @@
 
 ### Ownership
 
-- Nix が管理するもの: `mise`, `git`, `zsh`, `sheldon`、Nix/darwin/WSL のネイティブ依存、macOS defaults、WSL bootstrap 用ファイル。
+- Nix が管理するもの: `flake.lock` で固定した nixpkgs-unstable 版の `mise`、`git`, `zsh`, `sheldon`、Nix/darwin/WSL のネイティブ依存、macOS defaults、WSL bootstrap 用ファイル。
 - mise が管理するもの: 現行 `[tools]` の開発 CLI と言語ランタイム。`starship`, `delta`, `fzf`, `ghq` など現行 mise tools にあるものは mise 側に残し、Nix では重複導入しない。
 - mise dotfiles が管理するもの: `.gitconfig`, `.zshrc`, `.config/nvim`, `.config/mise/config.toml`, `.config/sheldon`, `.config/zsh`, `.config/starship.toml`, `.config/wezterm`, Windows PowerShell profile 候補。
 - Windows では `.config/mise/config.toml` を初期適用対象に含める。既存 global mise 設定を削除した後、Windows subset の global config を先に配置してから `mise install` を実行する。
