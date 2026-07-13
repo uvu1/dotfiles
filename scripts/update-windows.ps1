@@ -13,6 +13,11 @@ $stage = "initialization"
 $repoRoot = Join-Path $HOME "migrate-dotfiles"
 $miseDir = Join-Path $repoRoot "mise"
 $globalMiseConfig = Join-Path $HOME ".config/mise/config.toml"
+$windowsTargets = @(
+    (Join-Path $HOME ".config/nvim"),
+    (Join-Path $HOME ".gitconfig"),
+    (Join-Path $HOME ".config/wezterm")
+)
 $powerShellTargets = @(
     $globalMiseConfig,
     (Join-Path $HOME ".config/starship.toml"),
@@ -132,14 +137,14 @@ try {
     Invoke-Native -FilePath "mise" -ArgumentList @("-C", $miseDir, "-E", "windows-powershell", "install")
 
     Write-Stage "apply Windows dotfiles"
-    Invoke-Native -FilePath "mise" -ArgumentList @("-C", $miseDir, "-E", "windows", "dotfiles", "apply", "--yes")
+    Invoke-Native -FilePath "mise" -ArgumentList (@("-C", $miseDir, "-E", "windows", "dotfiles", "apply", "--yes") + $windowsTargets)
 
     Write-Stage "apply PowerShell dotfiles"
     Invoke-Native -FilePath "mise" -ArgumentList (@("-C", $miseDir, "-E", "windows-powershell", "dotfiles", "apply", "--yes") + $powerShellTargets)
 
     Write-Stage "verify dotfiles"
-    Invoke-Native -FilePath "mise" -ArgumentList @("-C", $miseDir, "-E", "windows", "dotfiles", "status", "--missing")
-    Invoke-Native -FilePath "mise" -ArgumentList @("-C", $miseDir, "-E", "windows", "dotfiles", "status")
+    Invoke-Native -FilePath "mise" -ArgumentList (@("-C", $miseDir, "-E", "windows", "dotfiles", "status", "--missing") + $windowsTargets)
+    Invoke-Native -FilePath "mise" -ArgumentList (@("-C", $miseDir, "-E", "windows", "dotfiles", "status") + $windowsTargets)
     Invoke-Native -FilePath "mise" -ArgumentList (@("-C", $miseDir, "-E", "windows-powershell", "dotfiles", "status", "--missing") + $powerShellTargets)
     Invoke-Native -FilePath "mise" -ArgumentList (@("-C", $miseDir, "-E", "windows-powershell", "dotfiles", "status") + $powerShellTargets)
 
