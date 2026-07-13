@@ -67,10 +67,12 @@ passwd uvu1
 pacman -Syu --needed sudo git curl ca-certificates
 ```
 
-`/etc/sudoers` の `%wheel ALL=(ALL:ALL) ALL` を有効化し、`uvu1` 所有の
-ディレクトリへこのリポジトリを clone します。その後、次を実行します。
+`/etc/sudoers` の `%wheel ALL=(ALL:ALL) ALL` を有効化し、このリポジトリを
+`uvu1` 所有の `~/dotfiles` へ clone します。その後、次を実行します。
 
 ```sh
+git clone https://github.com/uvu1/dotfiles ~/dotfiles
+cd ~/dotfiles
 sudo install -m 0644 bootstrap/wsl/wsl.conf /etc/wsl.conf
 ```
 
@@ -128,6 +130,19 @@ WSL では blink.cmp の Rust fuzzy matcher をビルドするため、Home Mana
 GCC と linker も導入します。また、Neovim のクリップボード連携に必要な
 `wl-copy` と `wl-paste` も導入します。`linker cc not found` が出た場合は
 Nix 構成を再適用した後、Neovim で blink.cmp を再ビルドします。
+
+### WSL の更新
+
+初回切り替え後は、どのディレクトリからでも次の一コマンドで更新できます。
+
+```sh
+dotfiles-update
+```
+
+`dotfiles-update` は `~/dotfiles` の `master` を `origin/master` へ fast-forwardし、
+Home Manager、mise tools、mise dotfiles の順に適用して status まで確認します。
+commit、push、stash、reset、ファイル削除は行いません。tracked/untracked を問わず
+worktree に変更がある場合は、変更一覧を表示して pull 前に終了します。
 
 ## Windows
 
