@@ -9,7 +9,7 @@ wezterm = "github:wezterm/wezterm"
 delta = "latest"
 fd = "latest"
 fzf = "latest"
-git-windows = { version = "latest", asset_pattern = "MinGit-*-64-bit.zip", bin_path = "cmd" }
+git-windows = { version = "latest", asset_pattern = "MinGit-*-64-bit.zip", bin_path = "cmd", github_attestations = false }
 just = "latest"
 lazygit = "latest"
 neovim = "latest"

@@ -14,7 +14,7 @@ fd = "latest"
 fzf = "latest"
 gh = "latest"
 ghq = "latest"
-git-windows = { version = "latest", asset_pattern = "MinGit-*-64-bit.zip", bin_path = "cmd" }
+git-windows = { version = "latest", asset_pattern = "MinGit-*-64-bit.zip", bin_path = "cmd", github_attestations = false }
 just = "latest"
 kubectl = "latest"
 lazygit = "latest"

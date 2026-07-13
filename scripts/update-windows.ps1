@@ -38,6 +38,19 @@ function Invoke-Native {
     }
 }
 
+function Install-GitWindows {
+    $variableName = "MISE_GITHUB_GITHUB_ATTESTATIONS"
+    $previousValue = [Environment]::GetEnvironmentVariable($variableName, "Process")
+
+    try {
+        [Environment]::SetEnvironmentVariable($variableName, "false", "Process")
+        Invoke-Native -FilePath "mise" -ArgumentList @("-C", $miseDir, "-E", "windows", "install", "git-windows")
+    }
+    finally {
+        [Environment]::SetEnvironmentVariable($variableName, $previousValue, "Process")
+    }
+}
+
 function Get-GitValue {
     param([Parameter(Mandatory)][string[]]$ArgumentList)
 
@@ -108,6 +121,9 @@ try {
     foreach ($configFile in @("mise.toml", "mise.windows.toml", "mise.windows-powershell.toml")) {
         Invoke-Native -FilePath "mise" -ArgumentList @("trust", (Join-Path $miseDir $configFile))
     }
+
+    Write-Stage "install MinGit"
+    Install-GitWindows
 
     Write-Stage "install Windows tools"
     Invoke-Native -FilePath "mise" -ArgumentList @("-C", $miseDir, "-E", "windows", "install")
