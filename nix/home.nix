@@ -10,6 +10,7 @@
     pkgs.zsh
   ] ++ pkgs.lib.optionals pkgs.stdenv.isLinux [
     pkgs.gcc
+    pkgs.wl-clipboard
   ];
 
   programs.home-manager.enable = true;

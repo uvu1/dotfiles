@@ -125,8 +125,9 @@ bash scripts/cutover-unix.sh linux
 macOS/WSL 共通で利用します。
 
 WSL では blink.cmp の Rust fuzzy matcher をビルドするため、Home Manager が
-GCC と linker も導入します。`linker cc not found` が出た場合は Nix 構成を
-再適用した後、Neovim で blink.cmp を再ビルドします。
+GCC と linker も導入します。また、Neovim のクリップボード連携に必要な
+`wl-copy` と `wl-paste` も導入します。`linker cc not found` が出た場合は
+Nix 構成を再適用した後、Neovim で blink.cmp を再ビルドします。
 
 ## Windows
 
