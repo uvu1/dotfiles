@@ -61,7 +61,7 @@ return {
 				jsonc = web_formatters,
 				css = web_formatters,
 
-				yaml = { "prettier", "yamlfmt", stop_after_first = true },
+				yaml = { "prettier" },
 				rust = { "rustfmt", lsp_format = "fallback" },
 				python = { "ruff_format" },
 				cpp = { "clang_format", lsp_format = "fallback" },
