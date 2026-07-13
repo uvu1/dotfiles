@@ -106,7 +106,7 @@
 - `mise -C mise -E windows install` で Windows subset の `[tools]` をインストールし、`mise -C mise -E windows ls --current` で有効バージョンを確認する。
 - `mise -C mise -E windows dotfiles apply --dry-run --verbose` で `mise global config / wezterm / nvim / .gitconfig` のみが対象になることを確認して apply する。
 - PowerShell profile を有効化する場合のみ `mise -C mise -E windows-powershell dotfiles apply --dry-run --verbose` で確認し、`mise -C mise -E windows-powershell dotfiles apply --yes` で combined global mise config、starship、PowerShell profile を適用し、`mise -C mise -E windows-powershell dotfiles status --missing` と通常 status を確認する。
-- PowerShell profile 適用後は `dotfiles-update` を公開する。固定した `$HOME\migrate-dotfiles` の clean な `master` を `origin/master` へ fast-forwardし、Windows/PowerShell tools と dotfiles を一括適用する。commit、push、stash、reset、削除は行わない。
+- PowerShell profile 適用後は `dotfiles-update` を公開する。WSLと共通で固定した `$HOME\dotfiles` の clean な `master` を `origin/master` へ fast-forwardし、Windows/PowerShell tools と dotfiles を一括適用する。commit、push、stash、reset、削除は行わない。
 
 ## Test Plan
 

@@ -2,7 +2,7 @@ function global:Update-Dotfiles {
     [CmdletBinding()]
     param()
 
-    $updateScript = Join-Path $HOME "migrate-dotfiles/scripts/update-windows.ps1"
+    $updateScript = Join-Path $HOME "dotfiles/scripts/update-windows.ps1"
     if (-not (Test-Path -LiteralPath $updateScript -PathType Leaf)) {
         throw "dotfiles update script not found: $updateScript"
     }

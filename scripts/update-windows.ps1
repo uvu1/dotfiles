@@ -10,7 +10,7 @@ if ($MyInvocation.UnboundArguments.Count -ne 0) {
 }
 
 $stage = "initialization"
-$repoRoot = Join-Path $HOME "migrate-dotfiles"
+$repoRoot = Join-Path $HOME "dotfiles"
 $miseDir = Join-Path $repoRoot "mise"
 $globalMiseConfig = Join-Path $HOME ".config/mise/config.toml"
 $windowsTargets = @(
