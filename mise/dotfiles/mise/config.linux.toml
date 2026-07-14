@@ -2,6 +2,7 @@
 experimental = true
 
 [tools]
+"github:uvu1/dotflow" = "0.1.0"
 bat = "latest"
 eza = "latest"
 fd = "latest"

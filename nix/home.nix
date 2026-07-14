@@ -7,7 +7,9 @@ let
       pkgs.git
       misePackage
     ];
-    text = builtins.readFile ../scripts/update-wsl.sh;
+    text = ''
+      export PATH="$HOME/.local/share/mise/shims:$PATH"
+    '' + builtins.readFile ../scripts/update-wsl.sh;
   };
 in
 {
