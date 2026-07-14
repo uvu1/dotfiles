@@ -5,6 +5,7 @@ dotfiles.default_mode = "symlink"
 experimental = true
 
 [tools]
+"github:uvu1/dotflow" = "0.1.0"
 delta = "latest"
 fd = "latest"
 fzf = "latest"

@@ -7,6 +7,9 @@ defer = "{% for file in files %}zsh-defer source \"{{ file }}\"\n{% endfor %}"
 [plugins.mise]
 inline = 'eval "$(mise activate --shims zsh)"'
 
+[plugins.dotflow]
+inline = 'eval "$(dotflow shell-init zsh)"'
+
 [plugins.starship]
 inline = 'eval "$(starship init zsh)"'
 
