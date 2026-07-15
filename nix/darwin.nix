@@ -29,7 +29,6 @@
     casks = [
       "1password"
       "adobe-creative-cloud"
-      "atok"
       "cloudflare-warp"
       "discord@canary"
       "microsoft-office"
