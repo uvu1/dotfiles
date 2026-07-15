@@ -16,6 +16,36 @@
 
   users.users.uvu1.home = "/Users/uvu1";
 
+  nix-homebrew = {
+    enable = true;
+    enableRosetta = false;
+    mutableTaps = true;
+    user = "uvu1";
+  };
+
+  homebrew = {
+    enable = true;
+    greedyCasks = true;
+    casks = [
+      "1password"
+      "adobe-creative-cloud"
+      "atok"
+      "cloudflare-warp"
+      "discord@canary"
+      "microsoft-office"
+      "obsidian"
+      "readdle-spark"
+      "spotify"
+      "zen@twilight"
+      "zoom"
+    ];
+    onActivation = {
+      autoUpdate = true;
+      cleanup = "none";
+      upgrade = true;
+    };
+  };
+
   fonts.packages = [
     pkgs.nerd-fonts.jetbrains-mono
   ];
