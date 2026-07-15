@@ -18,6 +18,11 @@ program = "home-manager"
 args = ["switch", "--flake", "{repo}#uvu1@arch-wsl"]
 cwd = "{repo}"
 
+[[profiles.wsl.after_sync]]
+program = "bash"
+args = ["scripts/sync-ai-config.sh"]
+cwd = "{repo}"
+
 [profiles.macos]
 platform = "macos"
 arch = "aarch64"
@@ -29,6 +34,11 @@ mise_environment = "darwin"
 [[profiles.macos.after_sync]]
 program = "sudo"
 args = ["darwin-rebuild", "switch", "--flake", "{repo}#uvu1-mac"]
+cwd = "{repo}"
+
+[[profiles.macos.after_sync]]
+program = "bash"
+args = ["scripts/sync-ai-config.sh"]
 cwd = "{repo}"
 
 [profiles.windows]

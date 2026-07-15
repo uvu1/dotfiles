@@ -31,6 +31,12 @@ yq = "latest"
 claude = "latest"
 
 [dotfiles]
+"~/.agents/skills" = { source = "dotfiles/ai/skills/codex", mode = "symlink-each" }
+"~/.claude/CLAUDE.md" = { source = "dotfiles/ai/claude/CLAUDE.md", mode = "symlink" }
+"~/.claude/settings.json" = { source = "dotfiles/ai/claude/settings.json", mode = "symlink" }
+"~/.claude/skills" = { source = "dotfiles/ai/skills/claude", mode = "symlink-each" }
+"~/.codex/AGENTS.md" = { source = "dotfiles/ai/codex/AGENTS.md", mode = "symlink" }
+"~/.codex/rules" = { source = "dotfiles/ai/codex/rules", mode = "symlink-each" }
 "~/.config/mise/config.toml" = { source = "dotfiles/mise/config.linux.toml", mode = "copy" }
 "~/.config/sheldon" = { source = "dotfiles/.config/sheldon", mode = "symlink" }
 "~/.config/starship.toml" = { source = "dotfiles/.config/starship.toml", mode = "symlink" }

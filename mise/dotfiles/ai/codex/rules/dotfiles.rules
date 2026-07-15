@@ -1,0 +1,7 @@
+prefix_rule(pattern=["/run/current-system/sw/bin/nix", "build"], decision="allow")
+prefix_rule(pattern=["sudo", "-n", "/run/current-system/sw/bin/darwin-rebuild", "switch"], decision="allow")
+prefix_rule(pattern=["/run/current-system/sw/bin/nix", "flake", "check", "--no-build"], decision="allow")
+prefix_rule(pattern=["/bin/zsh", "-lc", "MISE_EXPERIMENTAL=1 mise -C mise -E darwin install eza yamllint --verbose"], decision="allow")
+prefix_rule(pattern=["curl", "-fsSL", "https://api.github.com/repos/eza-community/eza/releases/latest"], decision="allow")
+prefix_rule(pattern=["/bin/zsh", "-lc", "MISE_EXPERIMENTAL=1 mise -C mise -E darwin install cargo:eza --verbose"], decision="allow")
+prefix_rule(pattern=["/run/current-system/sw/bin/nix", "eval", "--json", ".#darwinConfigurations.uvu1-mac.config.homebrew.casks"], decision="allow")

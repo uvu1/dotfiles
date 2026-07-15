@@ -5,3 +5,7 @@ result-*
 mise/mise.local.toml
 mise/mise.*.local.toml
 .mise-validation/
+
+# Claude Code machine-local overrides
+CLAUDE.local.md
+**/.claude/settings.local.json
