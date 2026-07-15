@@ -36,6 +36,7 @@
       "obsidian"
       "readdle-spark"
       "spotify"
+      "wezterm"
       "zen@twilight"
       "zoom"
     ];

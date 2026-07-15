@@ -118,8 +118,8 @@ sudo darwin-rebuild switch --flake .#uvu1-mac
 
 この適用では `nix-homebrew` が Apple Silicon 用 Homebrew を `/opt/homebrew` に導入し、
 1Password、Adobe Creative Cloud、ATOK、Cloudflare One Client、Discord Canary、
-Microsoft Office、Obsidian、Spark、Spotify、Zen Twilight、Zoom を Homebrew Cask で
-導入・更新します。Nix の宣言にない Homebrew package は削除しません。
+Microsoft Office、Obsidian、Spark、Spotify、WezTerm、Zen Twilight、Zoom を
+Homebrew Cask で導入・更新します。Nix の宣言にない Homebrew package は削除しません。
 
 Adobe 製品本体は Creative Cloud から選択して導入します。1Password、Adobe、ATOK、
 Cloudflare、Office などのアカウント・ライセンス認証、macOS の権限許可、Cloudflare
