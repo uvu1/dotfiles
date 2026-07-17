@@ -35,6 +35,13 @@ in
         exec /mnt/c/Windows/System32/OpenSSH/ssh.exe "$@"
       '';
     };
+    ".local/bin/ssh-keygen" = {
+      executable = true;
+      text = ''
+        #!/bin/sh
+        exec /mnt/c/Windows/System32/OpenSSH/ssh-keygen.exe "$@"
+      '';
+    };
   };
 
   programs.home-manager.enable = true;
