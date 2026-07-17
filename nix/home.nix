@@ -39,7 +39,7 @@ in
       executable = true;
       text = ''
         #!/bin/sh
-        exec /mnt/c/Windows/System32/OpenSSH/ssh-keygen.exe "$@"
+        exec ${pkgs.openssh}/bin/ssh-keygen "$@"
       '';
     };
   };
