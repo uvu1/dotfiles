@@ -7,6 +7,14 @@ defer = "{% for file in files %}zsh-defer source \"{{ file }}\"\n{% endfor %}"
 [plugins.mise]
 inline = 'eval "$(mise activate --shims zsh)"'
 
+[plugins.wsl-local-bin]
+inline = '''
+if [[ -n "${WSL_DISTRO_NAME:-}" ]]; then
+  typeset -U path PATH
+  path=("$HOME/.local/bin" $path)
+fi
+'''
+
 [plugins.dotflow]
 inline = 'eval "$(dotflow shell-init zsh)"'
 

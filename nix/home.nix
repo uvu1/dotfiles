@@ -27,5 +27,15 @@ in
     pkgs.wl-clipboard
   ];
 
+  home.file = pkgs.lib.optionalAttrs pkgs.stdenv.isLinux {
+    ".local/bin/ssh" = {
+      executable = true;
+      text = ''
+        #!/bin/sh
+        exec /mnt/c/Windows/System32/OpenSSH/ssh.exe "$@"
+      '';
+    };
+  };
+
   programs.home-manager.enable = true;
 }
