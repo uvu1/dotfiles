@@ -1,5 +1,9 @@
+# macOS(darwin) と WSL(linux) 共通で ~/.config/mise/config.toml へ配布する
+# グローバル設定。standalone なので base をマージせず全ツールを列挙する。
 [settings]
 experimental = true
+# .ruby-version / .node-version(.nvmrc) をプロジェクトのバージョン指定として読む
+idiomatic_version_file_enable_tools = ["ruby", "node"]
 
 [tools]
 "github:uvu1/dotflow" = "0.1.0"

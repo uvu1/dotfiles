@@ -1,23 +1,18 @@
+# base の mise.toml から delta, fd, fzf, just, lazygit, neovim, rg, stylua,
+# tree-sitter を継承する。ここには unix 用の追加ツールだけを記載する。
 [tools]
 bat = "latest"
 "cargo:eza" = "latest"
-fd = "latest"
-fzf = "latest"
 ghq = "latest"
 helm = "latest"
 kubectl = "latest"
-neovim = "latest"
 starship = "latest"
-rg = "latest"
 rust = "latest"
 gh = "latest"
 jq = "latest"
 node = "24.15.0"
 python = "3.14"
 codex = "latest"
-stylua = "latest"
-lazygit = "latest"
-tree-sitter = "latest"
 cloudflared = "latest"
 zoxide = "latest"
 prettier = "latest"
@@ -25,8 +20,6 @@ pipx = "latest"
 yamllint = "latest"
 ruff = "latest"
 biome = "latest"
-just = "latest"
-delta = "latest"
 yq = "latest"
 claude = "latest"
 
@@ -37,7 +30,7 @@ claude = "latest"
 "~/.claude/skills" = { source = "dotfiles/ai/skills/claude", mode = "symlink-each" }
 "~/.codex/AGENTS.md" = { source = "dotfiles/ai/codex/AGENTS.md", mode = "symlink" }
 "~/.codex/rules" = { source = "dotfiles/ai/codex/rules", mode = "symlink-each" }
-"~/.config/mise/config.toml" = { source = "dotfiles/mise/config.darwin.toml", mode = "copy" }
+"~/.config/mise/config.toml" = { source = "dotfiles/mise/config.unix.toml", mode = "copy" }
 "~/.config/sheldon" = { source = "dotfiles/.config/sheldon", mode = "symlink" }
 "~/.config/starship.toml" = { source = "dotfiles/.config/starship.toml", mode = "symlink" }
 "~/.config/wezterm" = { source = "dotfiles/.config/wezterm", mode = "symlink" }
