@@ -2,7 +2,7 @@
 # tree-sitter を継承する。ここには unix 用の追加ツールだけを記載する。
 [tools]
 bat = "latest"
-"cargo:eza" = "latest"
+eza = "latest"
 ghq = "latest"
 helm = "latest"
 kubectl = "latest"
