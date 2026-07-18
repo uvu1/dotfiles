@@ -1,3 +1,5 @@
+# macOS(darwin) と WSL(linux) 共通の unix toolset と dotfiles。
+# wsl / macos profile が mise 環境 "unix" として読み込む。
 # base の mise.toml から delta, fd, fzf, just, lazygit, neovim, rg, stylua,
 # tree-sitter を継承する。ここには unix 用の追加ツールだけを記載する。
 [tools]

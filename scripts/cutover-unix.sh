@@ -4,11 +4,11 @@ set -euo pipefail
 export MISE_EXPERIMENTAL=1
 
 if [[ $# -ne 1 ]]; then
-  echo "usage: $0 darwin|linux" >&2
+  echo "usage: $0 darwin|unix" >&2
   exit 2
 fi
 
-environment="$1"
+selector="$1"
 repo_root="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd)"
 mise_dir="$repo_root/mise"
 
@@ -17,8 +17,11 @@ if [[ -z "${HOME:-}" || "$HOME" == "/" ]]; then
   exit 1
 fi
 
-case "$environment" in
+# macOS は共有 unix 環境に加えて darwin 環境(wezterm)を適用する。
+# WSL は unix 環境のみ。互換のため linux も unix として受け付ける。
+case "$selector" in
   darwin)
+    environments=(unix darwin)
     targets=(
       "$HOME/.config/nvim"
       "$HOME/.config/mise"
@@ -30,7 +33,8 @@ case "$environment" in
       "$HOME/.gitconfig"
     )
     ;;
-  linux)
+  unix|linux)
+    environments=(unix)
     targets=(
       "$HOME/.config/nvim"
       "$HOME/.config/mise"
@@ -42,14 +46,16 @@ case "$environment" in
     )
     ;;
   *)
-    echo "unsupported environment: $environment" >&2
+    echo "unsupported selector: $selector" >&2
     exit 2
     ;;
 esac
 
 command -v mise >/dev/null
 
-mise -C "$mise_dir" -E "$environment" dotfiles apply --dry-run --force --verbose
+for env in "${environments[@]}"; do
+  mise -C "$mise_dir" -E "$env" dotfiles apply --dry-run --force --verbose
+done
 
 printf 'The following chezmoi-applied paths will be deleted:\n'
 printf '  %s\n' "${targets[@]}"
@@ -74,8 +80,13 @@ for target in "${targets[@]}"; do
   fi
 done
 
-mise -C "$mise_dir" -E "$environment" dotfiles apply --dry-run --verbose
-mise -C "$mise_dir" -E "$environment" dotfiles apply --yes
-mise -C "$mise_dir" -E "$environment" dotfiles apply --yes
-mise -C "$mise_dir" -E "$environment" dotfiles status --missing
-mise -C "$mise_dir" -E "$environment" dotfiles status
+for env in "${environments[@]}"; do
+  mise -C "$mise_dir" -E "$env" dotfiles apply --dry-run --verbose
+  mise -C "$mise_dir" -E "$env" dotfiles apply --yes
+  mise -C "$mise_dir" -E "$env" dotfiles apply --yes
+done
+
+for env in "${environments[@]}"; do
+  mise -C "$mise_dir" -E "$env" dotfiles status --missing
+  mise -C "$mise_dir" -E "$env" dotfiles status
+done

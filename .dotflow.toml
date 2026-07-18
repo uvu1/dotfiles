@@ -8,10 +8,10 @@ mise_dir = "mise"
 
 [profiles.wsl]
 platform = "wsl"
-add_environment = "linux"
+add_environment = "unix"
 
 [[profiles.wsl.environments]]
-mise_environment = "linux"
+mise_environment = "unix"
 
 [[profiles.wsl.after_sync]]
 program = "home-manager"
@@ -26,10 +26,14 @@ cwd = "{repo}"
 [profiles.macos]
 platform = "macos"
 arch = "aarch64"
-add_environment = "darwin"
+add_environment = "unix"
+
+[[profiles.macos.environments]]
+mise_environment = "unix"
 
 [[profiles.macos.environments]]
 mise_environment = "darwin"
+targets = ["~/.config/wezterm"]
 
 [[profiles.macos.after_sync]]
 program = "sudo"
