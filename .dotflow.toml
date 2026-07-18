@@ -56,9 +56,3 @@ targets = ["~/.config/nvim", "~/.gitconfig", "~/.config/wezterm"]
 [[profiles.windows.environments]]
 mise_environment = "windows-powershell"
 targets = ["~/.config/mise/config.toml", "~/.config/starship.toml", "~/Documents/PowerShell"]
-
-[[profiles.windows.before_install]]
-program = "mise"
-args = ["-C", "{backend}", "-E", "windows", "install", "git-windows"]
-[profiles.windows.before_install.env]
-MISE_GITHUB_GITHUB_ATTESTATIONS = "false"

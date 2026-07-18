@@ -1,11 +1,5 @@
-[tool_alias]
-git-windows = "github:git-for-windows/git"
-wezterm = "github:wezterm/wezterm"
-
-[tools]
-git-windows = { version = "latest", asset_pattern = "MinGit-*-64-bit.zip", bin_path = "cmd", github_attestations = false }
-wezterm = { version = "latest", asset_pattern = "WezTerm-windows-*.zip", filter_bins = ["wezterm.exe", "wezterm-gui.exe"] }
-
+# Git と WezTerm は winget で導入する（mise では管理しない）。
+# base の mise.toml から neovim ほか core CLI を継承。ここは Windows 用 dotfiles のみ。
 [dotfiles]
 "~/.config/nvim" = { source = "dotfiles/.config/nvim", mode = "copy" }
 "~/.config/mise/config.toml" = { source = "dotfiles/mise/config.windows.toml", mode = "copy" }

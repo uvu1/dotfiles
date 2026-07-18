@@ -24,19 +24,6 @@ function Invoke-Mise {
     }
 }
 
-function Install-GitWindows {
-    $variableName = "MISE_GITHUB_GITHUB_ATTESTATIONS"
-    $previousValue = [Environment]::GetEnvironmentVariable($variableName, "Process")
-
-    try {
-        [Environment]::SetEnvironmentVariable($variableName, "false", "Process")
-        Invoke-Mise -MiseArgs @("-C", $miseDir, "-E", "windows", "install", "git-windows")
-    }
-    finally {
-        [Environment]::SetEnvironmentVariable($variableName, $previousValue, "Process")
-    }
-}
-
 $targets = @(
     (Join-Path $HOME ".config/nvim"),
     (Join-Path $HOME ".config/wezterm"),
@@ -98,7 +85,6 @@ Invoke-Mise -MiseArgs @(
     "dotfiles", "apply", "--yes", $globalMiseConfig
 )
 
-Install-GitWindows
 Invoke-Mise -MiseArgs @("-C", $miseDir, "-E", "windows", "install")
 Invoke-Mise -MiseArgs @("-C", $miseDir, "-E", "windows", "ls", "--current")
 
