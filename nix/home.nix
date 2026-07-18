@@ -28,6 +28,16 @@ in
   ];
 
   home.file = pkgs.lib.optionalAttrs pkgs.stdenv.isLinux {
+    # 非NixOSではNixのglibcがロケールデータをLOCALE_ARCHIVEから探す。
+    # programs.zsh 未使用のため hm-session-vars.sh は読まれないので、
+    # zshが必ず最初に読む .zshenv でロケールを明示する（WSL日本語入力の文字化け対策）。
+    # zshはLANG代入時にsetlocaleを呼ぶため、LOCALE_ARCHIVEを必ず先に設定する
+    # （逆順だとarchive未設定のままsetlocaleが失敗しCフォールバック→日本語が化ける）。
+    ".zshenv".text = ''
+      export LOCALE_ARCHIVE="${pkgs.glibcLocales}/lib/locale/locale-archive"
+      export LANG=en_US.UTF-8
+    '';
+
     ".local/bin/ssh" = {
       executable = true;
       text = ''

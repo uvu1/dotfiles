@@ -12,5 +12,6 @@
       "Read(~/.codex/auth.json)",
       "Read(~/.claude.json)"
     ]
-  }
+  },
+  "effortLevel": "xhigh"
 }
