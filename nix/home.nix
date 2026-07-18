@@ -25,6 +25,8 @@ in
     dotfilesUpdate
     pkgs.gcc
     pkgs.wl-clipboard
+    pkgs.podman
+    pkgs.passt
   ];
 
   home.file = pkgs.lib.optionalAttrs pkgs.stdenv.isLinux {
@@ -36,6 +38,15 @@ in
     ".zshenv".text = ''
       export LOCALE_ARCHIVE="${pkgs.glibcLocales}/lib/locale/locale-archive"
       export LANG=en_US.UTF-8
+    '';
+
+    # 非NixOSのArchではNixのpodmanが/etc/containers/policy.jsonを持たず
+    # `podman pull`が失敗するため、ユーザー設定として宣言する。
+    ".config/containers/policy.json".text = ''
+      { "default": [ { "type": "insecureAcceptAnything" } ] }
+    '';
+    ".config/containers/registries.conf".text = ''
+      unqualified-search-registries = ["docker.io"]
     '';
 
     ".local/bin/ssh" = {

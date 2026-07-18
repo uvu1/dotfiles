@@ -13,5 +13,6 @@
       "Read(~/.claude.json)"
     ]
   },
-  "effortLevel": "xhigh"
+  "effortLevel": "xhigh",
+  "agentPushNotifEnabled": true
 }
