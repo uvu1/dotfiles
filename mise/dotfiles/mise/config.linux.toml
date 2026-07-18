@@ -1,5 +1,7 @@
 [settings]
 experimental = true
+# .ruby-version / .node-version(.nvmrc) をプロジェクトのバージョン指定として読む
+idiomatic_version_file_enable_tools = ["ruby", "node"]
 
 [tools]
 "github:uvu1/dotflow" = "0.1.0"
