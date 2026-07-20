@@ -34,6 +34,7 @@
       "microsoft-office"
       "obsidian"
       "readdle-spark"
+      "slack"
       "spotify"
       "wezterm@nightly"
       "zen@twilight"
