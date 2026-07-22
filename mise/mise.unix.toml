@@ -24,6 +24,7 @@ ruff = "latest"
 biome = "latest"
 yq = "latest"
 claude = "latest"
+vault = "latest"
 
 [dotfiles]
 "~/.agents/skills" = { source = "dotfiles/ai/skills/codex", mode = "symlink-each" }
