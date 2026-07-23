@@ -13,8 +13,9 @@
       "Read(~/.claude.json)"
     ]
   },
-  "model": "claude-fable-5[1m]",
+  "model": "opus[1m]",
   "effortLevel": "xhigh",
   "theme": "dark",
-  "agentPushNotifEnabled": true
+  "agentPushNotifEnabled": true,
+  "tui": "default"
 }
