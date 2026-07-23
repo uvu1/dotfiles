@@ -34,6 +34,7 @@
       "microsoft-office"
       "obsidian"
       "readdle-spark"
+      "scroll-reverser"
       "slack"
       "spotify"
       "wezterm@nightly"
