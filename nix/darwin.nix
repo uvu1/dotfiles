@@ -25,12 +25,12 @@
 
   homebrew = {
     enable = true;
-    greedyCasks = true;
     casks = [
       "1password"
       "adobe-creative-cloud"
       "cloudflare-warp"
       "discord@canary"
+      "karabiner-elements"
       "microsoft-office"
       "obsidian"
       "readdle-spark"
@@ -47,8 +47,6 @@
       upgrade = true;
     };
   };
-
-  services.karabiner-elements.enable = true;
 
   fonts.packages = [
     pkgs.nerd-fonts.jetbrains-mono
