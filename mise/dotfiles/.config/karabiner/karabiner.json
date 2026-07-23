@@ -6,17 +6,12 @@
                     {
                         "manipulators": [
                             {
-                                "description": "Change caps_lock to ctrl+space(toggle ime)",
+                                "description": "Change caps_lock to f18(toggle ime via macOS input source shortcut)",
                                 "from": {
                                     "key_code": "caps_lock",
                                     "modifiers": { "optional": ["any"] }
                                 },
-                                "to": [
-                                    {
-                                        "key_code": "spacebar",
-                                        "modifiers": ["left_control"]
-                                    }
-                                ],
+                                "to": [{ "key_code": "f18" }],
                                 "type": "basic"
                             }
                         ]
