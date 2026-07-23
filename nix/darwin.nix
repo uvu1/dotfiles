@@ -11,7 +11,15 @@
     primaryUser = "uvu1";
     stateVersion = 6;
 
-    defaults.finder.AppleShowAllFiles = true;
+    defaults = {
+      finder.AppleShowAllFiles = true;
+
+      # Scroll Reverser: マウスのみ反転。GUI での変更は次回 switch で宣言値に戻る。
+      CustomUserPreferences."com.pilotmoon.scroll-reverser" = {
+        InvertScrollingOn = true;
+        ReverseTrackpad = false;
+      };
+    };
   };
 
   users.users.uvu1.home = "/Users/uvu1";
