@@ -38,6 +38,7 @@
       "adobe-creative-cloud"
       "cloudflare-warp"
       "discord@canary"
+      "hiddenbar"
       "karabiner-elements"
       "microsoft-office"
       "obsidian"
