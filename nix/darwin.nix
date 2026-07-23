@@ -48,6 +48,8 @@
     };
   };
 
+  services.karabiner-elements.enable = true;
+
   fonts.packages = [
     pkgs.nerd-fonts.jetbrains-mono
   ];
