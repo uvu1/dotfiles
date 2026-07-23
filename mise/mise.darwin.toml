@@ -1,4 +1,6 @@
 # macOS 固有の dotfile のみ。共有 toolset / dotfiles は mise.unix.toml を参照。
 # macos profile は mise 環境 "unix"（共有）と "darwin"（この wezterm）を順に適用する。
 [dotfiles]
+# karabiner.json は保存時に rename されるため、file 単位ではなく directory 単位で symlink する。
+"~/.config/karabiner" = { source = "dotfiles/.config/karabiner", mode = "symlink" }
 "~/.config/wezterm" = { source = "dotfiles/.config/wezterm", mode = "symlink" }

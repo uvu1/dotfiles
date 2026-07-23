@@ -33,7 +33,7 @@ mise_environment = "unix"
 
 [[profiles.macos.environments]]
 mise_environment = "darwin"
-targets = ["~/.config/wezterm"]
+targets = ["~/.config/karabiner", "~/.config/wezterm"]
 
 [[profiles.macos.after_sync]]
 program = "sudo"
