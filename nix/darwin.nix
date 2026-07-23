@@ -42,6 +42,7 @@
       "karabiner-elements"
       "microsoft-office"
       "obsidian"
+      "raycast"
       "readdle-spark"
       "scroll-reverser"
       "slack"
