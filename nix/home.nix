@@ -104,5 +104,16 @@ in
     };
   };
 
+  # プロジェクトの .envrc から flake devshell を自動で読み込む。
+  # nix-direnv は devshell を GC root に登録し、再入時の再評価と
+  # nix store GC による巻き添え削除（texlive 等の大きな closure）を防ぐ。
+  # programs.zsh 未使用で HM の zsh integration が .zshrc に届かないため、
+  # hook は mise/dotfiles/.config/sheldon/plugins.toml 側で入れる。
+  programs.direnv = {
+    enable = true;
+    nix-direnv.enable = true;
+    enableZshIntegration = false;
+  };
+
   programs.home-manager.enable = true;
 }

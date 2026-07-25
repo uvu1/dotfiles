@@ -18,6 +18,11 @@ fi
 [plugins.dotflow]
 inline = 'eval "$(dotflow shell-init zsh)"'
 
+# chpwd/precmd hook を登録するため defer しない（遅延すると初回のディレクトリで
+# .envrc が読まれない）。direnv 本体は Nix の programs.direnv が提供する。
+[plugins.direnv]
+inline = 'eval "$(direnv hook zsh)"'
+
 [plugins.starship]
 inline = 'eval "$(starship init zsh)"'
 
