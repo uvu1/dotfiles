@@ -26,6 +26,7 @@ in
     pkgs.gcc
     pkgs.wl-clipboard
     pkgs.podman
+    pkgs.docker-compose # podman compose のプロバイダ（Docker API ソケット経由で接続）
     pkgs.passt
   ];
 
@@ -65,6 +66,41 @@ in
         #!/bin/sh
         exec ${pkgs.openssh}/bin/ssh-keygen "$@"
       '';
+    };
+  };
+
+  systemd.user = pkgs.lib.mkIf pkgs.stdenv.isLinux {
+    # 非NixOSのArchではNixのpodmanが同梱するuser unitがsystemd探索パスに入らないため、
+    # docker-compose（Docker APIクライアント）が繋ぐ podman.sock を宣言的に有効化する。
+    # podman compose はこのソケットを DOCKER_HOST に自動設定して provider を呼ぶ。
+    sockets.podman = {
+      Unit = {
+        Description = "Podman API Socket";
+        Documentation = [ "man:podman-system-service(1)" ];
+      };
+      Socket = {
+        ListenStream = "%t/podman/podman.sock";
+        SocketMode = "0660";
+      };
+      Install.WantedBy = [ "sockets.target" ];
+    };
+    services.podman = {
+      Unit = {
+        Description = "Podman API Service";
+        Requires = [ "podman.socket" ];
+        After = [ "podman.socket" ];
+        Documentation = [ "man:podman-system-service(1)" ];
+        StartLimitIntervalSec = 0;
+      };
+      Service = {
+        Delegate = true;
+        Type = "exec";
+        KillMode = "process";
+        Environment = ''LOGGING="--log-level=info"'';
+        # socket activation でリッスンFDを継承（アドレス指定なし）。
+        ExecStart = "${pkgs.podman}/bin/podman $LOGGING system service";
+      };
+      Install.WantedBy = [ "default.target" ];
     };
   };
 
