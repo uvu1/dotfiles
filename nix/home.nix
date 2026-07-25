@@ -30,14 +30,17 @@ in
   ];
 
   home.file = pkgs.lib.optionalAttrs pkgs.stdenv.isLinux {
-    # 非NixOSではNixのglibcがロケールデータをLOCALE_ARCHIVEから探す。
-    # programs.zsh 未使用のため hm-session-vars.sh は読まれないので、
-    # zshが必ず最初に読む .zshenv でロケールを明示する（WSL日本語入力の文字化け対策）。
-    # zshはLANG代入時にsetlocaleを呼ぶため、LOCALE_ARCHIVEを必ず先に設定する
-    # （逆順だとarchive未設定のままsetlocaleが失敗しCフォールバック→日本語が化ける）。
+    # WSLの日本語文字化け対策。programs.zsh 未使用で hm-session-vars.sh が
+    # 読まれないため、zshが最初に読む .zshenv でロケールを明示する。
+    # en_US.UTF-8 は Nix パッチ済み glibc しか LOCALE_ARCHIVE から解決できず、
+    # システム(Arch)glibc にリンクされた mise 導入ツールや coreutils は
+    # LOCALE_ARCHIVE を無視して C にフォールバックし日本語を化けさせる。
+    # C.UTF-8 は Nix/システム両方の glibc に組み込みで存在し archive 不要のため、
+    # 全プロセスで一貫して UTF-8 になる。LOCALE_ARCHIVE は名前付きロケールを
+    # 要求する Nix ツール向けに残す。
     ".zshenv".text = ''
       export LOCALE_ARCHIVE="${pkgs.glibcLocales}/lib/locale/locale-archive"
-      export LANG=en_US.UTF-8
+      export LANG=C.UTF-8
     '';
 
     # 非NixOSのArchではNixのpodmanが/etc/containers/policy.jsonを持たず
