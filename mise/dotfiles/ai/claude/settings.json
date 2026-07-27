@@ -13,6 +13,10 @@
       "Read(~/.claude.json)"
     ]
   },
+  "attribution": {
+    "commit": "",
+    "pr": ""
+  },
   "model": "claude-opus-5",
   "effortLevel": "xhigh",
   "theme": "dark",
