@@ -25,7 +25,15 @@ function module.apply(config)
 
   -- font
   config.font_size = 12.0
-  config.font = wezterm.font("JetBrains Mono", { weight = "Medium" })
+  -- Japanese fallback: Hiragino on macOS, BIZ UDGothic (bundled) on Windows
+  local japanese_font = { family = "Hiragino Sans", weight = "Medium" }
+  if string.find(wezterm.target_triple, "windows") then
+    japanese_font = { family = "BIZ UDGothic" }
+  end
+  config.font = wezterm.font_with_fallback({
+    { family = "JetBrains Mono", weight = "Medium" },
+    japanese_font,
+  })
 
   -- background
   config.window_background_opacity = 0.9
