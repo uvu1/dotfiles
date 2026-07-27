@@ -70,6 +70,21 @@ function module.apply(config)
     { key = "q", mods = "LEADER|CTRL", action = wezterm.action.QuitApplication },
   }
 
+  config.mouse_bindings = {
+    -- 左ドラッグで選択を確定した時点でクリップボードへコピー(リンクならクリックで開く)
+    {
+      event = { Up = { streak = 1, button = "Left" } },
+      mods = "NONE",
+      action = wezterm.action.CompleteSelectionOrOpenLinkAtMouseCursor("ClipboardAndPrimarySelection"),
+    },
+    -- 右クリックでクリップボードからペースト
+    {
+      event = { Down = { streak = 1, button = "Right" } },
+      mods = "NONE",
+      action = wezterm.action.PasteFrom("Clipboard"),
+    },
+  }
+
   -- switch to tab 1-8 with leader + number
   for i = 1, 8 do
     table.insert(config.keys, {
