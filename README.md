@@ -17,13 +17,14 @@ chezmoi 管理の設定を Nix、Home Manager、nix-darwin、mise dotfiles へ�
 - `mise/dotfiles/ai/`: Codex/Claude Codeの個人設定、共通skills、検証script
 - `AGENTS.md` / `CLAUDE.md`: このrepository固有のagent向け指示
 - `bootstrap/wsl/`: WSL の systemd、interop、既定ユーザー設定
-- `scripts/`: chezmoi 適用済みファイルを削除して切り替えるスクリプト
+- `.config/configuration.winget`: Windows のGUIアプリとbootstrap基盤
+- `scripts/`: 初期構築と更新をまとめるスクリプト
 - `docs/`: 設計と移行計画
 
 macOS と WSL は共通の unix toolset（mise 環境 `unix`）を利用します。macOS は
-加えて `darwin` 環境で wezterm 設定を配置します。Windows は Neovim とその周辺
-CLI の subset を mise で使います（Git と WezTerm は winget で導入）。PowerShell
-profile を含める場合は bat、eza、gh、ghq、kubectl、starship も追加します。
+加えて `darwin` 環境で wezterm 設定を配置します。Windows は単一の `windows`
+環境でNeovim、PowerShell profile、Windows用CLI、通常のdotfilesを管理します。
+GUIアプリ、Git、mise、PowerShell、WezTermの導入はWinGet Configurationが担当します。
 
 `bun` と `uv` はグローバルtoolsetに含めません。必要なプロジェクトのルートで
 それぞれ次を実行し、プロジェクトの `mise.toml` に追加します。
@@ -129,7 +130,8 @@ dotflow update --dry-run
 - WSL から
   `/mnt/c/Users/uvu1/AppData/Local/Microsoft/WindowsApps/op-ssh-sign-wsl.exe`
   を実行できること
-- Windows では OpenSSH Client と PowerShell 7 を利用できること
+- Windows では OpenSSH Clientと、WinGet Configuration対応のwinget
+  (`1.6.2631`以上)を利用できること
 
 ## macOS
 
@@ -271,27 +273,30 @@ pull後に `home-manager switch --flake ~/dotfiles#uvu1@arch-wsl` を実行し�
 
 ## Windows
 
-PowerShell 7 で mise を利用可能にし、このリポジトリを
-`$HOME\dotfiles` へ clone してから実行します。Windows、WSLともに
-`$HOME\dotfiles` / `~/dotfiles` を適用元の正本とします。
+このリポジトリを `$HOME\dotfiles` へcloneし、Windows PowerShellまたはPowerShell 7で
+bootstrapを実行します。Windows、WSLともに `$HOME\dotfiles` / `~/dotfiles` を
+適用元の正本とします。
 
 ```powershell
-$env:MISE_EXPERIMENTAL = "1"
-mise -C mise trust -a
-./scripts/cutover-windows.ps1 -IncludePowerShell
+./scripts/bootstrap-windows.ps1
 ```
 
-既存の chezmoi 由来設定を削除せず、対象だけを確認する場合は、切り替えスクリプトが
-表示する dry-run の後の確認入力で中止します。自動実行時は、削除対象を確認済みの場合に
-限り `-Yes` を追加できます。
+bootstrapはWinGet Configuration機能を有効化し、`.config/configuration.winget` を
+検証・適用してから、単一の `windows` mise環境をinstallします。その後、dotfilesの
+dry-run、apply、status、`dotflow doctor`を順に実行します。既存dotfileと競合した場合は
+削除や強制上書きをせず停止します。
 
-```powershell
-./scripts/cutover-windows.ps1 -IncludePowerShell -Yes
-```
+WinGet Configurationはbootstrap基盤、Windows環境、ブラウザ、日常利用するGUIアプリを
+宣言し、bootstrap実行時に最新版へ更新します。YAMLからresourceを削除しても、既に
+導入済みのアプリは自動ではアンインストールされません。OS component、runtime、ゲーム、
+chezmoi、miseと重複するCLIは宣言対象外です。
 
-`-IncludePowerShell` を省略すると、新しい PowerShell profile、starship 設定、
-PowerShell 用ツールは配置しません。どちらの場合も既存の chezmoi 由来 PowerShell
-profile と starship 設定は削除します。
+- bootstrap基盤: 1Password、7-Zip、Git、mise、PowerShell、WezTerm
+- Windows環境: WSL、Windows Terminal、PowerToys
+- ブラウザ: Chrome、Firefox Developer Edition/Nightly、Zen Browser/Twilight
+- 日常アプリ: Obsidian、Slack、Zoom、Spark、Spotify、Discord Canary
+- その他: Adobe Creative Cloud、Claude、Cloudflare WARP、Gyazo、ExplorerPatcher、
+  TranslucentTB
 
 ### Windows の更新
 
@@ -303,9 +308,9 @@ dotfiles-update
 ```
 
 `dotfiles-update` は互換aliasとして `dotflow update` を実行します。Windows profileは
-`windows`、`windows-powershell` の順に処理します。前者だけがNeovim、gitconfig、
-WezTerm 設定を、後者だけが重複し得るcombined mise config、starship、PowerShell
-profileをapplyします。
+単一の `windows` mise環境をinstallし、Neovim、gitconfig、WezTerm、combined mise
+config、starship、PowerShell profileをまとめてapplyします。通常更新では重い
+`winget configure`を再実行しません。
 
 Windows の Git と WezTerm は winget で導入し、mise では管理しません。Nvim と
 WezTerm の設定は、Windows の symlink 権限に依存しない copy 配置です。
@@ -326,10 +331,8 @@ Windows では次を実行します。
 $env:MISE_EXPERIMENTAL = "1"
 mise -C mise -E windows ls --current
 mise -C mise -E windows dotfiles status --missing
-mise -C mise -E windows-powershell ls --current
-mise -C mise -E windows-powershell dotfiles status --missing `
-  $HOME/.config/mise/config.toml `
-  $HOME/.config/starship.toml `
-  $HOME/Documents/PowerShell
+winget configure validate -f .config/configuration.winget
+winget configure test -f .config/configuration.winget --accept-configuration-agreements
+dotflow doctor
 Get-Command dotfiles-update
 ```

@@ -51,8 +51,3 @@ add_environment = "windows"
 
 [[profiles.windows.environments]]
 mise_environment = "windows"
-targets = ["~/.config/nvim", "~/.gitconfig", "~/.config/wezterm"]
-
-[[profiles.windows.environments]]
-mise_environment = "windows-powershell"
-targets = ["~/.config/mise/config.toml", "~/.config/starship.toml", "~/Documents/PowerShell"]

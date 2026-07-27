@@ -1,0 +1,195 @@
+# yaml-language-server: $schema=https://aka.ms/configuration-dsc-schema/0.2
+properties:
+  resources:
+    # Bootstrap foundation
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      directives:
+        description: Install 1Password
+      settings:
+        id: AgileBits.1Password
+        source: winget
+        useLatest: true
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      directives:
+        description: Install 7-Zip
+      settings:
+        id: 7zip.7zip
+        source: winget
+        useLatest: true
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      directives:
+        description: Install Git
+      settings:
+        id: Git.Git
+        source: winget
+        useLatest: true
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      directives:
+        description: Install mise
+      settings:
+        id: jdx.mise
+        source: winget
+        useLatest: true
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      directives:
+        description: Install PowerShell
+      settings:
+        id: Microsoft.PowerShell
+        source: winget
+        useLatest: true
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      directives:
+        description: Install WezTerm
+      settings:
+        id: wez.wezterm
+        source: winget
+        useLatest: true
+
+    # Windows development environment
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      directives:
+        description: Install Windows Subsystem for Linux
+      settings:
+        id: Microsoft.WSL
+        source: winget
+        useLatest: true
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      directives:
+        description: Install Windows Terminal
+      settings:
+        id: Microsoft.WindowsTerminal
+        source: winget
+        useLatest: true
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      directives:
+        description: Install PowerToys
+      settings:
+        id: Microsoft.PowerToys
+        source: winget
+        useLatest: true
+
+    # Browsers
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      directives:
+        description: Install Google Chrome
+      settings:
+        id: Google.Chrome
+        source: winget
+        useLatest: true
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      directives:
+        description: Install Firefox Developer Edition
+      settings:
+        id: Mozilla.Firefox.DeveloperEdition.en-CA
+        source: winget
+        useLatest: true
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      directives:
+        description: Install Firefox Nightly
+      settings:
+        id: Mozilla.Firefox.Nightly.MSIX
+        source: winget
+        useLatest: true
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      directives:
+        description: Install Zen Browser
+      settings:
+        id: Zen-Team.Zen-Browser
+        source: winget
+        useLatest: true
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      directives:
+        description: Install Zen Twilight
+      settings:
+        id: Zen-Team.Zen-Browser.Twilight
+        source: winget
+        useLatest: true
+
+    # Daily applications
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      directives:
+        description: Install Obsidian
+      settings:
+        id: Obsidian.Obsidian
+        source: winget
+        useLatest: true
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      directives:
+        description: Install Slack
+      settings:
+        id: SlackTechnologies.Slack
+        source: winget
+        useLatest: true
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      directives:
+        description: Install Zoom Workplace
+      settings:
+        id: Zoom.Zoom
+        source: winget
+        useLatest: true
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      directives:
+        description: Install Spark Desktop
+      settings:
+        id: Readdle.Spark
+        source: winget
+        useLatest: true
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      directives:
+        description: Install Spotify
+      settings:
+        id: Spotify.Spotify
+        source: winget
+        useLatest: true
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      directives:
+        description: Install Discord Canary
+      settings:
+        id: Discord.Discord.Canary
+        source: winget
+        useLatest: true
+
+    # Other user applications
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      directives:
+        description: Install Adobe Creative Cloud
+      settings:
+        id: Adobe.CreativeCloud
+        source: winget
+        useLatest: true
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      directives:
+        description: Install Claude
+      settings:
+        id: Anthropic.Claude
+        source: winget
+        useLatest: true
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      directives:
+        description: Install Cloudflare WARP
+      settings:
+        id: Cloudflare.Warp
+        source: winget
+        useLatest: true
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      directives:
+        description: Install Gyazo
+      settings:
+        id: Nota.Gyazo
+        source: winget
+        useLatest: true
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      directives:
+        description: Install ExplorerPatcher
+      settings:
+        id: valinet.ExplorerPatcher
+        source: winget
+        useLatest: true
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      directives:
+        description: Install TranslucentTB
+      settings:
+        id: CharlesMilette.TranslucentTB
+        source: winget
+        useLatest: true
+  configurationVersion: 0.2.0
