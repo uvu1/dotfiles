@@ -142,9 +142,11 @@ Nix を導入し、Command Line Tools の Git、または Nix の Git でこの
 sudo nix --extra-experimental-features 'nix-command flakes' run nix-darwin/nix-darwin-26.05#darwin-rebuild -- switch --flake .#uvu1-mac
 export MISE_EXPERIMENTAL=1
 mise -C mise trust -a
+# unix の toolset は ~/.config/mise/config.toml が正本で、cutover の apply が
+# それを symlink する。install はその後に実行する。
+bash scripts/cutover-unix.sh darwin
 mise -C mise -E unix install
 mise -C mise -E unix ls --current
-bash scripts/cutover-unix.sh darwin
 ```
 
 二回目以降の Nix 適用は次のとおりです。
@@ -245,9 +247,11 @@ chsh -s /home/uvu1/.nix-profile/bin/zsh uvu1
 getent passwd uvu1
 export MISE_EXPERIMENTAL=1
 mise -C mise trust -a
+# unix の toolset は ~/.config/mise/config.toml が正本で、cutover の apply が
+# それを symlink する。install はその後に実行する。
+bash scripts/cutover-unix.sh unix
 mise -C mise -E unix install
 mise -C mise -E unix ls --current
-bash scripts/cutover-unix.sh unix
 ```
 
 `mise --version` は `2026.6.14` 以上を返す必要があります。通常の nixpkgs 26.05 に

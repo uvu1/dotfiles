@@ -4,16 +4,10 @@ min_version = "2026.6.14"
 dotfiles.default_mode = "symlink"
 experimental = true
 
+# repo 内で dotflow を実行するための最小 toolset。
+# グローバル toolset は環境ごとの dotfiles/mise/config.*.toml が正本。
 [tools]
 "github:uvu1/dotflow" = "0.1.0"
-delta = "latest"
-fd = "latest"
-fzf = "latest"
-lazygit = "latest"
-neovim = "latest"
-rg = "latest"
-stylua = "latest"
-tree-sitter = "latest"
 
 [dotfiles]
 "~/.config/nvim" = { source = "dotfiles/.config/nvim", mode = "symlink" }

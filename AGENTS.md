@@ -11,7 +11,9 @@
 ## Changes
 
 - Read the relevant profile and its source dotfile before editing.
-- Put shared macOS/WSL tools and dotfiles in `mise/mise.unix.toml`; keep only OS-specific entries in `mise.darwin.toml` (currently just wezterm).
+- Put shared macOS/WSL tools in `mise/dotfiles/mise/config.unix.toml`. It is the single source of truth and is symlinked to `~/.config/mise/config.toml`, so never duplicate the toolset in `mise/mise.unix.toml`.
+- Put shared macOS/WSL dotfiles in `mise/mise.unix.toml`; keep only OS-specific entries in `mise.darwin.toml` (currently just wezterm).
+- Windows cannot symlink, so its global mise config is distributed by copy. `mise/mise.windows.toml` must mirror the toolset in `mise/dotfiles/mise/config.windows.toml`; change both together.
 - Do not add project-only tools such as `bun` or `uv` to the global toolsets.
 - Do not track credentials, OAuth state, histories, sessions, caches, generated memories, installation IDs, or machine-local trust decisions.
 - Preserve unrelated worktree changes and avoid destructive Git operations.

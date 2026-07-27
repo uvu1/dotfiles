@@ -1,26 +1,9 @@
-# macOS(darwin) と WSL(linux) 共通の unix toolset と dotfiles。
+# macOS(darwin) と WSL(linux) 共通の unix dotfiles。
 # wsl / macos profile が mise 環境 "unix" として読み込む。
-# base の mise.toml から delta, fd, fzf, just, lazygit, neovim, rg, stylua,
-# tree-sitter を継承する。ここには unix 用の追加ツールだけを記載する。
-[tools]
-bat = "latest"
-eza = "latest"
-ghq = "latest"
-starship = "latest"
-gh = "latest"
-jq = "latest"
-node = "24.15.0"
-python = "3.14"
-codex = "latest"
-cloudflared = "latest"
-zoxide = "latest"
-prettier = "latest"
-yamllint = "latest"
-ruff = "latest"
-biome = "latest"
-yq = "latest"
-claude = "latest"
-
+# unix の toolset は dotfiles/mise/config.unix.toml が唯一の正本。
+# それを ~/.config/mise/config.toml へ symlink するため、ここには toolset を
+# 重複して書かない。symlink なので pull した時点で toolset が反映され、
+# mise use -g などのローカル変更も repo の差分として現れる。
 [dotfiles]
 "~/.agents/skills" = { source = "dotfiles/ai/skills/codex", mode = "symlink-each" }
 "~/.claude/CLAUDE.md" = { source = "dotfiles/ai/claude/CLAUDE.md", mode = "symlink" }
@@ -28,7 +11,7 @@ claude = "latest"
 "~/.claude/skills" = { source = "dotfiles/ai/skills/claude", mode = "symlink-each" }
 "~/.codex/AGENTS.md" = { source = "dotfiles/ai/codex/AGENTS.md", mode = "symlink" }
 "~/.codex/rules" = { source = "dotfiles/ai/codex/rules", mode = "symlink-each" }
-"~/.config/mise/config.toml" = { source = "dotfiles/mise/config.unix.toml", mode = "copy" }
+"~/.config/mise/config.toml" = { source = "dotfiles/mise/config.unix.toml", mode = "symlink" }
 "~/.config/sheldon" = { source = "dotfiles/.config/sheldon", mode = "symlink" }
 "~/.config/starship.toml" = { source = "dotfiles/.config/starship.toml", mode = "symlink" }
 "~/.config/zsh" = { source = "dotfiles/.config/zsh", mode = "symlink" }

@@ -1,15 +1,25 @@
 # GUIアプリ、Git、mise、PowerShell、WezTermはWinGet Configurationで導入する。
-# ここではbaseのcore CLIにWindows用CLIと全Windows dotfilesを追加する。
+# Windowsはsymlinkが使えずcopy配布のため、dotfiles/mise/config.windows.tomlは
+# apply後にしか更新されない。initial bootstrapとpull直後の同一runでtoolを
+# installするには、この環境にtoolsetを併記する必要がある。
+# config.windows.tomlと同じ一覧を保つこと。
 [tool_alias]
 eza = "github:eza-community/eza"
 
 [tools]
 bat = "latest"
+delta = "latest"
 eza = { version = "latest", asset_pattern = "eza.exe_x86_64-pc-windows-gnu.zip" }
+fd = "latest"
+fzf = "latest"
 gh = "latest"
 ghq = "latest"
-kubectl = "latest"
+lazygit = "latest"
+neovim = "latest"
+rg = "latest"
 starship = "latest"
+stylua = "latest"
+tree-sitter = "latest"
 
 [dotfiles]
 "~/.config/nvim" = { source = "dotfiles/.config/nvim", mode = "copy" }
