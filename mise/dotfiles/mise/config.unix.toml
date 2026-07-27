@@ -6,7 +6,7 @@ experimental = true
 idiomatic_version_file_enable_tools = ["ruby", "node"]
 
 [tools]
-"github:uvu1/dotflow" = "0.1.0"
+"github:uvu1/dotflow" = "0.1.1"
 bat = "latest"
 eza = "latest"
 fd = "latest"

@@ -7,7 +7,7 @@ experimental = true
 # repo 内で dotflow を実行するための最小 toolset。
 # グローバル toolset は環境ごとの dotfiles/mise/config.*.toml が正本。
 [tools]
-"github:uvu1/dotflow" = "0.1.0"
+"github:uvu1/dotflow" = "0.1.1"
 
 [dotfiles]
 "~/.config/nvim" = { source = "dotfiles/.config/nvim", mode = "symlink" }

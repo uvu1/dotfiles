@@ -6,7 +6,7 @@ experimental = true
 eza = "github:eza-community/eza"
 
 [tools]
-"github:uvu1/dotflow" = "0.1.0"
+"github:uvu1/dotflow" = "0.1.1"
 bat = "latest"
 delta = "latest"
 eza = { version = "latest", asset_pattern = "eza.exe_x86_64-pc-windows-gnu.zip" }
