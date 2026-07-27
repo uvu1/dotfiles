@@ -68,7 +68,6 @@ if ($null -eq (Get-Command mise -ErrorAction SilentlyContinue)) {
 }
 
 Invoke-Checked -Program "mise" -Arguments @("-C", $miseDir, "trust", "-a")
-Invoke-Checked -Program "mise" -Arguments @("-C", $miseDir, "-E", "windows", "install")
 Invoke-Checked -Program "mise" -Arguments @(
     "-C", $miseDir, "-E", "windows",
     "dotfiles", "apply", "--dry-run", "--verbose"
@@ -85,6 +84,9 @@ Invoke-Checked -Program "mise" -Arguments @(
     "-C", $miseDir, "-E", "windows",
     "dotfiles", "status"
 )
+# The global config distributed above owns the toolset, so install must follow
+# apply. Windows copies rather than symlinks, so nothing resolves before then.
+Invoke-Checked -Program "mise" -Arguments @("-C", $miseDir, "-E", "windows", "install")
 Invoke-Checked -Program "mise" -Arguments @(
     "-C", $miseDir, "-E", "windows",
     "exec", "--", "dotflow", "doctor"
