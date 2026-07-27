@@ -9,7 +9,6 @@ experimental = true
 delta = "latest"
 fd = "latest"
 fzf = "latest"
-just = "latest"
 lazygit = "latest"
 neovim = "latest"
 rg = "latest"
