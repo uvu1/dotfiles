@@ -15,7 +15,7 @@
   },
   "model": "claude-opus-5",
   "effortLevel": "xhigh",
-  "tui": "default",
   "theme": "dark",
-  "agentPushNotifEnabled": true
+  "agentPushNotifEnabled": true,
+  "tui": "default"
 }
