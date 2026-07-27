@@ -23,6 +23,10 @@ return {
 		})
 	end, utils.opts("Focus or open explorer")),
 
+  utils.keymap.lazy({ "n", "x" }, "<leader>dl", function()
+    require("config.git-log").line_history()
+  end, utils.opts("Commit log for line/selection")),
+
   utils.keymap.lazy("n", "<leader>gd", function() require("snacks").picker.lsp_definitions() end, utils.opts("Go to definitions")),
   utils.keymap.lazy("n", "<leader>gr", function() require("snacks").picker.lsp_references() end, utils.opts("Go to references")),
   utils.keymap.lazy("n", "<leader>gi", function() require("snacks").picker.lsp_implementations() end, utils.opts("Go to implementations")),
