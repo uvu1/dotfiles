@@ -6,11 +6,7 @@
 bat = "latest"
 eza = "latest"
 ghq = "latest"
-helm = "latest"
-kubectl = "latest"
-kubelogin = "latest"
 starship = "latest"
-rust = "latest"
 gh = "latest"
 jq = "latest"
 node = "24.15.0"
@@ -25,7 +21,6 @@ ruff = "latest"
 biome = "latest"
 yq = "latest"
 claude = "latest"
-vault = "latest"
 
 [dotfiles]
 "~/.agents/skills" = { source = "dotfiles/ai/skills/codex", mode = "symlink-each" }
