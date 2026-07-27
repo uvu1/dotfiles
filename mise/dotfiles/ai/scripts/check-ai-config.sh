@@ -8,6 +8,7 @@ repo_root=$(CDPATH= cd -- "$ai_dir/../../.." && pwd)
 required_paths=(
   "$repo_root/AGENTS.md"
   "$repo_root/CLAUDE.md"
+  "$ai_dir/common/AGENTS.md"
   "$ai_dir/codex/AGENTS.md"
   "$ai_dir/codex/config.toml"
   "$ai_dir/codex/rules/dotfiles.rules"
@@ -47,7 +48,7 @@ fi
 
 if rg -n --hidden \
   "(api[_-]?key|access[_-]?token|auth[_-]?token|authorization|password)[\"']?[[:space:]]*[:=][[:space:]]*[\"'][^\$<{][^\"']+[\"']" \
-  "$ai_dir/codex" "$ai_dir/claude" "$ai_dir/skills"; then
+  "$ai_dir/common" "$ai_dir/codex" "$ai_dir/claude" "$ai_dir/skills"; then
   echo "possible hard-coded credential found in managed AI configuration" >&2
   exit 1
 fi
