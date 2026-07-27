@@ -60,4 +60,10 @@ return {
 	utils.keymap.lazy("n", "<leader>fc", function()
     require("snacks").picker.files({ cwd = vim.fn.stdpath("config") })
   end, utils.opts("Find config files")),
+
+  -- lazygit.nvim の置き換え。カラースキーム連携と nvim-remote による編集連携は
+  -- snacks 側が自動設定する。
+  utils.keymap.lazy({ "n", "t" }, "<leader>tl", function()
+    require("snacks").lazygit.open()
+  end, utils.opts("Toggle lazygit")),
 }

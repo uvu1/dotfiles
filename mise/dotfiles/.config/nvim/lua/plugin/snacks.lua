@@ -103,6 +103,10 @@ return {
 
       input = { enabled = true },
       notifier = { enabled = true },
+
+      -- lazygit.nvim の置き換え。setup 不要のオンデマンドモジュールだが、
+      -- snacks が担当することを明示するために宣言しておく。
+      lazygit = {},
     },
   },
 }

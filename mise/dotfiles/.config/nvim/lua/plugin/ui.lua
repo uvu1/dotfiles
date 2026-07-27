@@ -60,9 +60,11 @@ return {
         }
       }
     },
+    -- noice の notify view は backend = { "snacks", "notify" } で snacks を優先する
+    -- （noice/config/views.lua）。snacks.notifier が有効なので nvim-notify は不要。
     dependencies = {
       "MunifTanjim/nui.nvim",
-      "rcarriga/nvim-notify",
+      "folke/snacks.nvim",
     }
   }
 }

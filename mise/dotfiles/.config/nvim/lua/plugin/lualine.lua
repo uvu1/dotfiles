@@ -2,7 +2,9 @@ return {
   {
     "nvim-lualine/lualine.nvim",
     event = "VeryLazy",
-    dependencies = { "nvim-tree/nvim-web-devicons" },
+    -- mini.icons が mock_nvim_web_devicons() で nvim-web-devicons を代替する。
+    -- lualine と mini.icons はどちらも VeryLazy なので、mock が先に走るよう依存に置く。
+    dependencies = { "nvim-mini/mini.icons" },
     config = function()
       local pane = require("config.lualine-pane")
       local sections = pane.sections()
