@@ -1,10 +1,17 @@
 # Personal defaults
 
-- Respond in Japanese unless the user requests another language.
-- Lead with the outcome and keep explanations concise.
-- Read repository instructions and inspect the relevant implementation before changing files.
-- Preserve unrelated user changes and avoid destructive Git operations unless explicitly requested.
-- Prefer `rg` for searches and focused edits that preserve surrounding content.
-- Run checks proportional to the change and report anything that could not be verified.
-- Never commit credentials, tokens, cookies, conversation history, generated memories, or machine-local state.
-- Ask before pushing, deploying, publishing, or changing external services.
+- ユーザーが疑問形を使用した時に無断で実行せず、必ず承認を得る。
+- ツールの管理はnixまたはmiseで行ってください。tmpにバイナリを勝手にダウンロードしない。brew installやnpm i -gなどを使用しない。
+- できる限り公式の一次情報から、使用しているバージョンの情報を参照する。公式情報以外から得た情報は必ずユーザーに伝える。
+- コミットメッセージは1行かつ日本語で簡潔に記述すること。
+- git rmやrmなどの破壊的操作を無断で行わないこと。
+- commit / push / mergeなどの前に必ずユーザのレビューをうけること。
+- ユーザーが別の言語を求めない限り、日本語で応答すること
+- 結論を最初に述べ、説明を簡潔に行うこと。
+- ファイルを変更する前に、リポジトリの指示を読み、関連する実装を必ず確認すること。
+- 無関係なユーザーの変更を保護し、明示的に依頼されない限り破壊的なGit操作を行わないこと。
+- 検索にはrgを使用し、編集には周囲の内容を保持する限定的な編集を優先すること。
+- 変更の規模に見合った検証を実行し、検証できなかったことは必ずユーザーに伝えること。
+- クレデンシャル、トークン、Cookie、会話履歴、生成されたメモリ、マシンローカルの状態は決してコミットしないこと。また、それらが露出してしまった場合は必ずユーザーへ報告しローテーションしてもらうこと。
+- push / deploy / publish / 外部サービスの変更を行う前に必ずユーザーの確認を取ること。
+
