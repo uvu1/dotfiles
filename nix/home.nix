@@ -21,12 +21,12 @@ in
     misePackage
     pkgs.sheldon
     pkgs.zsh
+    pkgs.podman
+    pkgs.docker-compose # podman compose のプロバイダ（Docker API ソケット経由で接続）
   ] ++ pkgs.lib.optionals pkgs.stdenv.isLinux [
     dotfilesUpdate
     pkgs.gcc
     pkgs.wl-clipboard
-    pkgs.podman
-    pkgs.docker-compose # podman compose のプロバイダ（Docker API ソケット経由で接続）
     pkgs.passt
   ];
 
