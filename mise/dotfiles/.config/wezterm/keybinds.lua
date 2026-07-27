@@ -1,4 +1,5 @@
 local wezterm = require("wezterm")
+local workspaces = require("workspaces")
 local module = {}
 
 function module.apply(config)
@@ -43,6 +44,19 @@ function module.apply(config)
     [[\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]+\b]],
   }
 
+  -- リサイズはモーダルにして CTRL|SHIFT+hjkl を解放する。one_shot = false なので
+  -- table に入ったあとは hjkl の連打で調整でき、Escape / CTRL-g で抜ける。
+  config.key_tables = {
+    resize_pane = {
+      { key = "h", action = wezterm.action.AdjustPaneSize({ "Left", 3 }) },
+      { key = "l", action = wezterm.action.AdjustPaneSize({ "Right", 3 }) },
+      { key = "j", action = wezterm.action.AdjustPaneSize({ "Down", 3 }) },
+      { key = "k", action = wezterm.action.AdjustPaneSize({ "Up", 3 }) },
+      { key = "Escape", action = "PopKeyTable" },
+      { key = "g", mods = "CTRL", action = "PopKeyTable" },
+    },
+  }
+
   config.keys = {
     -- wezterm features
     { key = "p", mods = "CTRL|SHIFT", action = wezterm.action.ActivateCommandPalette },
@@ -52,6 +66,7 @@ function module.apply(config)
     { key = "c", mods = "CTRL|SHIFT", action = wezterm.action.CopyTo("Clipboard") },
     { key = "v", mods = "CTRL|SHIFT", action = wezterm.action.PasteFrom("Clipboard") },
     -- pane
+    { key = "z", mods = "LEADER", action = wezterm.action.TogglePaneZoomState },
     { key = "h", mods = "LEADER", action = wezterm.action.ActivatePaneDirection("Left") },
     { key = "l", mods = "LEADER", action = wezterm.action.ActivatePaneDirection("Right") },
     { key = "j", mods = "LEADER", action = wezterm.action.ActivatePaneDirection("Down") },
@@ -59,10 +74,36 @@ function module.apply(config)
     { key = "/", mods = "LEADER", action = wezterm.action.SplitHorizontal({ domain = "CurrentPaneDomain" }) },
     { key = "-", mods = "LEADER", action = wezterm.action.SplitVertical({ domain = "CurrentPaneDomain" }) },
     { key = "x", mods = "LEADER", action = wezterm.action.CloseCurrentPane({ confirm = false }) },
-    { key = "h", mods = "CTRL|SHIFT", action = wezterm.action.AdjustPaneSize({ "Left", 5 }) },
-    { key = "l", mods = "CTRL|SHIFT", action = wezterm.action.AdjustPaneSize({ "Right", 5 }) },
-    { key = "j", mods = "CTRL|SHIFT", action = wezterm.action.AdjustPaneSize({ "Down", 5 }) },
-    { key = "k", mods = "CTRL|SHIFT", action = wezterm.action.AdjustPaneSize({ "Up", 5 }) },
+    -- ペインが 3 枚以上になると hjkl の方向指定では狙えないためラベル選択する。
+    { key = "Space", mods = "LEADER", action = wezterm.action.PaneSelect },
+    { key = "s", mods = "LEADER", action = wezterm.action.PaneSelect({ mode = "SwapWithActive" }) },
+    {
+      key = "r",
+      mods = "LEADER",
+      action = wezterm.action.ActivateKeyTable({
+        name = "resize_pane",
+        one_shot = false,
+        timeout_milliseconds = 2000,
+      }),
+    },
+    -- workspace
+    { key = "w", mods = "LEADER", action = wezterm.action.ShowLauncherArgs({ flags = "FUZZY|WORKSPACES" }) },
+    {
+      key = "W",
+      mods = "LEADER",
+      action = wezterm.action.PromptInputLine({
+        description = "New workspace name",
+        action = wezterm.action_callback(function(window, pane, line)
+          if line and line ~= "" then
+            window:perform_action(wezterm.action.SwitchToWorkspace({ name = line }), pane)
+          end
+        end),
+      }),
+    },
+    -- zsh 側の ghq-fzf (bindkey ^g) と同じ操作感で workspace を開く。
+    { key = "g", mods = "LEADER", action = workspaces.ghq_selector() },
+    { key = "[", mods = "LEADER", action = wezterm.action.SwitchWorkspaceRelative(-1) },
+    { key = "]", mods = "LEADER", action = wezterm.action.SwitchWorkspaceRelative(1) },
     -- tab
     { key = "t", mods = "CTRL|SHIFT", action = wezterm.action.SpawnTab("CurrentPaneDomain") },
     { key = "w", mods = "CTRL|SHIFT", action = wezterm.action.CloseCurrentTab({ confirm = false }) },
