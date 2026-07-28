@@ -6,7 +6,34 @@ return {
   {
     "coder/claudecode.nvim",
     dependencies = { "folke/snacks.nvim" },
-    config = true,
+    -- Claude Code の既定レンダラ（tui: "default"）は mouse reporting を有効にしないため、
+    -- pane 上のマウスは nvim が処理する（:h terminal-mouse）。フォーカス用のクリックで
+    -- t -> nt に落ちた後、nvim が選択を作って visual mode に入ってしまう。
+    -- 実測（vim.on_key + ModeChanged）で判明した経路を順に塞いだ結果、選択を作り得る
+    -- 左ボタン系イベントすべてが対象。<LeftDrag> だけだと確定が <LeftRelease> に持ち越され、
+    -- さらに <2-LeftMouse> の単語選択が残っていた。nt は Normal の一種（:h mode()）なので
+    -- "n" で捕まり、"t" は pane 内クリック用。
+    -- <LeftMouse> は残す（クリックでのフォーカス移動とカーソル位置決めに必要）。
+    opts = function()
+      local lhs_list = { "<LeftDrag>", "<LeftRelease>" }
+      for _, n in ipairs({ 2, 3, 4 }) do
+        for _, ev in ipairs({ "LeftMouse", "LeftDrag", "LeftRelease" }) do
+          lhs_list[#lhs_list + 1] = ("<%d-%s>"):format(n, ev)
+        end
+      end
+
+      local keys = {}
+      for _, lhs in ipairs(lhs_list) do
+        -- rhs が string だと snacks.win が action 名として解決するので関数を渡す。
+        keys["claude_no" .. lhs:gsub("[<>-]", ""):lower()] = {
+          lhs,
+          function() end,
+          mode = { "n", "t" },
+          desc = "Disable nvim mouse selection",
+        }
+      end
+      return { terminal = { snacks_win_opts = { keys = keys } } }
+    end,
     -- cmd により lazy がコマンドスタブを作り、キー押下前でも :ClaudeCode 系が使える。
     cmd = {
       "ClaudeCode",

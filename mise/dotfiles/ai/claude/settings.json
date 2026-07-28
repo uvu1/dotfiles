@@ -1,5 +1,9 @@
 {
   "$schema": "https://json.schemastore.org/claude-code-settings.json",
+  "attribution": {
+    "commit": "",
+    "pr": ""
+  },
   "permissions": {
     "deny": [
       "Read(./.env)",
@@ -13,13 +17,9 @@
       "Read(~/.claude.json)"
     ]
   },
-  "attribution": {
-    "commit": "",
-    "pr": ""
-  },
   "model": "claude-opus-5",
   "effortLevel": "xhigh",
+  "tui": "fullscreen",
   "theme": "dark",
-  "agentPushNotifEnabled": true,
-  "tui": "default"
+  "agentPushNotifEnabled": true
 }

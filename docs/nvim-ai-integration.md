@@ -30,6 +30,24 @@ nvim 再構成に伴い、nvim 内の AI を **codecompanion + 自作 pane-tabs*
 | `<leader>as` | Send selection（visual）/ ファイルツリーで file 追加 |
 | `<leader>aa` / `<leader>ad` | Diff accept / deny |
 
+### pane 内の操作
+
+- pane は terminal mode 維持（`terminal.auto_insert` 既定 `true`）。クリックしたらそのまま Claude へ入力できる。
+- nvim 側の `dd` は terminal buffer が `nomodifiable` なため原理的に使えない。入力欄で `dd` / `cc` /
+  text object を使いたい場合は **Claude Code CLI 側の vim mode**（`settings.json` の `editorMode: "vim"`、
+  または `/config` → Editor mode。[公式](https://code.claude.com/docs/en/interactive-mode#vim-editor-mode)）
+  を有効にする。**現在は未設定（既定の `normal`）** — 一旦切る判断。
+- pane 内では、選択を作り得る左ボタン系イベントをすべて無効化している（`<LeftMouse>` のみ残す —
+  クリックでのフォーカス移動とカーソル位置決めに必要）。既定レンダラ（`tui: "default"`）は
+  [マウスを掴まない](https://code.claude.com/docs/en/fullscreen)ので pane 上のクリックは nvim が処理し
+  （`:h terminal-mouse`）、クリックで `t` → `nt` に落ちた直後に nvim が選択を作って visual mode に
+  入ってしまうため。`vim.on_key` + `ModeChanged` で実測しながら経路を順に塞いだ:
+  `<LeftDrag>` → 確定が `<LeftRelease>` に持ち越し → `<2-LeftMouse>` の単語選択が残存。
+  `nt` は Normal の一種（`:h mode()`）なので `mode = { "n", "t" }` で捕まる。
+  マウスでのテキスト選択は使えなくなるので、コピーは `<C-\><C-n>` で nvim normal mode に抜けてから行う。
+  なお `/tui fullscreen` にすると Claude 側がマウスを掴むため、この細工なしでも visual mode に入らなくなる
+  （代わりに会話が alternate screen に入り、nvim 側の scrollback には残らない）。
+
 ### diff レビュー運用
 
 - claudecode.nvim の diff は**変更適用前**のプレビュー（`<leader>aa` = `:w` で accept、`<leader>ad` = `:q` で deny）。
