@@ -24,13 +24,13 @@ return {
           ]],
 
           keys = {
-            { icon = " ", key = "f", desc = "Find File", action = "<leader>ff" },
-            { icon = " ", key = "g", desc = "Grep", action = "<leader>fg" },
-            { icon = " ", key = "e", desc = "Explorer", action = "<leader>e" },
-            { icon = " ", key = "r", desc = "Recent Files", action = "<leader>fr" },
-            { icon = " ", key = "c", desc = "Config", action = "<leader>fc" },
+            { icon = " ", key = "f", desc = "Find File", action = "<leader>ff" },
+            { icon = " ", key = "g", desc = "Grep", action = "<leader>fg" },
+            { icon = " ", key = "e", desc = "Explorer", action = "<leader>e" },
+            { icon = " ", key = "r", desc = "Recent Files", action = "<leader>fr" },
+            { icon = " ", key = "c", desc = "Config", action = "<leader>fc" },
             { icon = "󰒲 ", key = "l", desc = "Lazy", action = ":Lazy" },
-            { icon = " ", key = "q", desc = "Quit", action = ":qa" },
+            { icon = " ", key = "q", desc = "Quit", action = ":qa" },
           },
         },
 
@@ -38,14 +38,14 @@ return {
           { section = "header" },
           { section = "keys", gap = 1, padding = 1 },
           {
-            icon = " ",
+            icon = " ",
             title = "Recent Files",
             section = "recent_files",
             indent = 2,
             padding = { 1, 1 },
           },
           {
-            icon = " ",
+            icon = " ",
             title = "Projects",
             section = "projects",
             indent = 2,
