@@ -171,11 +171,11 @@ function M.os_info()
   local sysname = uname.sysname
 
   if sysname == "Darwin" then
-    return cache(" macOS")
+    return cache(" macOS")
   end
 
   if sysname:match("Windows") or sysname == "Windows_NT" then
-    return cache(" Windows")
+    return cache(" Windows")
   end
 
   if sysname == "Linux" then
@@ -200,17 +200,17 @@ function M.os_info()
     end
 
     if id == "ubuntu" or id_like:match("ubuntu") then
-      return cache(" Ubuntu")
+      return cache(" Ubuntu")
     end
 
     if id == "fedora" or id_like:match("fedora") then
-      return cache(" Fedora")
+      return cache(" Fedora")
     end
 
-    return cache(" Linux")
+    return cache(" Linux")
   end
 
-  return cache(" " .. sysname)
+  return cache(" " .. sysname)
 end
 
 return M

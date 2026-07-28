@@ -36,15 +36,15 @@ local function diagnostics_count()
   local parts = {}
 
   if counts[vim.diagnostic.severity.ERROR] > 0 then
-    table.insert(parts, " " .. counts[vim.diagnostic.severity.ERROR])
+    table.insert(parts, " " .. counts[vim.diagnostic.severity.ERROR])
   end
 
   if counts[vim.diagnostic.severity.WARN] > 0 then
-    table.insert(parts, " " .. counts[vim.diagnostic.severity.WARN])
+    table.insert(parts, " " .. counts[vim.diagnostic.severity.WARN])
   end
 
   if counts[vim.diagnostic.severity.INFO] > 0 then
-    table.insert(parts, " " .. counts[vim.diagnostic.severity.INFO])
+    table.insert(parts, " " .. counts[vim.diagnostic.severity.INFO])
   end
 
   if counts[vim.diagnostic.severity.HINT] > 0 then
@@ -58,7 +58,7 @@ local function language()
   local buf = pane.target_buf()
   local ft = vim.bo[buf].filetype
 
-  if ft == "" then
+  if ft == "" then
     ft = "text"
   end
 
@@ -66,14 +66,14 @@ local function language()
   local icon = ok and devicons.get_icon_by_filetype(ft, { default = true }) or nil
   local version = runtime.version(ft)
 
-  return (icon or "󰈙") .. " " .. ft .. (version ~= "" and " " .. version or "")
+  return (icon or "󰈙") .. " " .. ft .. (version ~= "" and " " .. version or "")
 end
 
 local function cursor_position()
   local win = pane.target_win()
 
   if not win or not vim.api.nvim_win_is_valid(win) then
-    return ""
+    return ""
   end
 
   local pos = vim.api.nvim_win_get_cursor(win)
@@ -96,7 +96,7 @@ local function file_encoding()
   local buf = pane.target_buf()
   local encoding = vim.bo[buf].fileencoding
 
-  if encoding == "" then
+  if encoding == "" then
     encoding = vim.o.encoding
   end
 

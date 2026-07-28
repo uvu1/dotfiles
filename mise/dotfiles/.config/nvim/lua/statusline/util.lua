@@ -24,7 +24,7 @@ function M.pill(component, opts)
 
   return vim.tbl_extend("force", {
     component,
-    separator = { left = "", right = "" },
+    separator = { left = "", right = "" },
     padding = { left = 1, right = 1 },
   }, opts)
 end
