@@ -1,0 +1,53 @@
+return {
+  {
+    "nvim-lualine/lualine.nvim",
+    event = "VeryLazy",
+    -- mini.icons が mock_nvim_web_devicons() で nvim-web-devicons を代替する。
+    -- lualine と mini.icons はどちらも VeryLazy なので、mock が先に走るよう依存に置く。
+    dependencies = { "nvim-mini/mini.icons" },
+    config = function()
+      local statusline = require("statusline")
+      local sections = statusline.sections()
+
+      statusline.setup()
+      vim.opt.laststatus = 2
+
+      require("lualine").setup({
+        options = {
+          theme = statusline.theme(),
+          globalstatus = false,
+          always_divide_middle = false,
+          component_separators = "",
+          section_separators = "",
+          refresh = {
+            statusline = 250,
+            tabline = 1000,
+            winbar = 1000,
+            refresh_time = 16,
+            events = {
+              "BufEnter",
+              "BufWinEnter",
+              "CursorMoved",
+              "CursorMovedI",
+              "DiagnosticChanged",
+              "FileChangedShellPost",
+              "FileType",
+              "ModeChanged",
+              "SessionLoadPost",
+              "VimResized",
+              "WinClosed",
+              "WinEnter",
+              "WinNew",
+              "WinResized",
+            },
+          },
+        },
+        sections = sections,
+        inactive_sections = vim.deepcopy(sections),
+        tabline = {},
+        winbar = {},
+        inactive_winbar = {},
+      })
+    end,
+  },
+}

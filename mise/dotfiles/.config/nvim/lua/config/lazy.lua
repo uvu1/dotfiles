@@ -14,14 +14,12 @@ if not (vim.uv or vim.loop).fs_stat(lazypath) then
 end
 vim.opt.rtp:prepend(lazypath)
 
-vim.g.mapleader = " "
-
 require("lazy").setup({
   spec = {
-    { import = "plugin", },
+    { import = "plugins" },
   },
   defaults = { lazy = true, version = false },
-  install = { colorscheme = { "kawaii", } },
+  install = { colorscheme = { "kawaii-theme" } },
   checker = { enabled = false, notify = false, frequency = 86400 }, -- 86400s = 24h
   change_detection = { enabled = true, notify = false },
   performance = {
