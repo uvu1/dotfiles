@@ -62,6 +62,12 @@ function module.apply(config)
     { key = "p", mods = "CTRL|SHIFT", action = wezterm.action.ActivateCommandPalette },
     { key = "x", mods = "CTRL|SHIFT", action = wezterm.action.ActivateCopyMode },
     { key = "Space", mods = "CTRL|SHIFT", action = wezterm.action.QuickSelect },
+    -- key passthrough
+    -- Windows では allow_win32_input_mode が優先されるため Shift+Enter が素の CR として届き、
+    -- Claude Code や nvim :terminal では改行ではなく送信になってしまう。Claude Code が組み込みで
+    -- 改行として扱う ESC+CR（Alt+Enter）へ差し替える。生バイト送出なのでキーエンコードに左右されず、
+    -- nvim 内蔵ターミナルも無改変で通過する。zsh では ^[^M が self-insert-unmeta なので改行挿入になる。
+    { key = "Enter", mods = "SHIFT", action = wezterm.action.SendString("\x1b\r") },
     -- copy/paste
     { key = "c", mods = "CTRL|SHIFT", action = wezterm.action.CopyTo("Clipboard") },
     { key = "v", mods = "CTRL|SHIFT", action = wezterm.action.PasteFrom("Clipboard") },
