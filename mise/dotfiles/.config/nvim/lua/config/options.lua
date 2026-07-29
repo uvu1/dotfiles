@@ -47,3 +47,14 @@ if vim.fn.has("wsl") == 1 then
     }
   end
 end
+
+-- nvim が mise の shim 経由で起動していれば PATH に installs/<tool>/<version>/bin が
+-- 並ぶが、そうでない経路（デスクトップランチャ等）では LSP も formatter も 1 つも
+-- 解決しない。mason の PATH prepend が隠していた前提なので明示的に補う。
+-- append にして、既に載っている具体パスの解決を優先させる。
+do
+  local shims = vim.fs.joinpath(vim.uv.os_homedir(), ".local/share/mise/shims")
+  if vim.uv.fs_stat(shims) and not vim.env.PATH:find(shims, 1, true) then
+    vim.env.PATH = vim.env.PATH .. ":" .. shims
+  end
+end

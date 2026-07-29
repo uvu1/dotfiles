@@ -17,9 +17,44 @@ starship = "latest"
 rg = "latest"
 gh = "latest"
 jq = "latest"
+
+# --- 言語サーバ ---------------------------------------------------------------
+# Neovim の LSP はすべてここが供給元。mason は廃止した（docs/nvim-lsp-audit.md）。
+# rust-analyzer は rust より前に置く。mise は [tools] の宣言順に PATH を前置し、
+# core:rust の install ディレクトリは ~/.cargo/bin への symlink で、そこには
+# active toolchain に component を持たない rustup の proxy がある。後ろに置くと
+# そちらに食われて必ず起動失敗する。
+rust-analyzer = "2026-07-27"
+lua-language-server = "3.18.2"
+# レジストリ短縮名と aqua:clangd/clangd はどちらも 0 件なので ubi を使う。
+"ubi:clangd/clangd" = "22.1.6"
+# この 1 パッケージで jsonls / cssls / html / eslint のバイナリが揃う。
+"npm:vscode-langservers-extracted" = "4.10.0"
+# ts_ls は解析対象の typescript をプロジェクトの node_modules から取る。
+# グローバルに typescript を置いても使われない（tsserver.path で強制すると逆に
+# プロジェクトのバージョンを無視してしまう）ので宣言しない。
+"npm:typescript-language-server" = "5.3.0"
+"npm:yaml-language-server" = "1.24.0"
+"npm:@tailwindcss/language-server" = "0.16.0"
+"npm:@github/copilot-language-server" = "1.526.0"
+"npm:basedpyright" = "1.39.9"
+# latest は 0.27.0.beta4（prerelease）なので安定版最新を明示固定する。
+"gem:ruby-lsp" = "0.26.10"
+# gopls は prebuilt が存在しない（ubi:golang/tools の release は asset 0 件）ため
+# go backend でソースからビルドする。下の go の宣言はそのための前提。
+"go:golang.org/x/tools/gopls" = "0.23.0"
+"go:golang.org/x/tools/cmd/goimports" = "0.48.0"
+
+# --- 言語ランタイム -----------------------------------------------------------
+# プロジェクト側の mise.toml / .tool-versions / .ruby-version / .nvmrc が優先される
+# （nvim からは lua/lib/mise.lua が mise x -C <root> 経由で起動する）。ここの宣言は
+# gem: / go: バックエンドのビルド土台と、プロジェクト外ファイルのフォールバック。
 node = "24.15.0"
 python = "3.14"
 rust = "1.97.0"
+# core:ruby は ruby-build でソースビルドするので、既に導入済みの版を選ぶ。
+ruby = "4.0.1"
+go = "1.26.5"
 codex = "latest"
 stylua = "latest"
 lazygit = "latest"
@@ -30,6 +65,11 @@ prettier = "latest"
 yamllint = "latest"
 ruff = "latest"
 biome = "latest"
+clang-format = "latest"
+gofumpt = "latest"
+golangci-lint = "latest"
+# 実行名は haml-lint。haml には LSP も treesitter パーサも存在せず、これが唯一の支援。
+"gem:haml_lint" = "0.76.0"
 delta = "latest"
 yq = "latest"
 claude = "latest"
