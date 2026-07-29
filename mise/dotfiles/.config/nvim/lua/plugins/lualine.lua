@@ -4,7 +4,10 @@ return {
     event = "VeryLazy",
     -- mini.icons が mock_nvim_web_devicons() で nvim-web-devicons を代替する。
     -- lualine と mini.icons はどちらも VeryLazy なので、mock が先に走るよう依存に置く。
-    dependencies = { "nvim-mini/mini.icons" },
+    -- aerial は winbar のパンくずに使う。lualine は setup() 時に
+    -- pcall(require, "lualine.components.aerial") で名前解決するため、rtp に
+    -- 無いと pcall が失敗して winbar に文字列 "aerial" がそのまま出る。
+    dependencies = { "nvim-mini/mini.icons", "stevearc/aerial.nvim" },
     config = function()
       local statusline = require("statusline")
       local sections = statusline.sections()
@@ -45,7 +48,7 @@ return {
         sections = sections,
         inactive_sections = vim.deepcopy(sections),
         tabline = {},
-        winbar = {},
+        winbar = statusline.winbar(),
         inactive_winbar = {},
       })
     end,

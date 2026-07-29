@@ -8,9 +8,11 @@ function M.refresh_statusline()
   local ok, lualine = pcall(require, "lualine")
 
   if ok and type(lualine.refresh) == "function" then
+    -- winbar も同じ更新サイクルに乗せる。パンくず（statusline.winbar）は
+    -- lualine 側の 1000ms タイマ任せだと古い symbol を出し続ける。
     lualine.refresh({
       force = true,
-      place = { "statusline" },
+      place = { "statusline", "winbar" },
       scope = "tabpage",
     })
     return

@@ -88,6 +88,24 @@ function M.sections()
   }
 end
 
+--- VSCode のパンくず。aerial 同梱の lualine コンポーネントをそのまま使う
+--- （aerial.nvim/lua/lualine/components/aerial.lua）。
+--- explorer・端末・picker では両コンポーネントを cond で落とし、winbar を
+--- 空文字にして行そのものを出さない。
+function M.winbar()
+  local editor = pane.cond("editor")
+
+  return {
+    lualine_c = {
+      { "filename", path = 1, cond = editor },
+      -- aerial 既定の sep_highlight = "NonText" は kawaii ではウィンドウ枠線色
+      -- （ComplHint と同じ問題）でほぼ見えない。WinBarNC は p.muted かつ
+      -- WinBar と同じ背景なので区切りだけ一段暗い正しい見た目になる。
+      { "aerial", cond = editor, sep_highlight = "WinBarNC" },
+    },
+  }
+end
+
 function M.theme()
   local function section()
     return { fg = state.colors.inactive, bg = state.colors.transparent }
