@@ -136,6 +136,29 @@ return {
         },
       })
 
+      -- typescript-language-server 5.3.0 は inlay hint を全部 'none'/false に
+      -- 既定しているので、明示しないと vim.lsp.inlay_hint を有効にしても何も返らない。
+      -- サーバは typescript.inlayHints と javascript.inlayHints の両方を読むため、
+      -- 同じ table を両方から参照する。...MatchesName 系だけ false にして
+      -- 「引数名と変数名が同じとき」の冗長なヒントを抑える。
+      local ts_inlay_hints = {
+        includeInlayEnumMemberValueHints = true,
+        includeInlayFunctionLikeReturnTypeHints = true,
+        includeInlayFunctionParameterTypeHints = true,
+        includeInlayParameterNameHints = "all",
+        includeInlayParameterNameHintsWhenArgumentMatchesName = false,
+        includeInlayPropertyDeclarationTypeHints = true,
+        includeInlayVariableTypeHints = true,
+        includeInlayVariableTypeHintsWhenTypeMatchesName = false,
+      }
+
+      vim.lsp.config("ts_ls", {
+        settings = {
+          typescript = { inlayHints = ts_inlay_hints },
+          javascript = { inlayHints = ts_inlay_hints },
+        },
+      })
+
       -- ここから 4 本だけ mise x でラップする。基準は「サーバがプロジェクトの
       -- 処理系を実行・内省しないと正しい答えを出せないか」。バージョン依存の実体が
       -- リポジトリ内のファイル（node_modules/typescript、compile_commands.json、
@@ -164,8 +187,24 @@ return {
 
       -- gopls は go list を実行する。stdlib・build tag・module graph がすべて
       -- ツールチェイン由来。
+      -- hints は gopls 0.23.0 の全 8 種（api-json で確認）。すべて既定 false なので
+      -- 明示しないと inlay hint は空のまま。うるさければ <leader>uh で切る。
       vim.lsp.config("gopls", {
         cmd = mise.lsp_cmd({ "gopls" }),
+        settings = {
+          gopls = {
+            hints = {
+              assignVariableTypes = true,
+              compositeLiteralFields = true,
+              compositeLiteralTypes = true,
+              constantValues = true,
+              functionTypeParameters = true,
+              ignoredError = true,
+              parameterNames = true,
+              rangeVariableTypes = true,
+            },
+          },
+        },
       })
 
       -- ruby のバージョンと bundler がそのまま解析対象。lspconfig 既定の cmd も
@@ -248,6 +287,21 @@ return {
         "ts_ls",
         "yamlls",
       })
+
+      -- Neovim 0.12 の組込み機能。LspAttach autocmd は要らない。
+      -- filter 無しの enable() は vim.g のグローバルマーカーを立てるだけで、
+      -- 実際の attach は client.lua が接続後に _capability.is_enabled() を見て行う
+      -- （＝これ以降に起動するサーバにも自動で伝播する）。
+      -- codelens も同様で、描画は nvim_set_decoration_provider なので
+      -- CursorHold での手動 refresh は不要。
+      vim.lsp.inlay_hint.enable(true)
+      vim.lsp.codelens.enable(true)
+      vim.lsp.linked_editing_range.enable(true)
+
+      -- document_color は 0.12 では既定で ON。既定の 'background' は値そのものを
+      -- 塗るので、VSCode のように左へスウォッチを出す 'virtual' に変えるだけ。
+      -- cssls と tailwindcss が対応し、Tailwind のクラス名にも色が出る。
+      vim.lsp.document_color.enable(true, nil, { style = "virtual" })
     end,
   },
 }
