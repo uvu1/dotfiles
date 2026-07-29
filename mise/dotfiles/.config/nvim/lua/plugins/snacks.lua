@@ -1,3 +1,24 @@
+-- ]r / [r は符号違いだけなので生成側で吸収する。v:count1 を掛けて 3]r も効かせる。
+local function jump_reference(direction)
+  return function()
+    require("snacks").words.jump(direction * vim.v.count1, true)
+  end
+end
+
+-- VSCode の F2 / F12 / Shift+F12 は <leader>g* と同じ操作なので、関数を
+-- 一度だけ定義して両方から参照する。F1〜F12 は他で一切使っていない。
+local function lsp_definitions()
+  require("snacks").picker.lsp_definitions()
+end
+
+local function lsp_references()
+  require("snacks").picker.lsp_references()
+end
+
+local function lsp_rename()
+  require("snacks").lsp.rename()
+end
+
 return {
   {
     "folke/snacks.nvim",
@@ -65,6 +86,22 @@ return {
         enabled = true,
         ui_select = true,
 
+        -- WezTerm が CTRL+q を自身の leader にしているため（wezterm/keybinds.lua）、
+        -- picker 既定の <c-q> = qflist は nvim に永久に届かない。届く別名を足す。
+        -- 既定の <a-h>/<a-i>/<a-p> 等と同じ Alt 系なので到達性は揃う。
+        win = {
+          input = {
+            keys = {
+              ["<a-q>"] = { "qflist", mode = { "i", "n" } },
+            },
+          },
+          list = {
+            keys = {
+              ["<a-q>"] = "qflist",
+            },
+          },
+        },
+
         sources = {
           explorer = {
             hidden = true,
@@ -102,6 +139,10 @@ return {
 
       input = { enabled = true },
       notifier = { enabled = true },
+
+      -- VSCode のオカレンスハイライト。needs_setup = true なので既定は無効。
+      -- 実体は documentHighlight 対応クライアントに限った document_highlight()。
+      words = { enabled = true },
 
       -- lazygit.nvim の置き換え。setup 不要のオンデマンドモジュールだが、
       -- snacks が担当することを明示するために宣言しておく。
@@ -144,20 +185,8 @@ return {
         desc = "Commit log for line/selection",
       },
 
-      {
-        "<leader>gd",
-        function()
-          require("snacks").picker.lsp_definitions()
-        end,
-        desc = "Go to definitions",
-      },
-      {
-        "<leader>gr",
-        function()
-          require("snacks").picker.lsp_references()
-        end,
-        desc = "Go to references",
-      },
+      { "<leader>gd", lsp_definitions, desc = "Go to definitions" },
+      { "<leader>gr", lsp_references, desc = "Go to references" },
       {
         "<leader>gi",
         function()
@@ -172,13 +201,12 @@ return {
         end,
         desc = "Go to type definitions",
       },
-      {
-        "<leader>grn",
-        function()
-          require("snacks").lsp.rename()
-        end,
-        desc = "Rename symbol",
-      },
+      { "<leader>grn", lsp_rename, desc = "Rename symbol" },
+
+      -- VSCode 同配置の F キー。上と同じ関数を指す。
+      { "<F2>", lsp_rename, desc = "Rename symbol" },
+      { "<F12>", lsp_definitions, desc = "Go to definitions" },
+      { "<S-F12>", lsp_references, desc = "Go to references" },
       {
         "<leader>gci",
         function()
@@ -193,6 +221,11 @@ return {
         end,
         desc = "Outgoing calls",
       },
+
+      -- ]] / [[ は lib/symbol-nav が使っているので参照移動は ]r / [r に置く。
+      { "]r", jump_reference(1), desc = "Next reference" },
+      { "[r", jump_reference(-1), desc = "Prev reference" },
+
       {
         "<leader>ss",
         function()
@@ -283,6 +316,32 @@ return {
           require("snacks").picker.files({ cwd = vim.fn.stdpath("config") })
         end,
         desc = "Find config files",
+      },
+
+      -- コマンドパレット。VSCode の Ctrl+Shift+P は WezTerm が自身のパレットに
+      -- 取っている（keybinds.lua）ので <leader>p に置く。
+      -- vscode レイアウトプリセットは上端固定・幅 0.4・枠なしで見た目も寄る。
+      -- command_history は sources 側で既に vscode レイアウトを持つ。
+      {
+        "<leader>pp",
+        function()
+          require("snacks").picker.commands({ layout = { preset = "vscode" } })
+        end,
+        desc = "Commands",
+      },
+      {
+        "<leader>pk",
+        function()
+          require("snacks").picker.keymaps({ layout = { preset = "vscode" } })
+        end,
+        desc = "Keymaps",
+      },
+      {
+        "<leader>ph",
+        function()
+          require("snacks").picker.command_history()
+        end,
+        desc = "Command history",
       },
 
       -- lazygit.nvim の置き換え。カラースキーム連携と nvim-remote による編集連携は
