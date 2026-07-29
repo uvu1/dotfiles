@@ -22,6 +22,7 @@ return {
       { "<leader>a", group = "AI" },
       -- VSCode の Ctrl+Shift+P は WezTerm が自身のコマンドパレットに取っている。
       { "<leader>p", group = "Palette" },
+      { "<leader>u", group = "UI" },
     },
   },
 }

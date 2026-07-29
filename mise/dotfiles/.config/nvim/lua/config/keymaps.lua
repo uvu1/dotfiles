@@ -18,4 +18,31 @@ end)
 -- clear search highlight
 vim.keymap.set("n", "<Esc>", "<cmd>nohlsearch<CR>", opts("Clear search highlights"))
 
+-- UI トグル（<leader>u）。Snacks.toggle:map() が which-key のアイコン・色・
+-- 説明の反転まで面倒を見るので vim.keymap.set は使わない。
+-- snacks は lazy = false、Snacks は遅延 __index のグローバルなので、
+-- init.lua が config.lazy の後にこのファイルを require している時点で安全。
+-- codelens と document_color には組込みトグルが無いが、
+-- vim.lsp.<mod>.is_enabled/enable が同形なので生成側で吸収する。
+local function lsp_toggle(mod, name)
+  return Snacks.toggle.new({
+    id = mod,
+    name = name,
+    get = function()
+      return vim.lsp[mod].is_enabled({ bufnr = 0 })
+    end,
+    set = function(state)
+      vim.lsp[mod].enable(state, { bufnr = 0 })
+    end,
+  })
+end
+
+Snacks.toggle.inlay_hints():map("<leader>uh")
+Snacks.toggle.diagnostics():map("<leader>ud")
+Snacks.toggle.indent():map("<leader>ug")
+Snacks.toggle.option("wrap"):map("<leader>uw")
+Snacks.toggle.words():map("<leader>uo")
+lsp_toggle("codelens", "CodeLens"):map("<leader>ul")
+lsp_toggle("document_color", "Document Colors"):map("<leader>uc")
+
 require("config.keymaps.contest")
