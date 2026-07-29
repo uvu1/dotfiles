@@ -62,6 +62,10 @@ tree-sitter = "latest"
 cloudflared = "latest"
 zoxide = "latest"
 prettier = "latest"
+# yamllint は registry 上 pipx backend しか無く、pipx backend は pipx か uv の
+# どちらかを PATH に要求する。uv はグローバルに置かない方針なので pipx を宣言する。
+# 直接使う CLI ではなく yamllint の導入土台。
+pipx = "latest"
 yamllint = "latest"
 ruff = "latest"
 biome = "latest"
