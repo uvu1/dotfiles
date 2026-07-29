@@ -1,44 +1,11 @@
-local function root_has(bufnr, names)
-  local path = vim.api.nvim_buf_get_name(bufnr)
-  if path == "" then
-    return false
-  end
-
-  local dir = vim.fs.dirname(path)
-  local found = vim.fs.find(names, {
-    path = dir,
-    upward = true,
-    stop = vim.loop.os_homedir(),
-  })
-
-  return #found > 0
-end
+local project = require("lib.project")
 
 local function web_formatters(bufnr)
-  local has_prettier = root_has(bufnr, {
-    "prettier.config.js",
-    "prettier.config.mjs",
-    "prettier.config.cjs",
-    ".prettierrc",
-    ".prettierrc.json",
-    ".prettierrc.js",
-    ".prettierrc.cjs",
-    ".prettierrc.mjs",
-    ".prettierrc.yaml",
-    ".prettierrc.yml",
-    ".prettierrc.toml",
-  })
-
-  local has_biome = root_has(bufnr, {
-    "biome.json",
-    "biome.jsonc",
-  })
-
-  if has_prettier then
+  if project.uses_prettier(bufnr) then
     return { "prettier" }
   end
 
-  if has_biome then
+  if project.uses_biome(bufnr) then
     return { "biome" }
   end
 
@@ -64,8 +31,16 @@ return {
         yaml = { "prettier" },
         rust = { "rustfmt", lsp_format = "fallback" },
         python = { "ruff_format" },
-        cpp = { "clang_format", lsp_format = "fallback" },
-        c = { "clang_format", lsp_format = "fallback" },
+        -- goimports が import を整理し、gofumpt が gofmt より厳しく整形する。
+        go = { "goimports", "gofumpt" },
+        -- ruby / haml は formatters_by_ft に置かない。ruby は ruby-lsp が
+        -- プロジェクトの bundle にある rubocop で整形するので、下の
+        -- format_on_save の lsp_format = "fallback" 経由に任せる方が正しい
+        -- （グローバルの rubocop では .rubocop.yml が参照する plugin gem を
+        -- 読めず落ちる）。haml は conform に formatter が存在しない。
+        -- clang_format は conform の非推奨エイリアス。clang-format が正名。
+        cpp = { "clang-format", lsp_format = "fallback" },
+        c = { "clang-format", lsp_format = "fallback" },
         lua = { "stylua" },
       },
 
