@@ -40,7 +40,7 @@ do
     callback = function(args)
       local client = vim.lsp.get_client_by_id(args.data.client_id)
 
-      -- copilot は全 filetype に attach するが documentSymbol を持たない。
+      -- documentSymbol を持たないサーバ（eslint / biome など）も attach するので、
       -- シンボルを出せるサーバが付いたときだけ張る。
       if not client or not client:supports_method("textDocument/documentSymbol") then
         return

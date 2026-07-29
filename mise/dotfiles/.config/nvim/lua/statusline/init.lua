@@ -99,7 +99,7 @@ function M.winbar()
     lualine_c = {
       { "filename", path = 1, cond = editor },
       -- aerial 既定の sep_highlight = "NonText" は kawaii ではウィンドウ枠線色
-      -- （ComplHint と同じ問題）でほぼ見えない。WinBarNC は p.muted かつ
+      -- でほぼ見えない。WinBarNC は p.muted かつ
       -- WinBar と同じ背景なので区切りだけ一段暗い正しい見た目になる。
       { "aerial", cond = editor, sep_highlight = "WinBarNC" },
     },

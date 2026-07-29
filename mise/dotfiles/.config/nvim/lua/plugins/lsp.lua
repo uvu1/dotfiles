@@ -8,11 +8,6 @@ return {
     config = function()
       local mise = require("lib.mise")
 
-      local ai_filetypes = {
-        codecompanion = true,
-        ["pane-tabs-ai"] = true,
-      }
-
       local yaml_schemas = require("schemastore").yaml.schemas()
       yaml_schemas.kubernetes = {
         "k8s/**/*.yaml",
@@ -232,39 +227,11 @@ return {
         },
       })
 
-      -- copilot LSP: インライン補完は Neovim 0.12 の vim.lsp.inline_completion で直接消費する。
-      -- lspconfig の既定は telemetryLevel = "all" なので明示的に切る。
-      vim.lsp.config("copilot", {
-        settings = {
-          telemetry = {
-            telemetryLevel = "off",
-          },
-        },
-      })
-
       vim.api.nvim_create_autocmd("FileType", {
         group = vim.api.nvim_create_augroup("ai-pane-completion", { clear = true }),
         pattern = { "codecompanion", "pane-tabs-ai" },
         callback = function(args)
           vim.b[args.buf].completion = false
-
-          if vim.lsp.inline_completion then
-            vim.lsp.inline_completion.enable(false, { bufnr = args.buf })
-          end
-        end,
-      })
-
-      vim.api.nvim_create_autocmd("LspAttach", {
-        group = vim.api.nvim_create_augroup("copilot-inline", { clear = true }),
-        callback = function(args)
-          local client = vim.lsp.get_client_by_id(args.data.client_id)
-          if not client then
-            return
-          end
-
-          if client.name == "copilot" then
-            vim.lsp.inline_completion.enable(not ai_filetypes[vim.bo[args.buf].filetype], { bufnr = args.buf })
-          end
         end,
       })
 
@@ -274,7 +241,6 @@ return {
         "basedpyright",
         "biome",
         "clangd",
-        "copilot",
         "cssls",
         "eslint",
         "gopls",

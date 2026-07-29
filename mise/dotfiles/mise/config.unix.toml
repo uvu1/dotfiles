@@ -36,7 +36,6 @@ lua-language-server = "3.18.2"
 "npm:typescript-language-server" = "5.3.0"
 "npm:yaml-language-server" = "1.24.0"
 "npm:@tailwindcss/language-server" = "0.16.0"
-"npm:@github/copilot-language-server" = "1.526.0"
 "npm:basedpyright" = "1.39.9"
 # latest は 0.27.0.beta4（prerelease）なので安定版最新を明示固定する。
 "gem:ruby-lsp" = "0.26.10"

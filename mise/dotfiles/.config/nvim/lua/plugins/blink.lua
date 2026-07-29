@@ -34,14 +34,6 @@ return {
           end,
 
           "snippet_forward",
-
-          function()
-            if vim.lsp.inline_completion then
-              return vim.lsp.inline_completion.get()
-            end
-            return false
-          end,
-
           "fallback",
         },
         ["<C-space>"] = { "show", "show_documentation", "hide_documentation" },
