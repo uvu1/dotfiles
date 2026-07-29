@@ -36,17 +36,9 @@ return {
         default_detail = 1,
       },
 
-      form = {
-        border = "rounded",
-      },
-
-      confirm = {
-        border = "rounded",
-      },
-
-      task_win = {
-        border = "rounded",
-      },
+      -- form / task_win の border は書かない。overseer の既定が nil で
+      -- nvim_open_win に素通しするため winborder が効く。
+      -- confirm = { border } は overseer が一度も読まない死んだ設定だったので削除した。
     },
   },
 }

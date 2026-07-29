@@ -81,6 +81,8 @@ return {
       persist_size = false,
       float_opts = {
         relative = "editor",
+        -- toggleterm だけは winborder に従わない（ui.lua が opts.border or "single"
+        -- とハードコードしている）ので明示が要る。丸角にしたければ "curved"。
         border = "single",
         width = term_width,
         height = term_height,

@@ -71,8 +71,9 @@ return {
           },
         },
 
+        -- border は書かない。blink の pick_border() が nil のとき winborder を読む
+        -- （lib/window/utils.lua）。枠の指定は config/options.lua に集約している。
         menu = {
-          border = "rounded",
           draw = {
             treesitter = {},
             columns = {
@@ -87,9 +88,6 @@ return {
           auto_show = false,
           auto_show_delay_ms = 500,
           treesitter_highlighting = false,
-          window = {
-            border = "rounded",
-          },
         },
 
         ghost_text = {
@@ -99,9 +97,6 @@ return {
 
       signature = {
         enabled = true,
-        window = {
-          border = "rounded",
-        },
       },
 
       sources = {

@@ -13,6 +13,12 @@ return {
         long_message_to_split = false,
         lsp_doc_border = false,
       },
+      -- border.style は書かない。noice 自身の既定（config/views.lua）が
+      -- cmdline_popup / cmdline_popupmenu ともに "rounded" なので、ここの指定は
+      -- 完全な重複だった。見た目は変わらない。
+      -- 注意: noice は必ず自前の style を渡すため nui の winborder フォールバックには
+      -- 落ちない。つまり noice の枠は winborder に追従しない（今たまたま一致している）。
+      -- padding は nui 固有で既定に無いので残す。
       views = {
         cmdline_popup = {
           relative = "editor",
@@ -25,7 +31,6 @@ return {
             height = "auto",
           },
           border = {
-            style = "rounded",
             padding = { 0, 1 },
           },
         },
@@ -41,7 +46,6 @@ return {
             height = 10,
           },
           border = {
-            style = "rounded",
             padding = { 0, 1 },
           },
         },
