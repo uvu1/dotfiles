@@ -6,20 +6,7 @@ vim.api.nvim_create_autocmd("VimEnter", {
     end
 
     vim.schedule(function()
-      local ok, snacks = pcall(require, "snacks")
-      if not ok then
-        return
-      end
-      snacks.explorer.open({
-        focus = "list",
-        enter = true,
-        auto_close = false,
-        layout = {
-          preset = "sidebar",
-          preview = false,
-          hidden = { "input" },
-        },
-      })
+      require("lib.explorer").focus_or_open({ enter = true })
     end)
   end,
 })

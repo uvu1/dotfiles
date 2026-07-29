@@ -139,25 +139,7 @@ return {
       {
         "<leader>e",
         function()
-          local snacks = require("snacks")
-          local explorers = snacks.picker.get({ source = "explorer" })
-
-          for _, explorer in ipairs(explorers) do
-            if explorer and not explorer.closed then
-              explorer:focus("list")
-              return
-            end
-          end
-
-          snacks.explorer.open({
-            focus = "list",
-            auto_close = false,
-            layout = {
-              preset = "sidebar",
-              preview = false,
-              hidden = { "input" },
-            },
-          })
+          require("lib.explorer").focus_or_open()
         end,
         desc = "Focus or open explorer",
       },
