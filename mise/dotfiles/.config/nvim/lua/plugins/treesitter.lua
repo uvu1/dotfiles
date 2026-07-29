@@ -24,6 +24,17 @@ return {
         "markdown",
         "markdown_inline",
         "toml",
+        -- jsonc はパーサが存在しない（json が jsonc filetype も担当する）。
+        "ruby",
+        "embedded_template", -- eruby
+        "go",
+        "gomod",
+        "gosum",
+        "gowork",
+        "c",
+        "cpp",
+        -- haml はパーサが upstream に存在しない。Vim 同梱の syntax/haml.vim で
+        -- ハイライトされる（下の pcall が start の失敗を吸収する）。
       }
       require("nvim-treesitter").install(langs)
 
