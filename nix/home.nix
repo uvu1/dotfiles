@@ -69,7 +69,8 @@ let
   ];
 
   # 日常 CLI とエディタ。neovim は provider wrapper が付かない unwrapped を使う。
-  # yq は yq-go（pkgs.yq は別物の Python 実装）、delta は git-delta ではなく delta。
+  # yq は yq-go（pkgs.yq は別物の Python 実装）、delta は git-delta ではなく delta、
+  # ykman は yubikey-manager。
   cliTools = [
     unstable.bat
     unstable.delta
@@ -85,6 +86,7 @@ let
     unstable.starship
     unstable.tree-sitter
     unstable.yq-go
+    unstable.yubikey-manager
     unstable.zoxide
   ];
 
