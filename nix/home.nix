@@ -23,6 +23,7 @@ in
     pkgs.zsh
     pkgs.podman
     pkgs.docker-compose # podman compose のプロバイダ（Docker API ソケット経由で接続）
+    pkgs.postgresql_18
   ] ++ pkgs.lib.optionals pkgs.stdenv.isLinux [
     dotfilesUpdate
     pkgs.gcc
