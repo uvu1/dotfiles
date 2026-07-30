@@ -18,17 +18,14 @@ return {
     },
 
     opts = {
-      templates = {
-        "builtin",
-        "user.just",
-      },
-
-      strategy = {
-        "terminal",
-        direction = "bottom",
-        size = 15,
-      },
-
+      -- templates と strategy は書かない。現在の overseer はどちらも読まない。
+      -- ・テンプレートは runtimepath の lua/overseer/template/**/*.lua を常に
+      --   全部読む（overseer/template.lua の get_providers）。除外したいときは
+      --   disable_template_modules を使う。mise のタスクは overseer 同梱の
+      --   template/mise.lua が `mise tasks --json` から拾うので、
+      --   <leader>rr にそのまま並ぶ（実測で build / lint を検出）。
+      -- ・strategy は task 単位のオプションに移り、overseer.Config には無い
+      --   （doc/strategies.md）。出力バッファの指定は output.use_terminal。
       task_list = {
         direction = "right",
         min_width = 32,
