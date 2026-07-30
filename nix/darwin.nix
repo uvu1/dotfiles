@@ -14,6 +14,14 @@
     defaults = {
       finder.AppleShowAllFiles = true;
 
+      # 漢字が PingFang SC(簡体字) で描画されるのを防ぐ。CoreText のフォント
+      # フォールバックは優先言語リスト全体を見るため、ja を2番目に置けば
+      # UI は英語のまま Hiragino Sans が優先される。反映には再ログインが必要。
+      CustomUserPreferences.NSGlobalDomain.AppleLanguages = [
+        "en-JP"
+        "ja-JP"
+      ];
+
       # Scroll Reverser: マウスのみ反転。GUI での変更は次回 switch で宣言値に戻る。
       CustomUserPreferences."com.pilotmoon.scroll-reverser" = {
         InvertScrollingOn = true;
