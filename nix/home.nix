@@ -100,6 +100,13 @@ in
     pkgs.podman
     pkgs.docker-compose # podman compose のプロバイダ（Docker API ソケット経由で接続）
     pkgs.postgresql_18
+    # pg gem 等の C 拡張が libpq-fe.h と pg_config を要求する。postgresql_18 は
+    # outputsToInstall が ["out" "man"] で dev が profile に入らず、さらに nixpkgs は
+    # out から pg_config を削除している（generic.nix の `rm "$out/bin/pg_config"`）。
+    # libpq も outputsToInstall が ["out"] だけなので dev を明示する。
+    pkgs.libpq
+    pkgs.libpq.dev
+    pkgs.libpq.pg_config
   ] ++ devTools ++ cliTools ++ runtimes ++ pkgs.lib.optionals pkgs.stdenv.isLinux [
     dotfilesUpdate
     pkgs.gcc
