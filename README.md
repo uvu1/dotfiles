@@ -11,8 +11,8 @@ chezmoi 管理の設定を Nix、Home Manager、nix-darwin、mise dotfiles へ�
 ## 構成
 
 - `flake.nix`: macOS の nix-darwin、WSL Arch の Home Manager standalone、mise 用 nixpkgs-unstable の固定
-- `nix/`: Nix が管理する最小基盤
-- `mise/`: 共通(unix) と OS 固有の toolset・mise dotfiles
+- `nix/`: Nix が管理する基盤と、グローバルに使う全ツール（LSP・リンタ・フォーマッタ・日常CLI・フォールバックランタイム）
+- `mise/`: プロジェクト単位のバージョン切り替え、vendor CLI、OS 固有の toolset・mise dotfiles
 - `mise/dotfiles/`: 通常配置へ移植した設定ファイル
 - `mise/dotfiles/ai/`: Codex/Claude Codeの個人設定、共通skills、検証script
 - `AGENTS.md` / `CLAUDE.md`: このrepository固有のagent向け指示
@@ -25,6 +25,31 @@ macOS と WSL は共通の unix toolset（mise 環境 `unix`）を利用しま�
 加えて `darwin` 環境で wezterm 設定を配置します。Windows は単一の `windows`
 環境でNeovim、PowerShell profile、Windows用CLI、通常のdotfilesを管理します。
 GUIアプリ、Git、mise、PowerShell、WezTermの導入はWinGet Configurationが担当します。
+
+### nix と mise の責務
+
+グローバルに使うツールは `nix/home.nix` が唯一の供給元です。言語サーバ、リンタ、
+フォーマッタ、日常CLI、そしてプロジェクト外のファイル向けフォールバックランタイム
+（node / python / go / ruby / rust）がここに入り、`flake.lock` で固定されます。
+
+miseが担うのは次の2つだけです。
+
+1. **プロジェクト単位のバージョン切り替え。** 各プロジェクトの `mise.toml` や
+   `.node-version` / `.ruby-version` / `Gemfile` が唯一の宣言元で、そのディレクトリ
+   以下でだけ nix のフォールバックより前に出ます。
+   gem製のLSPはインタプリタがビルド時のrubyに固定されるため、Gemfileが別のrubyを
+   pinしているプロジェクトでは `mise.local.toml` に `gem:ruby-lsp` を宣言します
+   （詳細と症状は `docs/nvim-lsp-audit.md` の「既知の罠」）。
+2. **vendor CLI。** `claude` / `cloudflared` / `aqua:openai/codex` はサービスに接続する
+   クライアントで提供元の出荷に追従したいため、再現性より鮮度を取って `latest` の
+   まま mise に残しています。
+
+sheldonはmiseを `mise activate zsh`（PATH activation）で有効化します。`--shims` は
+版が未解決のときPATHの後方へフォールスルーせず `No version is set for shim: <tool>`
+で停止するため、フォールバックをnixに置く構成と両立しません。
+
+同じツールを `nix/home.nix` とグローバルのmise toolsetの両方に宣言してはいけません。
+miseはinstallディレクトリをNix profileより前に置くので、mise側が黙って勝ちます。
 
 `bun` と `uv` はグローバルtoolsetに含めません。必要なプロジェクトのルートで
 それぞれ次を実行し、プロジェクトの `mise.toml` に追加します。

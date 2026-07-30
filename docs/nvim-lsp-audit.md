@@ -1,5 +1,15 @@
 # Neovim LSP / formatter / linter 供給と設定の評価
 
+> **供給元はこの監査のあとにもう一度変わった（2026-07-31）。**
+> mason 撤去時点では mise が唯一の供給元だったが、npm backend が
+> `#!/usr/bin/env node` を固定できずプロジェクトの node で LSP が動いてしまう問題と、
+> `latest` 指定による macOS / WSL の版ズレを解消するため、**LSP・リンタ・フォーマッタ・
+> 日常CLI・フォールバックランタイムは `nix/home.nix` へ移した**。mise に残るのは
+> プロジェクト単位のバージョン切り替えと vendor CLI（`claude` / `cloudflared` /
+> `aqua:openai/codex`）だけ。
+> 以下の「Verified Facts」と Finding 3 は**当時の記録**として残す。現在の供給元は
+> 「構成の全体像 → 供給層」と「LSP が起動しないときの調査手順」を見ること。
+
 ## Summary
 
 - 対象は `mise/dotfiles/.config/nvim` の LSP 層と、それを支える formatter / linter の供給元。補完層（blink.cmp）は `docs/nvim-completion-audit.md` の管轄なので重複させない。
@@ -34,7 +44,7 @@
 
 | 検証項目 | 方法 | 結果 |
 | --- | --- | --- |
-| Neovim バージョン | `nvim --version` | **0.12.4**（`mise/dotfiles/mise/config.unix.toml:15` で固定） |
+| Neovim バージョン | `nvim --version` | **0.12.4**（当時は `config.unix.toml` で固定。現在は `nix/home.nix` の `neovim-unwrapped`） |
 | `automatic_enable` の対象 | `mason-lspconfig/features/automatic_enable.lua:56` | `registry.get_installed_package_names()` の**全件**を `vim.lsp.enable` する。**`ensure_installed` は参照されない** |
 | 修正前の有効サーバ | headless で `vim.lsp._enabled_configs` を印字 | 12 個。`ensure_installed` の 11 個に無い **`clangd` を含む** |
 | mason の実インストール | `~/.local/share/nvim/mason/packages` | 12 パッケージ。各 `mason-receipt.json` の `.source.id` は npm 9 / GitHub 3 |
@@ -115,45 +125,157 @@ Finding 9 に関わる補完として `taplo` 0.10.0 / `shellcheck` 0.11.0 / `sh
 
 ### 供給層
 
+現行（2026-07-31 以降）。`mason` と mise の LSP 層は撤去済み。
+
 | 層 | 宣言箇所 | LSP サーバ | formatter / linter | 版の固定 | 更新経路 |
 | --- | --- | --- | --- | --- | --- |
-| Nix + home-manager | `nix/home.nix:18-31` | 0 件 | 0 件 | flake.lock | `dotflow update` |
-| mise（unix） | `mise/dotfiles/mise/config.unix.toml` | 0 件 | stylua / prettier / yamllint / ruff / biome / clang-format | `latest` 中心 | `dotflow update` |
-| mise（windows） | `mise/dotfiles/mise/config.windows.toml` | 0 件 | stylua のみ | `latest` | `dotflow update` |
-| rustup（`~/.cargo/bin`） | **宣言なし**（mise の `core:rust` が委譲） | 0 件 | rustfmt / clippy | rustup toolchain | なし |
-| **mason** | `lua/plugins/lsp.lua:205-223` ＋ 手動 `:Mason` | **12 本** | 0 件 | **記録なし** | **なし** |
+| **Nix + home-manager** | `nix/home.nix` の `devTools` / `cliTools` / `runtimes` | **15 本すべて** | **すべて**（clang-format は `llvmPackages_22.clang-tools` 同梱、goimports は `gotools` から抽出） | **flake.lock** | `dotflow update` |
+| mise（unix、グローバル） | `mise/dotfiles/mise/config.unix.toml` | 0 件 | 0 件 | `latest`（vendor CLI のみ意図的） | `dotflow update` |
+| mise（プロジェクト） | 各プロジェクトの `mise.toml` / `.node-version` / `.ruby-version` / `Gemfile` | 0 件 | `haml-lint`（Gemfile 経由の `bundle exec`） | プロジェクトが宣言 | プロジェクト側 |
+| rustup（`~/.cargo/bin`） | プロジェクトが `rust` を宣言したときだけ mise の `core:rust` が導入 | 0 件 | rustfmt / clippy（そのプロジェクト内のみ） | rustup toolchain | プロジェクト側 |
 
-### サーバ 12 本
+グローバルのフォールバックは nix 側の `rustc` / `cargo` / `rustfmt` / `clippy` / `rust-analyzer`。
+rust を宣言していないディレクトリでは `~/.cargo/bin` が PATH に載らないので、
+かつて `rust-analyzer` を `rust` より前に宣言しないと rustup の proxy に食われた問題
+（Finding 3 の PATH 順ハック）は構造的に消えた。
 
-| サーバ | 実体（供給元・版） | repo 内の設定 | attach 範囲 |
-| --- | --- | --- | --- |
-| lua_ls | mason 3.18.2 | `lsp.lua:61` runtime / globals / library / telemetry | lua |
-| yamlls | mason 1.24.0 | `lsp.lua:39` schemastore 1310 件 ＋ k8s glob | yaml 系 4 種 |
-| jsonls | mason 4.10.0 | `lsp.lua:52` schemastore ＋ validate（今回追加） | json / jsonc |
-| cssls | mason 4.10.0 | `lsp.lua:134` validate 無効（今回追加） | css / scss / less |
-| html | mason 4.10.0 | なし（lspconfig 既定） | html 系 |
-| tailwindcss | mason 0.14.29 | `lsp.lua:92` filetypes 12 種 ＋ root_dir（今回追加） | 絞り込み済み |
-| ts_ls | mason 5.3.0 | なし（空呼び出しを削除） | ts / js 系 |
-| biome | **mason 2.5.3**（mise 2.5.4 と競合） | なし | biome 設定のある ts/js/json/css |
-| pyright | mason 1.1.411 | なし | python |
-| rust_analyzer | mason 2026-07-06 | `lsp.lua:142` allFeatures / clippy | rust |
-| clangd | mason 22.1.6（**手動導入 → 今回宣言化**） | なし | c / cpp |
-| copilot | mason 1.520.0 | `lsp.lua:157` telemetry off（今回追加） | 全 filetype |
+### サーバ 15 本
 
-`vim.lsp.enable` は `lua/plugins/lsp.lua:226` の 1 箇所だけになり、有効サーバ集合は `:205-218` のリストが唯一の正本になった。
+`vim.lsp.enable` は `lua/plugins/lsp.lua` の 1 箇所だけで、そのリストが有効サーバ集合の唯一の正本。
+実体はすべて nix profile（`/etc/profiles/per-user/uvu1/bin`）。
+
+| サーバ | 実行ファイル | 版 | `mise x -C` ラップ | repo 内の設定 |
+| --- | --- | --- | --- | --- |
+| lua_ls | `lua-language-server` | 3.18.2 | — | runtime / globals / library / telemetry |
+| yamlls | `yaml-language-server` | 1.24.0 | — | schemastore ＋ k8s glob |
+| jsonls | `vscode-json-language-server` | VSCodium 1.121 | — | schemastore ＋ validate |
+| cssls | `vscode-css-language-server` | 同上 | — | validate 無効 |
+| html | `vscode-html-language-server` | 同上 | — | なし（lspconfig 既定） |
+| eslint | `vscode-eslint-language-server` | 同上 | — | format 無効 / onSave |
+| tailwindcss | `tailwindcss-language-server` | 0.14.29 | — | filetypes 12 種 ＋ root_dir |
+| ts_ls | `typescript-language-server` | 5.3.0 | — | なし（typescript は node_modules から） |
+| biome | `biome` | 2.5.0 | — | なし |
+| basedpyright | `basedpyright-langserver` | 1.39.8 | **あり**（プロジェクトの python） | なし |
+| rust_analyzer | `rust-analyzer` | 2026-06-15 | **あり**（RUSTUP_TOOLCHAIN） | allFeatures / clippy |
+| ruby_lsp | `ruby-lsp` | 0.26.3 | **あり**（`bundled`） | なし |
+| gopls | `gopls` | 0.23.0 | **あり**（プロジェクトの go） | なし |
+| clangd | `clangd` | 22.1.8 | — | なし |
+| copilot | `copilot-language-server` | 1.517.0 | — | telemetry off |
+
+`mise x -C` でラップするのは「サーバがプロジェクトの処理系を実行・内省しないと正しい答えを
+出せない」4 本だけ。残りはバージョン依存の実体がリポジトリ内のファイル
+（`node_modules/typescript`、`compile_commands.json`、JSON schema、`.eslintrc`）なので、
+サーバ自身が workspace から解決する。
+
+### LSP が起動しないときの調査手順
+
+供給元が nix と mise の 2 つあるので、この順で切り分ける。
+
+```sh
+# 1. 実体がどこから来ているか。nix profile を指していれば正常。
+command -v <実行ファイル名>
+#    → /etc/profiles/per-user/uvu1/bin/...  正常
+#    → ~/.local/share/mise/installs/...     移行漏れ（mise 側の宣言を消す）
+#    → 何も出ない                            nix 側の宣言漏れ、または shim の残骸
+
+# 2. shim の残骸を疑う場合。mise から外したツールの shim が残っていると
+#    PATH 前方で `No version is set for shim: <tool>` で止まる。
+ls ~/.local/share/mise/shims | rg '<tool>'
+rm -rf ~/.local/share/mise/shims && mise reshim
+
+# 3. サーバ自身が起動するか（PATH や node に依存していないことの確認）。
+env -i "$(command -v <実行ファイル名>)" --version
+
+# 4. mise x でラップされている 4 本は、プロジェクト側の処理系が入っているか。
+mise x -C <プロジェクト> -- <実行ファイル名> --version
+#    未導入なら mise install、mise.toml が untrusted なら mise trust。
+#    lib/mise.lua は MISE_EXEC_AUTO_INSTALL=0 なので黙って入れずに即失敗する。
+
+# 5. それでも分からなければ :LspLog。lib/mise.lua は起動 5 秒以内の非 0 終了を
+#    vim.notify で知らせるので、通知が出ていれば手順 4 のコマンドを手で叩く。
+```
+
+#### 既知の罠: hook-env の PATH を `mise x` にそのまま渡すと解決が落ちる
+
+sheldon は mise を hook-env モード（`mise activate zsh`）で有効化するため、**nvim が継承する
+PATH には既に「nvim を起動したディレクトリ」の installs が前置されている**。その PATH を
+そのまま渡して `mise x -C <root>` を呼ぶと、mise は前置済みの分を解決対象から外したうえで
+対象 root のツールを再付与せず、**プロジェクトの処理系が子プロセスに渡らない**。
+
+実測（`mise.toml` に `python = "3.13"` を宣言した root で）:
+
+```
+継承した PATH のまま      → /etc/profiles/per-user/uvu1/bin/python3        （nix の 3.14.6）
+PATH=__MISE_ORIG_PATH     → installs/python/3.13/bin/python3               （プロジェクト版）
+```
+
+症状は「basedpyright が `Import "x" could not be resolved` を出し補完候補が 0 件」のように出る。
+サーバ本体は正常に起動しているので `:LspLog` にも起動エラーは残らず、原因が見えにくい。
+`basedpyright` の CLI（`mise x -- basedpyright file.py`）だと解決できるのに LSP だと解決
+できない、という食い違いが出たらこれ。
+
+対処は `lib/mise.lua` の `base_path()`。mise が activate 前の PATH を保存している
+`__MISE_ORIG_PATH` を土台として子プロセスに渡し、mise に一から解決させる。
+`vim.lsp.rpc.start` の `env` は `base_env()` とのマージなのでキーの削除はできないが、
+`PATH` の上書きはできるのでこれで足りる（`$VIMRUNTIME/lua/vim/_core/system.lua` の
+`setup_env` は `clear_env` なしだとマージし、LSP transport は `clear_env` を渡さない）。
+shims モードでは `__MISE_ORIG_PATH` が存在せず継承 PATH をそのまま使うので、
+その場合も同じコードで動く。
+
+#### 既知の罠: gem 製サーバとプロジェクトの ruby の食い違い
+
+`ruby-lsp` は **nix profile 版のシェバンに ruby が絶対パスで焼き込まれている**
+（`/nix/store/…-ruby-3.4.9/bin/ruby`）。PATH の ruby は一切見ないので、mise で
+プロジェクトの ruby を固定しても効かない。Ruby LSP は起動時に composed bundle を
+作る際その 3.4.9 で `bundle check || bundle install` を走らせるため、Gemfile が
+別の ruby を pin していると死ぬ:
+
+```
+Your Ruby version is 3.4.9, but your Gemfile specified 3.2.2 (Bundler::RubyVersionMismatch)
+bundler: failed to load command: ruby-lsp (/etc/profiles/per-user/uvu1/bin/ruby-lsp)
+```
+
+`.ruby-lsp/` を消して再生成させても、composed bundle は親 Gemfile を
+`eval_gemfile` で継承するので ruby 指定も引き継ぎ、解決しない。
+
+**対処はプロジェクトの `mise.local.toml` に gem backend で宣言すること。**
+mise の gem backend は install 時に有効だった ruby へインタプリタを symlink で固定
+するので、そのプロジェクトの ruby でビルドされ composed bundle も同じ版で走る。
+
+```toml
+# <project>/mise.local.toml    ※ .git/info/exclude に入れればローカル専用にできる
+[tools]
+"gem:ruby-lsp" = "0.26.10"
+```
+
+```
+installs/gem-ruby-lsp/0.26.10/libexec/bin/ruby -> installs/ruby/3.2/bin/ruby
+installs/gem-ruby-lsp/0.26.10/libexec/extensions/arm64-darwin-23/3.2.0-static/
+```
+
+初回は composed bundle の `bundle install` が走るので attach に数十秒かかる。
+2 回目以降は `bundle check` が通るので速い。同じ罠は他の gem 製ツール
+（`rubocop` を LSP 外で直接呼ぶ場合など）でも起きる。
+
+なお `haml_lint` はこの手を使わない。Gemfile に入っていないならそのプロジェクトは
+haml を lint しない方針と見なし、`nvim-lint.lua` の `gates` が
+`project.bundles(dir, "haml_lint")` で判定して静かにスキップする（`rubocop` と同じ扱い）。
 
 ### filetype × ツール
 
 | filetype | LSP | formatter (conform) | linter (nvim-lint) | 実体の供給元 | 設定ファイル |
 | --- | --- | --- | --- | --- | --- |
-| ts / tsx / js / jsx | ts_ls ＋ biome | prettier または biome | biomejs（biome 設定時のみ） | mason / mise | プロジェクト依存 |
-| json / jsonc | jsonls ＋ biome | prettier または biome | biomejs（同上） | mason / mise | schemastore |
-| css | cssls ＋ tailwindcss ＋ biome | prettier または biome | biomejs（同上） | mason / mise | プロジェクト依存 |
-| yaml | yamlls | prettier | yamllint | mason / mise | **yamllint 既定のみ** |
-| rust | rust_analyzer | rustfmt | — | mason / **rustup** | — |
-| python | pyright | ruff_format | ruff | mason / mise | — |
-| c / cpp | clangd | clang-format | — | mason / mise | **なし（LLVM 既定）** |
-| lua | lua_ls | stylua | — | mason / mise | `stylua.toml` |
+| ts / tsx / js / jsx | ts_ls ＋ biome ＋ eslint | prettier または biome | biomejs（biome 設定時のみ） | nix | プロジェクト依存 |
+| json / jsonc | jsonls ＋ biome | prettier または biome | biomejs（同上） | nix | schemastore |
+| css | cssls ＋ tailwindcss ＋ biome | prettier または biome | biomejs（同上） | nix | プロジェクト依存 |
+| yaml | yamlls | prettier | yamllint | nix | **yamllint 既定のみ** |
+| rust | rust_analyzer | rustfmt | — | nix（プロジェクトが宣言すれば rustup） | — |
+| python | basedpyright | ruff_format | ruff | nix | — |
+| go | gopls | gofumpt ＋ goimports | golangcilint（`.golangci.*` があるときのみ） | nix | — |
+| ruby | ruby_lsp | LSP fallback（bundle の rubocop） | — | nix（bundle は プロジェクト） | プロジェクトの Gemfile |
+| haml | — | — | haml_lint（**Gemfile に載っているときのみ**） | **プロジェクトの Gemfile** | プロジェクト依存 |
+| c / cpp | clangd | clang-format | — | nix | **なし（LLVM 既定）** |
+| lua | lua_ls | stylua | — | nix | `stylua.toml` |
 | markdown（9 件） | — | — | — | — | — |
 | toml（12 件） | — | — | — | — | — |
 | ps1（8 件） | — | — | — | — | — |
@@ -448,5 +570,5 @@ mise で `taplo` 0.10.0 / `shellcheck` 0.11.0 / `shfmt` 3.13.1 が供給可能�
 - 検証は `$VIMRUNTIME` のランタイム、`~/.local/share/nvim/lazy` のプラグインソース読解、および headless 実行での実測で行った。Web 上の記事は参照していない。mise 側の供給可能性のみ `mise ls-remote`（npm / aqua / ubi レジストリ）に問い合わせた。
 - **`docs/nvim-completion-audit.md` の Finding 1（blink の `'*'` capabilities が LSP クライアントに届かない）は同じ `lua/plugins/lsp.lua` に関わるが別問題**。`$VIMRUNTIME/lua/vim/lsp.lua:341-362` のマージ順で `'*'` は最下位なので、本ドキュメントの修正とは競合しない。未対応のまま同ドキュメントの管轄。
 - 同様に、**廃止済み AI プラグイン（`codecompanion` / `pane-tabs-ai`）の死んだ filetype 分岐**は `lua/plugins/lsp.lua:14-17,165-175`、`conform.lua`、`nvim-lint.lua` に残っているが、`docs/nvim-completion-audit.md` の Finding 6 の管轄なので本ドキュメントでは触っていない。
-- `~/.local/share/mise/shims/clangd` が存在するが、`config.unix.toml` に `clangd` の宣言は無い。追跡されないローカル残骸。
+- `~/.local/share/mise/shims/clangd` が存在するが `config.unix.toml` に `clangd` の宣言は無い、という残骸を当時記録した。2026-07-31 の nix 移行で shims ディレクトリを再生成したため解消済み。**mise から宣言を消したあとは必ず `rm -rf ~/.local/share/mise/shims && mise reshim` を走らせること**（残った shim は PATH 前方で `No version is set for shim` になり nix profile に到達しない）。
 - 現存する nvim 関連ドキュメントは本ファイルと `docs/nvim-ai-integration.md`、`docs/nvim-completion-audit.md` の 3 件。`nvim-completion-audit.md:215` が参照する `docs/nvim-plugin-audit.md` と `docs/nvim-rebuild.md` は commit `d8d9abf` で削除済みでリンクが切れている。
