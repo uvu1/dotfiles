@@ -1,14 +1,15 @@
--- サーバ本体はグローバル（mise/config.unix.toml）に置き、解析対象のツールチェーン
--- だけをプロジェクトの mise 設定（mise.toml / .tool-versions / .ruby-version /
--- .nvmrc）から取るための層。LSP と nvim-lint が同じ規則を共有する。
+-- サーバ本体は nix profile（nix/home.nix）に置き、解析対象のツールチェーンだけを
+-- プロジェクトの設定（mise.toml / .tool-versions / .ruby-version / .node-version /
+-- Gemfile）から取るための層。LSP と nvim-lint が同じ規則を共有する。
 --
--- なぜ必要か: nvim 自身が mise の shim 経由で起動するため、nvim の PATH には
--- グローバルの installs/<tool>/<version>/bin が具体パスとして並んでいる。shim は
--- その後ろに埋もれるので、裸のコマンド名はグローバル版に固定され、プロジェクト
--- ごとの解決が起きない。`mise x -C <root>` だけがそれを覆せる。
+-- なぜ必要か: nvim の PATH は起動した時点の 1 つのディレクトリで解決済みで、
+-- 以後変わらない。裸のコマンド名はその解決に固定されるので、バッファごと・root
+-- ごとの切り替えが起きない（起動場所がプロジェクト内ならその版に、外なら nix の
+-- フォールバックに張り付く）。`mise x -C <root>` だけがそれを覆せる。
 --
 -- 検証済み: `mise x -C <dir> -- printf ABC` の stdout は正確に "ABC" のみ。
--- 診断は stderr に出るので JSON-RPC を壊さない。
+-- 診断は stderr に出るので JSON-RPC を壊さない。また `mise x` は継承した PATH の
+-- うち mise 管理外のエントリを保つので、nix profile のサーバ本体は掴めたままになる。
 local M = {}
 
 -- 未導入のツールチェーンを黙ってインストールさせない。エディタ内で数分ブロック
@@ -17,6 +18,27 @@ local FAIL_FAST = {
   MISE_EXEC_AUTO_INSTALL = "0",
   MISE_NOT_FOUND_AUTO_INSTALL = "0",
 }
+
+--- `mise x` に渡す PATH の土台。
+---
+--- sheldon は mise を hook-env モード（`mise activate zsh`）で有効化するので、nvim が
+--- 継承する PATH には既に「nvim を起動したディレクトリ」の installs が前置されている。
+--- その PATH をそのまま渡して `mise x -C <別の root>` を呼ぶと、mise は前置済みの分を
+--- 解決対象から外したうえで対象 root のツールを再付与しないため、プロジェクトの処理系が
+--- 子プロセスに渡らない（実測: python を宣言した root でも nix のフォールバックに落ちた）。
+--- activate 前の PATH は mise 自身が __MISE_ORIG_PATH に保存しているので、それを土台に
+--- 渡して mise に一から解決させる。GUI 起動など activate を通っていない場合は未設定
+--- なので、その時は継承した PATH をそのまま使う。
+--- @return string
+local function base_path()
+  local orig = vim.env.__MISE_ORIG_PATH
+
+  if type(orig) == "string" and orig ~= "" then
+    return orig
+  end
+
+  return vim.env.PATH
+end
 
 --- @param path string|nil
 --- @return boolean
@@ -131,9 +153,11 @@ function M.lsp_cmd(argv, opts)
       resolved = vim.list_extend({ "bundle", "exec" }, resolved)
     end
 
+    -- vim.lsp.rpc.start の env は base_env() とのマージなのでキーの削除はできないが、
+    -- PATH の上書きはできる。それだけで mise に一から解決させられる。
     return vim.lsp.rpc.start(M.argv(resolved, dir), notify_early_exit(dispatchers, label, dir), {
       cwd = dir,
-      env = opts.env and vim.tbl_extend("force", FAIL_FAST, opts.env) or FAIL_FAST,
+      env = vim.tbl_extend("force", FAIL_FAST, { PATH = base_path() }, opts.env or {}),
     })
   end
 end
@@ -164,7 +188,8 @@ function M.linter(linter, dir, bundled)
     args = vim.list_extend(head, linter.args or {}),
     -- nvim-lint の env は uv.spawn の env（＝環境の置換）で、vim.system と違って
     -- マージされない。既存環境を明示的に持ち回らないと HOME や GEM_* を失う。
-    env = vim.tbl_extend("force", vim.fn.environ(), FAIL_FAST),
+    -- PATH は lsp_cmd と同じ理由で activate 前のものに戻す（base_path 参照）。
+    env = vim.tbl_extend("force", vim.fn.environ(), FAIL_FAST, { PATH = base_path() }),
   })
 end
 

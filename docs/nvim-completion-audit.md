@@ -28,7 +28,7 @@
 
 | 検証項目 | 方法 | 結果 |
 | --- | --- | --- |
-| Neovim バージョン | `nvim --version` | **0.12.4**（`mise/dotfiles/mise/config.unix.toml:15` で `neovim = "0.12.4"` 固定） |
+| Neovim バージョン | `nvim --version` | **0.12.4**（`nix/home.nix` の `cliTools` の `neovim-unwrapped`。2026-07-31 に mise から移行、それ以前は `config.unix.toml` で固定していた） |
 | blink.cmp の pin | `lazy-lock.json` | `branch = "main"`, commit `0f54bd78892f587db4dcf100a23eaddfc2a9df7d`。`blink.lib` は `5876dd95` |
 | 遅延ロード時の LSP capabilities | `nvim --headless "+e lua/config/options.lua"` → attach 待ち → `client.config.capabilities` を印字 | `lua_ls snippetSupport=nil labelDetails=nil resolveSupport=false`。`package.loaded["blink.cmp"]` は `false` |
 | blink 先読み時の LSP capabilities | 同上に `require("lazy").load({plugins={"blink.cmp"}})` を先行させる | `lua_ls snippetSupport=true labelDetails=true resolveSupport=true` |
@@ -45,7 +45,7 @@
 | keymap command の妥当性 | `config/keymap.lua:174-193` | `show_and_insert_or_accept_single` `select_and_accept` `snippet_forward` `show_documentation` すべて実在 |
 | 公式の lazy.nvim 導入例 | `blink.cmp/doc/blink-cmp.txt:121-168` | `dependencies = { "saghen/blink.lib", "rafamadriz/friendly-snippets" }` と `build`。**`event` は指定されていない** |
 | noice 検出時の cmdline ghost text | `doc/blink-cmp.txt:3471,3485-3491` | noice.nvim を検出すると ghost text が出るのが既定。本設定は明示的に無効化している |
-| rust toolchain | `mise/dotfiles/mise/config.unix.toml:22` | `rust = "1.97.0"`。`blink.cmp/lib/` に `libblink_cmp_fuzzy.dylib.0f54bd7` が存在（ビルド済み） |
+| rust toolchain | `nix/home.nix` の `runtimes` | `cargo` / `rustc` 1.96.1（2026-07-31 に mise の `rust = "1.97.0"` から移行）。`blink.cmp/lib/` に `libblink_cmp_fuzzy.dylib.*` が存在（ビルド済み） |
 
 ## 構成の全体像
 
@@ -141,7 +141,7 @@ end)
 
 `lua/plugins/blink.lua:128`。ネイティブライブラリが無い場合、`blink.cmp/lua/blink/cmp/init.lua:79-83` が `error()` を投げる（`prefer_rust_with_warning` なら警告して Lua 実装へフォールバックする）。
 
-`lua/plugins/blink.lua:12-14` の `build` は `cargo build --release` を実行するため Rust toolchain が必要で、`mise/dotfiles/mise/config.unix.toml:22` の `rust = "1.97.0"` に依存している。現行マシンではビルド済み（`blink.cmp/lib/` に dylib あり）だが、**新規マシンで nvim のプラグイン同期が `mise install` より先に走ると、以後 `InsertEnter` ごとに例外が出る**。
+`lua/plugins/blink.lua:12-14` の `build` は `cargo build --release` を実行するため Rust toolchain が必要。かつては mise の `rust = "1.97.0"` に依存しており、**新規マシンで nvim のプラグイン同期が `mise install` より先に走ると以後 `InsertEnter` ごとに例外が出る**という順序依存があった。2026-07-31 に `cargo` を `nix/home.nix` の `runtimes` へ移したので、home-manager の activation が済んでいれば cargo は常に PATH にあり、この順序依存は解消している。
 
 なお `build():wait(60000)` は公式例の `pwait()` と違い失敗を隠さないので、`implementation = "rust"` と組み合わせる限りむしろ適切。
 

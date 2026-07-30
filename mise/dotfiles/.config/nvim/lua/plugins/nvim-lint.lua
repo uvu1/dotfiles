@@ -76,7 +76,7 @@ return {
       }
 
       -- linter → 走らせる条件。プロジェクトが採用していない流派の診断が出るのを
-      -- 防ぐ。ここに無い linter は無条件で走る。
+      -- 防ぐ。ここに無い linter は無条件で走る。第 2 引数は lint 対象の root。
       local gates = {
         biomejs = project.uses_biome,
         golangcilint = function(bufnr)
@@ -86,6 +86,13 @@ return {
             ".golangci.toml",
             ".golangci.json",
           })
+        end,
+        -- haml_lint は nixpkgs に無いのでグローバルには置かない。Gemfile に
+        -- 入っていないなら、そのプロジェクトは haml を lint しない方針だと
+        -- 見なす（rubocop と同じ扱い）。実行ファイルの有無ではなく方針で判断
+        -- するので、グローバルや mise.local.toml に入れても走らせない。
+        haml_lint = function(_, dir)
+          return dir ~= nil and project.bundles(dir, "haml_lint")
         end,
       }
 
@@ -128,7 +135,7 @@ return {
           cwd = dir,
           filter = function(linter)
             local gate = gates[linter.name]
-            return gate == nil or gate(bufnr)
+            return gate == nil or gate(bufnr, dir)
           end,
           -- linter.cwd / linter.env は静的値しか取れないため、プロジェクト依存の
           -- 差し込みは try_lint 側から行う。

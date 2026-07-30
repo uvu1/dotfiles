@@ -161,11 +161,12 @@ return {
       -- ラップは無益なうえ、プロジェクトが古い node を pin していると逆に壊れる。
 
       -- rust-analyzer は `rustc --print sysroot` と `cargo metadata` を実行する。
-      -- mise の rust バージョン切り替えは PATH ではなく RUSTUP_TOOLCHAIN 経由
+      -- サーバ本体と既定の toolchain は nix profile 由来だが、プロジェクトが mise で
+      -- rust を宣言している場合の切り替えは PATH ではなく RUSTUP_TOOLCHAIN 経由
       -- （installs/rust/<v> はすべて ~/.cargo/bin への symlink）なので、
       -- mise x を通さないとプロジェクトの toolchain が反映されない。
       -- 注意: lspconfig の root_dir は nvim の環境で cargo metadata を呼ぶため、
-      -- root 検出だけはグローバルの rustup cargo を使う（ラップの外側）。
+      -- root 検出だけは nvim 起動時に解決された cargo を使う（ラップの外側）。
       vim.lsp.config("rust_analyzer", {
         cmd = mise.lsp_cmd({ "rust-analyzer" }),
         settings = {
@@ -209,11 +210,10 @@ return {
         cmd = mise.lsp_cmd({ "ruby-lsp" }, { bundled = "ruby-lsp" }),
       })
 
-      -- インタプリタそのものが stdlib と site-packages。
-      -- basedpyright は npm 製で shebang が node なので、MISE_DISABLE_TOOLS で
-      -- node を外すと mise が継承分の node も含めて PATH から落とし、
-      -- `env: 'node': No such file or directory` で起動できない（実測）。
-      -- プロジェクトの node で動かす。
+      -- インタプリタそのものが stdlib と site-packages なので、プロジェクトの
+      -- python を掴ませる必要がある。サーバ自身の node は nixpkgs が shebang を
+      -- 絶対パスに書き換えているため（buildNpmPackage の patchShebangs）、
+      -- PATH 上の node には依存しない。空 env でも起動することを実測済み。
       vim.lsp.config("basedpyright", {
         cmd = mise.lsp_cmd({ "basedpyright-langserver", "--stdio" }),
       })
@@ -235,8 +235,8 @@ return {
         end,
       })
 
-      -- 有効サーバ集合の唯一の正本。実体は mise/config.unix.toml が供給する
-      -- （mason は廃止した）。ここに無いサーバは起動しない。
+      -- 有効サーバ集合の唯一の正本。実体は nix/home.nix の devTools が供給する
+      -- （mason は廃止し、mise からも移した）。ここに無いサーバは起動しない。
       vim.lsp.enable({
         "basedpyright",
         "biome",

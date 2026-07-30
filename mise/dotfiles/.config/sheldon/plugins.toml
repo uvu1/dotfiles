@@ -4,9 +4,9 @@ shell = "zsh"
 defer = "{% for file in files %}zsh-defer source \"{{ file }}\"\n{% endfor %}"
 
 [plugins]
-[plugins.mise]
-inline = 'eval "$(mise activate --shims zsh)"'
-
+# mise より先に前置する。mise activate は起動時の PATH を __MISE_ORIG_PATH に
+# 捕まえ、以後のフックはそれを土台に組み直すため、後ろに置くと ~/.local/bin
+# （home.nix が置く Windows の ssh.exe ラッパ）が失われうる。
 [plugins.wsl-local-bin]
 inline = '''
 if [[ -n "${WSL_DISTRO_NAME:-}" ]]; then
@@ -14,6 +14,14 @@ if [[ -n "${WSL_DISTRO_NAME:-}" ]]; then
   path=("$HOME/.local/bin" $path)
 fi
 '''
+
+# shims ではなく PATH activation を使う。shim は版が未解決のとき PATH の後方へ
+# フォールスルーせず `No version is set for shim: <tool>` で止まるので、
+# グローバルのツールを nix profile に置き mise をプロジェクト単位の切り替えだけに
+# 使う構成と両立しない。この出力は即座に PATH を設定してからフックを登録するため、
+# 下の dotflow shell-init の時点で dotflow は解決できる。
+[plugins.mise]
+inline = 'eval "$(mise activate zsh)"'
 
 [plugins.dotflow]
 inline = 'eval "$(dotflow shell-init zsh)"'

@@ -72,9 +72,9 @@ if vim.fn.has("wsl") == 1 then
   end
 end
 
--- nvim が mise の shim 経由で起動していれば PATH に installs/<tool>/<version>/bin が
--- 並ぶが、そうでない経路（デスクトップランチャ等）では LSP も formatter も 1 つも
--- 解決しない。mason の PATH prepend が隠していた前提なので明示的に補う。
+-- LSP / formatter の実体は nix profile にあり、デスクトップランチャ等から起動しても
+-- そこは PATH に載る。ここで補うのは mise がグローバルに宣言している分（dotflow と
+-- vendor CLI）だけで、シェルを経由しない起動でもそれらを解決できるようにする。
 -- append にして、既に載っている具体パスの解決を優先させる。
 do
   local shims = vim.fs.joinpath(vim.uv.os_homedir(), ".local/share/mise/shims")

@@ -1,78 +1,37 @@
-# macOS(darwin) と WSL(linux) 共通で ~/.config/mise/config.toml へ配布する
-# グローバル設定。standalone なので base をマージせず全ツールを列挙する。
+# macOS(darwin) と WSL(linux) 共通で ~/.config/mise/config.toml へ配布するグローバル設定。
+#
+# グローバルに使うツール（LSP・リンタ・フォーマッタ・日常 CLI・フォールバックの
+# 言語ランタイム）は nix/home.nix が唯一の供給元で、flake.lock で固定されている。
+# npm backend が `#!/usr/bin/env node` を固定できずプロジェクトの node で LSP が
+# 動いてしまう問題と、`latest` 指定による macOS / WSL の版ズレを避けるため移した。
+#
+# ここに残すのは 2 つだけ。
+#   1. dotflow: dotfiles の更新経路そのもの。sheldon が shell-init を eval する。
+#   2. vendor CLI: サービスに接続するクライアントで提供元の出荷に追従したいもの。
+#
+# 同じツールを nix と両方に宣言しないこと。mise は install ディレクトリを nix profile
+# より前に置くので mise 側が黙って勝ち、nix の宣言が死ぬ。
 [settings]
 experimental = true
-# .ruby-version / .node-version(.nvmrc) をプロジェクトのバージョン指定として読む
+# .ruby-version / .node-version / Gemfile をプロジェクトのバージョン指定として読む。
+# [tools] からランタイムを外してもこれが project 側の宣言元を有効にするので、
+# kintai の node 18.12.1 / ruby 3.2.2 のような固定は従来どおり効く。
 idiomatic_version_file_enable_tools = ["ruby", "node"]
+# sheldon は shims ではなく `mise activate zsh` で有効化する。このモードは
+# command_not_found_handler を登録するため、未導入のツールを黙って入れさせない
+# （nvim の lua/lib/mise.lua の MISE_EXEC_AUTO_INSTALL=0 と同じ方針）。
+not_found_auto_install = false
 
 [tools]
 "github:uvu1/dotflow" = "0.1.1"
-bat = "latest"
-eza = "latest"
-fd = "latest"
-fzf = "latest"
-ghq = "latest"
-neovim = "0.12.4"
-starship = "latest"
-rg = "latest"
-gh = "latest"
-jq = "latest"
 
-# --- 言語サーバ ---------------------------------------------------------------
-# Neovim の LSP はすべてここが供給元。mason は廃止した（docs/nvim-lsp-audit.md）。
-# rust-analyzer は rust より前に置く。mise は [tools] の宣言順に PATH を前置し、
-# core:rust の install ディレクトリは ~/.cargo/bin への symlink で、そこには
-# active toolchain に component を持たない rustup の proxy がある。後ろに置くと
-# そちらに食われて必ず起動失敗する。
-rust-analyzer = "2026-07-27"
-lua-language-server = "3.18.2"
-# レジストリ短縮名と aqua:clangd/clangd はどちらも 0 件なので ubi を使う。
-"ubi:clangd/clangd" = "22.1.6"
-# この 1 パッケージで jsonls / cssls / html / eslint のバイナリが揃う。
-"npm:vscode-langservers-extracted" = "4.10.0"
-# ts_ls は解析対象の typescript をプロジェクトの node_modules から取る。
-# グローバルに typescript を置いても使われない（tsserver.path で強制すると逆に
-# プロジェクトのバージョンを無視してしまう）ので宣言しない。
-"npm:typescript-language-server" = "5.3.0"
-"npm:yaml-language-server" = "1.24.0"
-"npm:@tailwindcss/language-server" = "0.16.0"
-"npm:basedpyright" = "1.39.9"
-# latest は 0.27.0.beta4（prerelease）なので安定版最新を明示固定する。
-"gem:ruby-lsp" = "0.26.10"
-# gopls は prebuilt が存在しない（ubi:golang/tools の release は asset 0 件）ため
-# go backend でソースからビルドする。下の go の宣言はそのための前提。
-"go:golang.org/x/tools/gopls" = "0.23.0"
-"go:golang.org/x/tools/cmd/goimports" = "0.48.0"
-
-# --- 言語ランタイム -----------------------------------------------------------
-# プロジェクト側の mise.toml / .tool-versions / .ruby-version / .nvmrc が優先される
-# （nvim からは lua/lib/mise.lua が mise x -C <root> 経由で起動する）。ここの宣言は
-# gem: / go: バックエンドのビルド土台と、プロジェクト外ファイルのフォールバック。
-node = "24.15.0"
-python = "3.14"
-rust = "1.97.0"
-# core:ruby は ruby-build でソースビルドするので、既に導入済みの版を選ぶ。
-ruby = "4.0.1"
-go = "1.26.5"
-codex = "latest"
-stylua = "latest"
-lazygit = "latest"
-tree-sitter = "latest"
-cloudflared = "latest"
-zoxide = "latest"
-prettier = "latest"
-# yamllint は registry 上 pipx backend しか無く、pipx backend は pipx か uv の
-# どちらかを PATH に要求する。uv はグローバルに置かない方針なので pipx を宣言する。
-# 直接使う CLI ではなく yamllint の導入土台。
-pipx = "latest"
-yamllint = "latest"
-ruff = "latest"
-biome = "latest"
-clang-format = "latest"
-gofumpt = "latest"
-golangci-lint = "latest"
-# 実行名は haml-lint。haml には LSP も treesitter パーサも存在せず、これが唯一の支援。
-"gem:haml_lint" = "0.76.0"
-delta = "latest"
-yq = "latest"
+# --- vendor CLI ---------------------------------------------------------------
+# 再現性より鮮度を優先して latest のままにする。nix に移すと nixpkgs の追従待ちで
+# codex / claude の更新通知が出続ける（nixpkgs は upstream より数リリース遅れる）。
 claude = "latest"
+cloudflared = "latest"
+# レジストリ既定の npm:@openai/codex は bin/codex が
+# lib/node_modules/@openai/codex/bin/codex.js への symlink で `#!/usr/bin/env node`。
+# プロジェクトの node で動いてしまうため、GitHub リリースのネイティブバイナリを
+# 配る aqua backend を明示する。node 依存も shebang の穴も消える。
+"aqua:openai/codex" = "latest"
