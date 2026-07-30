@@ -51,6 +51,10 @@ sheldonはmiseを `mise activate zsh`（PATH activation）で有効化します�
 同じツールを `nix/home.nix` とグローバルのmise toolsetの両方に宣言してはいけません。
 miseはinstallディレクトリをNix profileより前に置くので、mise側が黙って勝ちます。
 
+この分割は2026-07-31にmiseからnixへ移して成立したものです。nvimの設定を触る場合は
+`docs/nvim-tooling-migration.md` に変更点と版の差分、`lib/mise.lua` の `base_path()` が
+必須である理由がまとまっています。
+
 `bun` と `uv` はグローバルtoolsetに含めません。必要なプロジェクトのルートで
 それぞれ次を実行し、プロジェクトの `mise.toml` に追加します。
 

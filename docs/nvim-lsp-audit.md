@@ -9,6 +9,9 @@
 > `aqua:openai/codex`）だけ。
 > 以下の「Verified Facts」と Finding 3 は**当時の記録**として残す。現在の供給元は
 > 「構成の全体像 → 供給層」と「LSP が起動しないときの調査手順」を見ること。
+>
+> **nvim 設定を触る人はまず `docs/nvim-tooling-migration.md` を読む。** 何が変わり何が
+> 変わっていないか、版の差分、`lib/mise.lua` の `base_path()` がなぜ必須かがまとまっている。
 
 ## Summary
 
