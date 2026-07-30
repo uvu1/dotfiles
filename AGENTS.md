@@ -12,7 +12,7 @@
 ## Changes
 
 - Read the relevant profile and its source dotfile before editing.
-- Add globally available tools to `nix/home.nix`. Its `devTools` / `cliTools` / `runtimes` lists are the single source of truth for them.
+- Add globally available tools to `nix/home.nix`. Its `devTools` / `debugTools` / `cliTools` / `runtimes` lists are the single source of truth for them.
 - A tool must never be declared in both `nix/home.nix` and the global mise toolset. mise prepends its install directories ahead of the Nix profile, so mise silently wins and the Nix entry becomes dead weight.
 - Sheldon activates mise with `mise activate zsh` (PATH activation), not `--shims`. Shims abort with `No version is set for shim: <tool>` instead of falling through to the Nix profile, which would break every fallback runtime. Keep `wsl-local-bin` ordered before the mise plugin so `~/.local/bin` survives in `__MISE_ORIG_PATH`.
 - Put the remaining shared macOS/WSL mise entries in `mise/dotfiles/mise/config.unix.toml`. It is the single source of truth and is symlinked to `~/.config/mise/config.toml`, so never duplicate the toolset in `mise/mise.unix.toml`. Editing it takes effect immediately, so land the matching Nix change first.

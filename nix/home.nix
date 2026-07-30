@@ -42,6 +42,32 @@ let
     unstable.stylua
   ];
 
+  # codelldb（Rust / C++ のデバッグアダプタ）。単体パッケージは無く VSCode 拡張として
+  # だけ提供され、実行ファイルは share/vscode/extensions/.../adapter/codelldb に置かれる
+  # ので bin に出ない。goimports と同じ形で必要な 1 本だけ取り出す。拡張ごと
+  # home.packages に入れると同梱の lldb / lldb-server / python3.12 まで profile に
+  # 出て衝突源になる。nixpkgs 側で liblldb を絶対パスに wrap 済みなので、
+  # symlink 経由で起動しても liblldb を見失わない（DAP の initialize に success で応答）。
+  codelldb = pkgs.runCommand "codelldb-${unstable.vscode-extensions.vadimcn.vscode-lldb.version}" { } ''
+    mkdir -p "$out/bin"
+    ln -s ${unstable.vscode-extensions.vadimcn.vscode-lldb}/share/vscode/extensions/vadimcn.vscode-lldb/adapter/codelldb \
+      "$out/bin/codelldb"
+  '';
+
+  # nvim-dap のデバッグアダプタと neotest のテストランナー。どれも実行ファイル名が
+  # 一意なので profile 衝突は無い。mise へ置かない理由は 2 つあり、
+  # 1 つは「グローバルに使うツールは nix」という全体方針、もう 1 つは registry に
+  # 短縮名が存在せず backend を手で選ぶ必要があること（delve は go backend の
+  # ソースビルド、codelldb は .vsix を zip として展開、js-debug は供給経路なし）。
+  # 版は nix でも落ちない: delve 1.27.0 / cargo-nextest 0.9.140 /
+  # vscode-js-debug 1.117.0 / codelldb 1.12.2。
+  debugTools = [
+    unstable.delve # dlv。nvim-dap-go が `dlv dap -l` で DAP サーバとして起動する
+    codelldb
+    unstable.vscode-js-debug # bin/js-debug は dapDebugServer.js を node で起動するラッパ
+    unstable.cargo-nextest # neotest-rust が `cargo nextest run` を呼ぶ
+  ];
+
   # 日常 CLI とエディタ。neovim は provider wrapper が付かない unwrapped を使う。
   # yq は yq-go（pkgs.yq は別物の Python 実装）、delta は git-delta ではなく delta。
   cliTools = [
@@ -107,7 +133,7 @@ in
     pkgs.libpq
     pkgs.libpq.dev
     pkgs.libpq.pg_config
-  ] ++ devTools ++ cliTools ++ runtimes ++ pkgs.lib.optionals pkgs.stdenv.isLinux [
+  ] ++ devTools ++ debugTools ++ cliTools ++ runtimes ++ pkgs.lib.optionals pkgs.stdenv.isLinux [
     dotfilesUpdate
     pkgs.gcc
     pkgs.wl-clipboard
