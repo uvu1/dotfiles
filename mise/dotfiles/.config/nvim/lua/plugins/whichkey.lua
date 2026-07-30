@@ -21,6 +21,8 @@ return {
       { "<leader>r", group = "Run" },
       { "<leader>a", group = "AI" },
       { "<leader>u", group = "UI" },
+      { "<leader>D", group = "Debug" },
+      { "<leader>T", group = "Test" },
     },
   },
 }
