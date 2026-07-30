@@ -162,6 +162,16 @@ function M.lsp_cmd(argv, opts)
   end
 end
 
+--- `uv.spawn` に渡す環境。nvim-lint の env と nvim-dap の
+--- `dap.ExecutableAdapter.options.env` はどちらも uv.spawn の env（＝環境の置換）で、
+--- vim.system と違ってマージされない。既存環境を明示的に持ち回らないと HOME や
+--- GEM_* を失う。PATH は lsp_cmd と同じ理由で activate 前のものに戻す（base_path 参照）。
+--- @param extra table<string, string>|nil
+--- @return table<string, string>
+function M.spawn_env(extra)
+  return vim.tbl_extend("force", vim.fn.environ(), FAIL_FAST, { PATH = base_path() }, extra or {})
+end
+
 --- nvim-lint の linter を mise 経由に書き換える。`try_lint` の `wrap_linter` から
 --- 呼ぶ（cmd / args の評価前に deepcopy に対して呼ばれる）。
 --- @param linter table
@@ -186,10 +196,7 @@ function M.linter(linter, dir, bundled)
   return vim.tbl_extend("force", linter, {
     cmd = "mise",
     args = vim.list_extend(head, linter.args or {}),
-    -- nvim-lint の env は uv.spawn の env（＝環境の置換）で、vim.system と違って
-    -- マージされない。既存環境を明示的に持ち回らないと HOME や GEM_* を失う。
-    -- PATH は lsp_cmd と同じ理由で activate 前のものに戻す（base_path 参照）。
-    env = vim.tbl_extend("force", vim.fn.environ(), FAIL_FAST, { PATH = base_path() }),
+    env = M.spawn_env(),
   })
 end
 
