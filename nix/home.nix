@@ -85,6 +85,7 @@ let
     unstable.ripgrep
     unstable.starship
     unstable.tree-sitter
+    unstable.tmux
     unstable.yq-go
     unstable.yubikey-manager
     unstable.zoxide
