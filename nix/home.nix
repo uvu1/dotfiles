@@ -1,6 +1,82 @@
 { inputs, pkgs, ... }:
 let
-  misePackage = inputs.nixpkgs-unstable.legacyPackages.${pkgs.stdenv.hostPlatform.system}.mise;
+  # グローバルに使うツールは unstable から取る。stable 26.05 では
+  # llvmPackages_22.clang-tools が 22.1.5、gopls が 0.22.0 で、置き換え前の
+  # mise の版に届かない。copilot-language-server だけ unfree なので
+  # legacyPackages では評価できず、predicate で当該パッケージのみ許可する。
+  unstable = import inputs.nixpkgs-unstable {
+    system = pkgs.stdenv.hostPlatform.system;
+    config.allowUnfreePredicate = p: pkgs.lib.getName p == "copilot-language-server";
+  };
+  misePackage = unstable.mise;
+
+  # gotools は goimports のほかに bundle / stringer / play / stress など汎用名の
+  # バイナリを 45 個撒く。bundle は ruby のものと衝突して profile が作れないので、
+  # conform が使う goimports だけを取り出す。単体パッケージは nixpkgs に無い。
+  goimports = pkgs.runCommand "goimports-${unstable.gotools.version}" { } ''
+    mkdir -p "$out/bin"
+    ln -s ${unstable.gotools}/bin/goimports "$out/bin/goimports"
+  '';
+
+  # Neovim が解決する LSP / リンタ / フォーマッタの実体。npm 製サーバの
+  # `#!/usr/bin/env node` を nixpkgs が絶対 node パスに書き換えるため、
+  # プロジェクトが古い node を pin していても影響を受けない。
+  devTools = [
+    unstable.basedpyright
+    unstable.copilot-language-server
+    unstable.gopls
+    unstable.llvmPackages_22.clang-tools # clangd + clang-format + clang-tidy を同一版で供給
+    unstable.lua-language-server
+    unstable.ruby-lsp
+    unstable.tailwindcss-language-server
+    unstable.typescript-language-server
+    unstable.vscode-langservers-extracted # jsonls / cssls / html / eslint の 4 本
+    unstable.yaml-language-server
+    unstable.biome
+    unstable.golangci-lint
+    unstable.ruff
+    unstable.yamllint
+    unstable.gofumpt
+    goimports
+    unstable.prettier
+    unstable.stylua
+  ];
+
+  # 日常 CLI とエディタ。neovim は provider wrapper が付かない unwrapped を使う。
+  # yq は yq-go（pkgs.yq は別物の Python 実装）、delta は git-delta ではなく delta。
+  cliTools = [
+    unstable.bat
+    unstable.delta
+    unstable.eza
+    unstable.fd
+    unstable.fzf
+    unstable.gh
+    unstable.ghq
+    unstable.jq
+    unstable.lazygit
+    unstable.neovim-unwrapped
+    unstable.ripgrep
+    unstable.starship
+    unstable.tree-sitter
+    unstable.yq-go
+    unstable.zoxide
+  ];
+
+  # プロジェクト外のファイル向けフォールバック。プロジェクトが mise.toml /
+  # .node-version / Gemfile / rust-toolchain.toml で版を pin していれば、mise が
+  # installs を PATH 前方に置くのでそちらが勝つ（sheldon は hook-env モードで
+  # activate するので、宣言が無いディレクトリではここまでフォールスルーする）。
+  runtimes = [
+    unstable.nodejs_24
+    unstable.python314
+    unstable.go
+    unstable.ruby_4_0
+    unstable.rustc
+    unstable.cargo
+    unstable.rustfmt # conform の rustfmt
+    unstable.clippy # rust_analyzer の check.command
+    unstable.rust-analyzer
+  ];
   dotfilesUpdate = pkgs.writeShellApplication {
     name = "dotfiles-update";
     runtimeInputs = [
@@ -24,7 +100,7 @@ in
     pkgs.podman
     pkgs.docker-compose # podman compose のプロバイダ（Docker API ソケット経由で接続）
     pkgs.postgresql_18
-  ] ++ pkgs.lib.optionals pkgs.stdenv.isLinux [
+  ] ++ devTools ++ cliTools ++ runtimes ++ pkgs.lib.optionals pkgs.stdenv.isLinux [
     dotfilesUpdate
     pkgs.gcc
     pkgs.wl-clipboard
