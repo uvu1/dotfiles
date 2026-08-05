@@ -1,3 +1,11 @@
 #:schema https://developers.openai.com/codex/config-schema.json
 model = "gpt-5.6-sol"
 model_reasoning_effort = "xhigh"
+
+# 完了(agent-turn-complete)と承認待ち(approval-requested)で BEL を鳴らし、通知の見せ方は
+# wezterm の bell.lua に一本化する。既定の "auto" は OSC 9 を送るため bell イベントが
+# 発火しない。既定の condition は "unfocused" で別タブに居る間は鳴らないため、ペイン単位の
+# 抑制を bell.lua に任せて always にする。
+# nest した値は dotted key で書くこと(理由は AGENTS.md)。
+tui.notification_method = "bel"
+tui.notification_condition = "always"

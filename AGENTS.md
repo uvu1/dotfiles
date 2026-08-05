@@ -19,6 +19,7 @@
 - Put shared macOS/WSL dotfiles in `mise/mise.unix.toml`; keep only OS-specific entries in `mise.darwin.toml` (currently just wezterm).
 - Put Windows tools in `mise/dotfiles/mise/config.windows.toml`. It is the single source of truth and is copied to `~/.config/mise/config.toml`, so never duplicate the toolset in `mise/mise.windows.toml`.
 - Do not add project-only tools such as `bun` or `uv` to the global toolsets.
+- Write nested values in `mise/dotfiles/ai/codex/config.toml` as dotted keys (`tui.notification_method = "bel"`), never as `[table]` headers. `scripts/sync-ai-config.sh` puts the managed block at the top of `~/.codex/config.toml` and keeps the machine-local settings below it, so a table header would swallow every top-level key that follows. The script refuses to run when the source has a table header, and it drops body keys by reading the source's own top-level key names, so adding a default there needs no change to the script.
 - Do not track credentials, OAuth state, histories, sessions, caches, generated memories, installation IDs, or machine-local trust decisions.
 - Preserve unrelated worktree changes and avoid destructive Git operations.
 
@@ -28,4 +29,5 @@
 - Regenerate the shim directory after removing anything from the global mise toolset (`rm -rf ~/.local/share/mise/shims && mise reshim`). `mise reshim` alone keeps orphans and `mise prune` only removes installed versions, so a stale shim would shadow the Nix profile.
 - Run the relevant `mise -C mise -E <env> dotfiles status` after dotfile changes (`unix`, `darwin`, or `windows`).
 - Run `mise/dotfiles/ai/scripts/check-ai-config.sh` after AI configuration changes.
+- Run `stylua --check mise/dotfiles/.config/wezterm` after wezterm changes. A new wezterm module cannot be smoke-tested from a scratch directory: `require` only searches the real config dir (`~/.config/wezterm`), and neither `--config-file`'s directory nor `WEZTERM_CONFIG_DIR` changes that, so `wezterm show-keys` silently keeps loading the deployed config. Deploy the profile first, or exercise the module against a stubbed `wezterm` table under a plain Lua interpreter.
 - Use `dotflow doctor` to validate dotflow configuration. `dotflow update --dry-run` requires a clean worktree.

@@ -1,8 +1,13 @@
 local wezterm = require("wezterm")
+local bell = require("bell")
 
 local module = {}
 
 local EDGE_BG = "#0b0e14"
+
+local BELL_BADGE = "󰂞 "
+-- グリフ + 空白の表示幅。#BELL_BADGE はバイト長なので桁数の予約には使えない。
+local BELL_BADGE_WIDTH = 2
 
 local INDEX_LEFT_PAD = "  "
 local INDEX_RIGHT_PAD = " "
@@ -186,12 +191,31 @@ local function tab_title(tab)
   return pane.title
 end
 
+-- bell が鳴ったタブに印を付ける。アクティブなタブは見えている扱いで印を消すので、
+-- format-tab-title の再描画がそのまま既読処理になる。
+local function bell_badge(tab)
+  local badge = ""
+
+  for _, pane in ipairs(tab.panes) do
+    if tab.is_active then
+      bell.clear(pane.pane_id)
+    elseif bell.is_rung(pane.pane_id) then
+      badge = BELL_BADGE
+    end
+  end
+
+  return badge
+end
+
 wezterm.on("format-tab-title", function(tab, tabs, panes, config, hover, max_width)
   local title = tab_title(tab)
   local index = tostring(tab.tab_index + 1)
+  local badge = bell_badge(tab)
 
-  if #title > max_width - 8 then
-    title = wezterm.truncate_right(title, max_width - 9) .. "…"
+  local reserved = 8 + (badge == "" and 0 or BELL_BADGE_WIDTH)
+
+  if #title > max_width - reserved then
+    title = wezterm.truncate_right(title, max_width - reserved - 1) .. "…"
   end
 
   local bg
@@ -219,7 +243,7 @@ wezterm.on("format-tab-title", function(tab, tabs, panes, config, hover, max_wid
 
     { Background = { Color = bg } },
     { Foreground = { Color = fg } },
-    { Text = TITLE_LEFT_PAD .. title .. TITLE_RIGHT_PAD },
+    { Text = badge .. TITLE_LEFT_PAD .. title .. TITLE_RIGHT_PAD },
 
     { Background = { Color = EDGE_BG } },
     { Foreground = { Color = bg } },

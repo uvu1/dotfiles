@@ -1,5 +1,6 @@
 local wezterm = require("wezterm")
 local appearance = require("appearance")
+local bell = require("bell")
 local keybinds = require("keybinds")
 local statusbar = require("statusbar")
 
@@ -34,6 +35,7 @@ if not string.find(osName, "windows") then
 end
 
 appearance.apply(config)
+bell.apply(config)
 keybinds.apply(config)
 statusbar.apply(config)
 

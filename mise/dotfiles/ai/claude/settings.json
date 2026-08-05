@@ -21,5 +21,6 @@
   "effortLevel": "xhigh",
   "tui": "default",
   "theme": "dark",
-  "agentPushNotifEnabled": true
+  "agentPushNotifEnabled": true,
+  "preferredNotifChannel": "terminal_bell"
 }
