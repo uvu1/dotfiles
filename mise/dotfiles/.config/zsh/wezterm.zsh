@@ -19,7 +19,7 @@ __wezterm_set_user_var() {
 }
 
 # シェル自身の名前。コマンドを実行していないタブはこれで表示される。
-# WSL は pwsh から開かれるタブなので、従来どおり wsl として見せる。
+# Windows の既定ペインは WSL だが、macOS の zsh と区別したいので wsl と名乗らせる。
 if [[ -n ${WSL_DISTRO_NAME:-} ]]; then
   __wezterm_set_user_var WEZTERM_SHELL wsl
 else

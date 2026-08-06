@@ -112,6 +112,9 @@ function module.apply(config)
     { key = "]", mods = "LEADER", action = wezterm.action.SwitchWorkspaceRelative(1) },
     -- tab
     { key = "t", mods = "CTRL|SHIFT", action = wezterm.action.SpawnTab("CurrentPaneDomain") },
+    -- CTRL|SHIFT t は既定のシェルで開く。別のシェルが要るときは launch_menu から選ぶ
+    -- (Windows は既定が WSL なので、pwsh のタブはここから開く)。
+    { key = "n", mods = "LEADER", action = wezterm.action.ShowLauncherArgs({ flags = "FUZZY|LAUNCH_MENU_ITEMS" }) },
     { key = "w", mods = "CTRL|SHIFT", action = wezterm.action.CloseCurrentTab({ confirm = false }) },
     -- quit
     { key = "q", mods = "LEADER|CTRL", action = wezterm.action.QuitApplication },

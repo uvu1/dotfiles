@@ -14,9 +14,20 @@ config.mux_enable_ssh_agent = false
 config.native_macos_fullscreen_mode = true
 
 -- Set default shell based on the operating system
+-- Windows でも既定のペインは WSL にする。wsl_domains + default_domain は使えない:
+-- 後述の default_gui_startup_args により最初のウィンドウが unix ドメインで開くので
+-- default_domain が効かず、WSL ドメインのペインは GUI プロセス側のローカル所有になって
+-- mux によるセッション永続化が壊れる。mux server を WSL 内で動かす構成は WSL 1 専用
+-- (WSL 2 は AF_UNIX interop 非対応)。Windows 側プロセスである mux server が spawn する
+-- default_prog 自体を wsl.exe にすれば、永続化を保ったまま WSL の login shell が起きる。
+-- pwsh は launch_menu から開く (LEADER n)。SpawnCommand の domain 既定値は
+-- CurrentPaneDomain = mux server なので、pwsh のタブも GUI 再起動で消えない。
 local osName = wezterm.target_triple
 if string.find(osName, "windows") then
-  config.default_prog = { "pwsh.exe", "-NoLogo" }
+  config.default_prog = { "wsl.exe", "~" }
+  config.launch_menu = {
+    { label = "pwsh", args = { "pwsh.exe", "-NoLogo" } },
+  }
 elseif string.find(osName, "darwin") then
   config.default_prog = { "/bin/zsh", "-l" }
 elseif string.find(osName, "linux") then

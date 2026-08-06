@@ -181,7 +181,7 @@ local function tab_title(tab)
   local name = normalize_process_name(argv and argv[1])
 
   -- コマンドを実行していないペインはシェル自身を名乗らせる。WSL の zsh は
-  -- WEZTERM_SHELL に wsl を入れるので、pwsh から開いたタブは従来どおり wsl と出る。
+  -- WEZTERM_SHELL に wsl を入れるので、Windows の既定ペインは wsl と出る。
   if name == "" then
     name = normalize_process_name(pane.user_vars and pane.user_vars.WEZTERM_SHELL)
   end
