@@ -24,16 +24,24 @@ local INACTIVE_FG = "#a9b1d6"
 local HOVER_BG = "#24283b"
 local HOVER_FG = "#c0caf5"
 
+-- 同じものを指す別名を 1 つに寄せてから ICONS を引く。
+local ALIASES = {
+  powershell = "pwsh",
+  wslhost = "wsl",
+}
+
+-- 正規化済みのプロセス名 -> グリフ。ここに無いものは DEFAULT_ICON で出す。
+local ICONS = {
+  ssh = "󰣀",
+  pwsh = "",
+  wsl = "󰌽",
+  zsh = "",
+}
+
+local DEFAULT_ICON = ""
+
 local function basename(s)
   return string.gsub(s, "(.*[/\\])(.*)", "%2")
-end
-
-local function is_windows()
-  return wezterm.target_triple:find("windows") ~= nil
-end
-
-local function is_macos()
-  return wezterm.target_triple:find("darwin") ~= nil
 end
 
 local function normalize_process_name(name)
@@ -131,64 +139,75 @@ local function cwd_name(pane)
   return basename(cwd)
 end
 
+-- mux 越しのペインは foreground process を報告しない。ClientPane は
+-- get_foreground_process_name を実装しておらず、mux の codec も working_dir しか
+-- 運ばないため、いずれも空になる。mux を越えて伝搬する user_vars を第一の情報源にし、
+-- mux を経由しない起動のためにプロセス情報をフォールバックとして残す。
+local function pane_argv(pane)
+  local prog = pane.user_vars and pane.user_vars.WEZTERM_PROG
+
+  if prog and prog ~= "" then
+    local argv = {}
+
+    for word in prog:gmatch("%S+") do
+      table.insert(argv, word)
+    end
+
+    if #argv > 0 then
+      return argv
+    end
+  end
+
+  local info = foreground_process_info(pane)
+
+  if info and info.argv and #info.argv > 0 then
+    return info.argv
+  end
+
+  if pane.foreground_process_name and pane.foreground_process_name ~= "" then
+    return { pane.foreground_process_name }
+  end
+
+  return nil
+end
+
 local function tab_title(tab)
   if tab.tab_title and #tab.tab_title > 0 then
     return tab.tab_title
   end
 
   local pane = tab.active_pane
-  local proc = normalize_process_name(pane.foreground_process_name)
-  local info = foreground_process_info(pane)
-  local argv = info and info.argv or nil
-  local cwd = cwd_name(pane)
+  local argv = pane_argv(pane)
+  local name = normalize_process_name(argv and argv[1])
 
-  if proc == "ssh" then
-    local host = ssh_host_from_argv(argv)
-
-    if host then
-      return "󰣀 ssh " .. host
-    end
-
-    return "󰣀 ssh"
+  -- コマンドを実行していないペインはシェル自身を名乗らせる。WSL の zsh は
+  -- WEZTERM_SHELL に wsl を入れるので、pwsh から開いたタブは従来どおり wsl と出る。
+  if name == "" then
+    name = normalize_process_name(pane.user_vars and pane.user_vars.WEZTERM_SHELL)
   end
 
-  if is_windows() then
-    if proc == "pwsh" or proc == "powershell" then
-      if cwd ~= "" then
-        return " pwsh " .. cwd
-      end
-
-      return " pwsh"
-    end
-
-    if proc == "wsl" or proc == "wslhost" then
-      if cwd ~= "" then
-        return "󰌽 wsl " .. cwd
-      end
-
-      return "󰌽 wsl"
-    end
+  if name == "" then
+    return pane.title
   end
 
-  if is_macos() then
-    if proc == "zsh" then
-      if cwd ~= "" then
-        return " zsh " .. cwd
-      end
+  name = ALIASES[name] or name
 
-      return " zsh"
-    end
+  -- ssh は接続先が cwd より知りたい情報なので、そちらだけ差し替える。
+  local detail
+
+  if name == "ssh" then
+    detail = ssh_host_from_argv(argv)
+  else
+    detail = cwd_name(pane)
   end
 
-  if proc ~= "" then
-    if cwd ~= "" then
-      return " " .. proc .. " " .. cwd
-    end
+  local title = (ICONS[name] or DEFAULT_ICON) .. " " .. name
 
-    return " " .. proc
+  if detail and detail ~= "" then
+    return title .. " " .. detail
   end
 
-  return pane.title
+  return title
 end
 
 -- bell が鳴ったタブに印を付ける。アクティブなタブは見えている扱いで印を消すので、

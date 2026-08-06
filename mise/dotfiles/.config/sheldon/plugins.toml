@@ -82,3 +82,9 @@ apply = ["defer"]
 local = "~/.config/zsh"
 use = ["kubernetes.zsh"]
 apply = ["defer"]
+
+# direnv と同じ理由で defer しない。preexec/precmd hook を初回プロンプトより前に
+# 登録しないと、最初のコマンドの分だけ wezterm のタブ名が更新されない。
+[plugins.wezterm]
+local = "~/.config/zsh"
+use = ["wezterm.zsh"]
