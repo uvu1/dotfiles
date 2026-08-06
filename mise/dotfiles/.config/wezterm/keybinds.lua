@@ -2,6 +2,49 @@ local wezterm = require("wezterm")
 local workspaces = require("workspaces")
 local module = {}
 
+local is_windows = wezterm.target_triple:find("windows") ~= nil
+
+local function url_decode(s)
+  return (s:gsub("%%(%x%x)", function(hex)
+    return string.char(tonumber(hex, 16))
+  end))
+end
+
+-- Windows の既定ペインは mux server が spawn する wsl.exe。Windows 側の wezterm は
+-- OSC 7 で受け取った Linux パスへ chdir できないため、SpawnCommand の cwd ではなく
+-- wsl.exe --cd で引き継ぐ (wezterm 本体の WslDomain も内部で同じ引数を組んでいる)。
+-- cwd を publish しているのは zsh/wezterm.zsh の OSC 7 なので、両者は対で扱うこと。
+local function spawn_in_current_cwd(pane)
+  local spawn = { domain = "CurrentPaneDomain" }
+
+  if not is_windows then
+    return spawn
+  end
+
+  -- pwsh ペイン (LEADER n) は Windows ローカルなので既定の cwd 継承がそのまま効く。
+  if pane:get_user_vars().WEZTERM_SHELL ~= "wsl" then
+    return spawn
+  end
+
+  local cwd = pane:get_current_working_dir()
+
+  if not cwd or cwd.scheme ~= "file" then
+    return spawn
+  end
+
+  spawn.args = { "wsl.exe", "--cd", url_decode(cwd.path) }
+
+  return spawn
+end
+
+-- wezterm.action.X は引数を取るアクションでは呼び出し可能オブジェクトなので、
+-- 変数に束縛せず実行時に名前で引く。
+local function spawn_action(name)
+  return wezterm.action_callback(function(window, pane)
+    window:perform_action(wezterm.action[name](spawn_in_current_cwd(pane)), pane)
+  end)
+end
+
 function module.apply(config)
   config.disable_default_key_bindings = true
 
@@ -77,8 +120,8 @@ function module.apply(config)
     { key = "l", mods = "LEADER", action = wezterm.action.ActivatePaneDirection("Right") },
     { key = "j", mods = "LEADER", action = wezterm.action.ActivatePaneDirection("Down") },
     { key = "k", mods = "LEADER", action = wezterm.action.ActivatePaneDirection("Up") },
-    { key = "/", mods = "LEADER", action = wezterm.action.SplitHorizontal({ domain = "CurrentPaneDomain" }) },
-    { key = "-", mods = "LEADER", action = wezterm.action.SplitVertical({ domain = "CurrentPaneDomain" }) },
+    { key = "/", mods = "LEADER", action = spawn_action("SplitHorizontal") },
+    { key = "-", mods = "LEADER", action = spawn_action("SplitVertical") },
     { key = "x", mods = "LEADER", action = wezterm.action.CloseCurrentPane({ confirm = false }) },
     -- ペインが 3 枚以上になると hjkl の方向指定では狙えないためラベル選択する。
     { key = "Space", mods = "LEADER", action = wezterm.action.PaneSelect },
@@ -111,7 +154,8 @@ function module.apply(config)
     { key = "[", mods = "LEADER", action = wezterm.action.SwitchWorkspaceRelative(-1) },
     { key = "]", mods = "LEADER", action = wezterm.action.SwitchWorkspaceRelative(1) },
     -- tab
-    { key = "t", mods = "CTRL|SHIFT", action = wezterm.action.SpawnTab("CurrentPaneDomain") },
+    -- SpawnTab は SpawnCommand を受け取れないので、cwd/args を渡せる方を使う。
+    { key = "t", mods = "CTRL|SHIFT", action = spawn_action("SpawnCommandInNewTab") },
     -- CTRL|SHIFT t は既定のシェルで開く。別のシェルが要るときは launch_menu から選ぶ
     -- (Windows は既定が WSL なので、pwsh のタブはここから開く)。
     { key = "n", mods = "LEADER", action = wezterm.action.ShowLauncherArgs({ flags = "FUZZY|LAUNCH_MENU_ITEMS" }) },
