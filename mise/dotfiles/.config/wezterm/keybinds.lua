@@ -45,6 +45,103 @@ local function spawn_action(name)
   end)
 end
 
+-- 直前のコマンドの出力をクリップボードへ取る。OSC 133 + pane:get_semantic_zones() と
+-- いう定番の実装は使えない: mux の codec は SemanticZone を運ばず、ClientPane も
+-- get_semantic_zones を実装していないため、mux 越しのペインでは常に空が返る。
+-- 代わりに starship のプロンプトが「空行 / 情報行 / ❯ 行」で固定なことを利用して
+-- 行範囲を割り出す。記号の出所は starship.toml の [character]。
+local PROMPT_SYMBOL = "❯"
+
+-- プロンプトを探して遡る上限。既定の scrollback 全体を毎回引くと重いので頭打ちにする。
+local MAX_LOOKBACK_ROWS = 2000
+
+-- get_lines_as_text は物理行を改行区切りで返す。stable row との対応をとるため、
+-- 先頭行の stable row を一緒に返す。
+local function pane_lines(pane, dims)
+  local nlines = dims.viewport_rows + math.min(dims.scrollback_rows, MAX_LOOKBACK_ROWS)
+  local bottom = dims.physical_top + dims.viewport_rows
+  local lines = {}
+
+  for line in (pane:get_lines_as_text(nlines) .. "\n"):gmatch("([^\n]*)\n") do
+    table.insert(lines, line)
+  end
+
+  return lines, bottom - nlines
+end
+
+-- 直前の出力が占める stable row の範囲を返す。始点は入力行 (❯ コマンド) 自身で、
+-- 折り返した長いコマンドも論理行として 1 行に戻せるようにしてある。
+local function last_output_rows(lines, first_row, cursor_row)
+  local function at(row)
+    return lines[row - first_row + 1]
+  end
+
+  -- 記号にパターンのメタ文字は無いが、行頭限定であることを明示するため素の比較で見る。
+  local function is_prompt(row)
+    return at(row) and at(row):sub(1, #PROMPT_SYMBOL) == PROMPT_SYMBOL
+  end
+
+  if not at(cursor_row) then
+    return nil, "カーソル行を取得できません"
+  end
+
+  if not is_prompt(cursor_row) then
+    return nil, "プロンプト行にいないため範囲を判定できません"
+  end
+
+  -- 現在のプロンプトブロックを遡ってスキップする。情報行は折り返すことがあるので
+  -- 行数を決め打ちせず、add_newline が入れる空行に当たるまで戻る。
+  local row = cursor_row - 1
+
+  while at(row) and at(row) ~= "" do
+    row = row - 1
+  end
+
+  if not at(row) then
+    return nil, "プロンプトの区切りが見つかりません"
+  end
+
+  local last = row - 1
+
+  row = last
+
+  while at(row) and not is_prompt(row) do
+    row = row - 1
+  end
+
+  if not at(row) then
+    return nil, "直前のプロンプトが見つかりません"
+  end
+
+  return row, last
+end
+
+local function copy_last_output()
+  return wezterm.action_callback(function(window, pane)
+    local dims = pane:get_dimensions()
+    local lines, first_row = pane_lines(pane, dims)
+    local from, last = last_output_rows(lines, first_row, pane:get_cursor_position().y)
+
+    if not from then
+      window:toast_notification("wezterm", last, nil, 4000)
+      return
+    end
+
+    -- get_text_from_region は論理行へ戻して返す。先頭の 1 論理行が入力行なので、
+    -- そこだけ落とせば折り返しの有無によらず出力だけが残る。end_y は inclusive。
+    local text = pane:get_text_from_region(0, from, dims.cols, last)
+    local output = text:match("^[^\n]*\n(.*)$")
+
+    if not output or output:match("^%s*$") then
+      window:toast_notification("wezterm", "直前のコマンドに出力がありません", nil, 4000)
+      return
+    end
+
+    -- 末尾に改行を足さない。シェルへ貼り付けたときに即実行されてしまう。
+    window:copy_to_clipboard(output, "ClipboardAndPrimarySelection")
+  end)
+end
+
 function module.apply(config)
   config.disable_default_key_bindings = true
 
@@ -114,6 +211,8 @@ function module.apply(config)
     -- copy/paste
     { key = "c", mods = "CTRL|SHIFT", action = wezterm.action.CopyTo("Clipboard") },
     { key = "v", mods = "CTRL|SHIFT", action = wezterm.action.PasteFrom("Clipboard") },
+    -- 直前のコマンドの出力をコピーする。成功時は無言、範囲を割り出せなかったときだけ通知する。
+    { key = "c", mods = "LEADER", action = copy_last_output() },
     -- pane
     { key = "z", mods = "LEADER", action = wezterm.action.TogglePaneZoomState },
     { key = "h", mods = "LEADER", action = wezterm.action.ActivatePaneDirection("Left") },
