@@ -24,15 +24,18 @@ elseif string.find(osName, "linux") then
 end
 
 -- mux server 上でタブ/ペインを保持し、GUI の再起動やクラッシュでセッションを失わない。
--- Windows は GUI の起動方法を変えたくないため対象外。
+-- default_gui_startup_args はサブコマンドなしで wezterm / wezterm-gui を起動したときに
+-- 効くため、Windows のショートカットから wezterm-gui.exe を叩く起動方法のままで有効になる。
+-- mux server が死ぬ（OS 再起動 / kill-server）とセッションも消える点は変わらない。
 -- GUI と mux server のバージョンが食い違って接続できなくなった場合は
 -- `wezterm cli kill-server` でサーバを落としてから起動し直す。
-if not string.find(osName, "windows") then
-  config.unix_domains = {
-    { name = "unix" },
-  }
-  config.default_gui_startup_args = { "connect", "unix" }
-end
+-- なお mux 越しのペインは foreground process を報告しないため、タブ名は user_vars に
+-- 依存する。tabbar.lua と、それを publish する zsh/wezterm.zsh・PowerShell の
+-- 50-wezterm.ps1 は三点セットで扱うこと。
+config.unix_domains = {
+  { name = "unix" },
+}
+config.default_gui_startup_args = { "connect", "unix" }
 
 appearance.apply(config)
 bell.apply(config)

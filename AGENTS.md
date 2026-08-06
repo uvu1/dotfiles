@@ -20,6 +20,7 @@
 - Put Windows tools in `mise/dotfiles/mise/config.windows.toml`. It is the single source of truth and is copied to `~/.config/mise/config.toml`, so never duplicate the toolset in `mise/mise.windows.toml`.
 - Do not add project-only tools such as `bun` or `uv` to the global toolsets.
 - Write nested values in `mise/dotfiles/ai/codex/config.toml` as dotted keys (`tui.notification_method = "bel"`), never as `[table]` headers. `scripts/sync-ai-config.sh` puts the managed block at the top of `~/.codex/config.toml` and keeps the machine-local settings below it, so a table header would swallow every top-level key that follows. The script refuses to run when the source has a table header, and it drops body keys by reading the source's own top-level key names, so adding a default there needs no change to the script.
+- wezterm runs every pane through the `unix` mux domain on both macOS and Windows, so tab titles cannot read the foreground process: `ClientPane` never implements `get_foreground_process_name` and the mux codec only carries `working_dir`. `user_vars` is the only source that survives the hop, so `tabbar.lua` reads `WEZTERM_PROG` / `WEZTERM_SHELL` and the two publishers that set them — `mise/dotfiles/.config/zsh/wezterm.zsh` and `mise/dotfiles/Documents/PowerShell/profile.d/50-wezterm.ps1` — must change together with it.
 - Do not track credentials, OAuth state, histories, sessions, caches, generated memories, installation IDs, or machine-local trust decisions.
 - Preserve unrelated worktree changes and avoid destructive Git operations.
 
