@@ -128,7 +128,10 @@ return {
 
       -- VSCode のオカレンスハイライト。needs_setup = true なので既定は無効。
       -- 実体は documentHighlight 対応クライアントに限った document_highlight()。
-      words = { enabled = true },
+      -- kawaii-theme は LspReference* と Visual が同じ背景色で、常時点くと
+      -- 単語選択（v）と区別できない。必要なときだけ <leader>uo で入れる
+      -- （オンの間だけ ]r / [r の参照移動も効く）。
+      words = { enabled = false },
 
       -- lazygit.nvim の置き換え。setup 不要のオンデマンドモジュールだが、
       -- snacks が担当することを明示するために宣言しておく。

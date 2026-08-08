@@ -5,7 +5,9 @@ vim.opt.termguicolors = true
 vim.opt.wrap = false
 vim.opt.scrolloff = 8
 vim.opt.signcolumn = "yes"
-vim.opt.cursorline = true
+-- kawaii-theme は CursorLine と Visual が同じ背景色なので、カーソル行の
+-- ハイライトが行選択（V）と見分けられない。行位置は relativenumber で足りる。
+vim.opt.cursorline = false
 
 vim.opt.pumblend = 10
 vim.opt.winblend = 10
