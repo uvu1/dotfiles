@@ -70,8 +70,9 @@ let
 
   # 日常 CLI とエディタ。neovim は provider wrapper が付かない unwrapped を使う。
   # yq は yq-go（pkgs.yq は別物の Python 実装）、delta は git-delta ではなく delta、
-  # ykman は yubikey-manager。
+  # ykman は yubikey-manager、aws は awscli2（pkgs.awscli は v1）。
   cliTools = [
+    unstable.awscli2
     unstable.bat
     unstable.delta
     unstable.eza
@@ -83,6 +84,7 @@ let
     unstable.lazygit
     unstable.neovim-unwrapped
     unstable.ripgrep
+    unstable.saml2aws
     unstable.starship
     unstable.tree-sitter
     unstable.tmux
