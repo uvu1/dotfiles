@@ -46,6 +46,7 @@
       "adobe-creative-cloud"
       "cloudflare-warp"
       "discord@canary"
+      "google-chrome@canary"
       "hiddenbar"
       "karabiner-elements"
       "microsoft-office"
