@@ -5,6 +5,30 @@
     "pr": ""
   },
   "permissions": {
+    "allow": [
+      "Bash(agent-browser --version)",
+      "Bash(agent-browser doctor:*)",
+      "Bash(agent-browser skills:*)",
+      "Bash(agent-browser open --allowed-domains localhost,127.0.0.1 http://localhost:*)",
+      "Bash(agent-browser open --allowed-domains localhost,127.0.0.1 http://127.0.0.1:*)",
+      "Bash(agent-browser open http://localhost:*)",
+      "Bash(agent-browser open http://127.0.0.1:*)",
+      "Bash(agent-browser goto http://localhost:*)",
+      "Bash(agent-browser goto http://127.0.0.1:*)",
+      "Bash(agent-browser screenshot:*)",
+      "Bash(agent-browser snapshot:*)",
+      "Bash(agent-browser wait:*)",
+      "Bash(agent-browser get:*)",
+      "Bash(agent-browser is:*)",
+      "Bash(agent-browser click:*)",
+      "Bash(agent-browser press:*)",
+      "Bash(agent-browser hover:*)",
+      "Bash(agent-browser scroll:*)",
+      "Bash(agent-browser console:*)",
+      "Bash(agent-browser errors:*)",
+      "Bash(agent-browser tab:*)",
+      "Bash(agent-browser close:*)"
+    ],
     "deny": [
       "Read(./.env)",
       "Read(./.env.*)",
@@ -14,7 +38,13 @@
       "Read(~/.aws/credentials)",
       "Read(~/.config/gh/hosts.yml)",
       "Read(~/.codex/auth.json)",
-      "Read(~/.claude.json)"
+      "Read(~/.claude.json)",
+      "Bash(agent-browser chat:*)",
+      "Bash(agent-browser eval:*)",
+      "Bash(agent-browser cookies:*)",
+      "Bash(agent-browser storage:*)",
+      "Bash(agent-browser auth:*)",
+      "Bash(agent-browser state:*)"
     ]
   },
   "model": "claude-opus-5",

@@ -35,3 +35,10 @@ cloudflared = "latest"
 # プロジェクトの node で動いてしまうため、GitHub リリースのネイティブバイナリを
 # 配る aqua backend を明示する。node 依存も shebang の穴も消える。
 "aqua:openai/codex" = "latest"
+# AI エージェント用のブラウザ自動化 CLI。実際の描画をスクリーンショットで確認する
+# ために使う（今は ai/skills/claude/agent-browser の Claude 用 skill だけを配線）。
+# mise registry に別名が無く、npm 版は
+# bin が `#!/usr/bin/env node` の shim（engines: node>=24）なので codex と同じく
+# aqua backend で GitHub リリースのネイティブバイナリを取る。
+"aqua:vercel-labs/agent-browser" = "latest"
+fastfetch = "latest"
