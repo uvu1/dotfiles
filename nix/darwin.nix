@@ -32,6 +32,8 @@
 
   users.users.uvu1.home = "/Users/uvu1";
 
+  services.tailscale.enable = true;
+
   nix-homebrew = {
     enable = true;
     enableRosetta = false;
