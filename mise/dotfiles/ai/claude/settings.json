@@ -51,6 +51,7 @@
   "effortLevel": "xhigh",
   "tui": "default",
   "theme": "dark",
+  "preferredNotifChannel": "terminal_bell",
   "agentPushNotifEnabled": true,
-  "preferredNotifChannel": "terminal_bell"
+  "skipDangerousModePermissionPrompt": true
 }
