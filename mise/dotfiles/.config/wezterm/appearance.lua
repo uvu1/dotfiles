@@ -24,7 +24,7 @@ function module.apply(config)
   config.initial_rows = 32
 
   -- font
-  config.font_size = 12.0
+  config.font_size = 16.0
   -- Japanese fallback: Hiragino on macOS, BIZ UDGothic (bundled) on Windows
   local japanese_font = { family = "Hiragino Sans", weight = "Medium" }
   if string.find(wezterm.target_triple, "windows") then
