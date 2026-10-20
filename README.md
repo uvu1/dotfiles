@@ -369,3 +369,64 @@ winget configure test -f .config/configuration.winget --accept-configuration-agr
 dotflow doctor
 Get-Command dotfiles-update
 ```
+
+## macOS Work profile (CLI-only)
+
+A separate work profile installs **no Homebrew Casks or other GUI applications**
+and does **not** use nix-darwin. It uses standalone Home Manager plus mise
+dotfiles. Its package list is the regular `nix/home.nix` toolchain **minus**
+global language runtimes (Node.js, Python, Go, Ruby, Rust), PostgreSQL/libpq,
+`awscli2`, `saml2aws`, and `yubikey-manager`. It keeps Neovim, LSPs,
+formatters, linters, debuggers, Zsh/Sheldon/Starship, Git/gh/ghq, Podman and
+docker-compose, and other CLI utilities. LSP/debugger package dependencies may
+contain their own private runtimes; the global runtime executables are omitted.
+
+The work dotfile allowlist is `mise/mise.work.toml` (Neovim, mise work
+toolset, Sheldon, Starship, Zsh). It intentionally skips the personal Git
+identity/signing config, AI user/account configuration, Karabiner, WezTerm and
+macOS system preferences. The work mise toolset includes dotflow, Claude Code,
+Codex, cloudflared, agent-browser and fastfetch. Individual projects can
+install their own runtimes using local `mise.toml` files. The shared Zsh
+`Ctrl+K` Kubernetes binding needs `kubectl` installed separately if used.
+
+**Before installing:** get approval for Nix/Home Manager, developer tools, and
+the Podman virtual machine from your workplace. Install Nix first (and Git if
+needed), clone the repository and start in its root:
+
+```sh
+git clone https://github.com/uvu1/dotfiles ~/dotfiles
+cd ~/dotfiles
+bash scripts/switch-work-macos.sh
+export MISE_EXPERIMENTAL=1
+mise -C mise trust -a
+mise -C mise -E work dotfiles apply --yes \
+  ~/.config/nvim ~/.config/mise/config.toml ~/.config/sheldon \
+  ~/.config/starship.toml ~/.config/zsh ~/.zshrc
+mise -C mise -E work install
+```
+
+The `switch-work-macos.sh` script chooses Apple Silicon or Intel from
+`uname -m` and uses `--impure` to read **the current work account**
+(`USER` and `HOME`) for Home Manager. Do not run this script with sudo.
+It uses `home-manager` if installed or launches release-26.05 with `nix run`.
+
+After the work profile is applied and dotflow is on PATH, updates are:
+
+```sh
+dotflow --profile work doctor
+dotflow --profile work update --dry-run
+dotflow --profile work update
+```
+
+**Important compatibility change:** dotflow auto-selects a profile only when
+exactly one profile matches the platform. Since `macos` and `work` now both
+match macOS, personal Macs must explicitly run
+`dotflow --profile macos update` (and similarly for `apply`/`status`).
+Unqualified `dotflow update` on macOS fails safely with a profile ambiguity
+error; WSL/Windows auto-selection is unchanged. Do not run the personal
+`darwin-rebuild switch --flake .#uvu1-mac` on the work machine.
+
+Podman on macOS requires a Linux VM; after installing, initialize/start it
+separately with `podman machine init` and `podman machine start`. Neither is
+automatically run. Company accounts, Git identity, SSH keys and kubeconfig
+must be configured separately and should not be copied from personal dotfiles.

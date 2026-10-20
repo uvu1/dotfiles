@@ -30,6 +30,24 @@
     let
       linuxSystem = "x86_64-linux";
       darwinSystem = "aarch64-darwin";
+
+      # Standalone Home Manager for a work Mac. Unlike nix-darwin, this does not
+      # configure Homebrew GUI apps, system defaults, services, or macOS users.
+      # --impure is required to read the current account's USER/HOME.
+      mkWorkHome = system: home-manager.lib.homeManagerConfiguration {
+        pkgs = import nixpkgs { inherit system; };
+        extraSpecialArgs = {
+          inherit inputs;
+          workProfile = true;
+        };
+        modules = [
+          ./nix/home.nix
+          {
+            home.username = builtins.getEnv "USER";
+            home.homeDirectory = builtins.getEnv "HOME";
+          }
+        ];
+      };
     in
     {
       darwinConfigurations."uvu1-mac" = nix-darwin.lib.darwinSystem {
@@ -41,6 +59,9 @@
           home-manager.darwinModules.home-manager
         ];
       };
+
+      homeConfigurations."work-aarch64-darwin" = mkWorkHome "aarch64-darwin";
+      homeConfigurations."work-x86_64-darwin" = mkWorkHome "x86_64-darwin";
 
       homeConfigurations."uvu1@arch-wsl" = home-manager.lib.homeManagerConfiguration {
         pkgs = import nixpkgs {

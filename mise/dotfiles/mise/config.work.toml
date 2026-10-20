@@ -1,0 +1,16 @@
+# Work Mac: keep vendor CLIs current, while Nix Home Manager manages all
+# global editor/LSP/formatter/debugger/utility/container CLI executables.
+# Language runtimes are intentionally not installed globally. Projects can
+# opt into their own versions with mise.toml / local mise files.
+[settings]
+experimental = true
+idiomatic_version_file_enable_tools = ["ruby", "node"]
+not_found_auto_install = false
+
+[tools]
+"github:uvu1/dotflow" = "0.1.1"
+claude = "latest"
+cloudflared = "latest"
+"aqua:openai/codex" = "latest"
+"aqua:vercel-labs/agent-browser" = "latest"
+fastfetch = "latest"

@@ -51,3 +51,25 @@ add_environment = "windows"
 
 [[profiles.windows.environments]]
 mise_environment = "windows"
+
+# Work Mac: explicit opt-in. Adding a second macOS profile means all Mac
+# dotflow invocations must use --profile macos or --profile work.
+[profiles.work]
+platform = "macos"
+add_environment = "work"
+
+[[profiles.work.environments]]
+mise_environment = "work"
+targets = [
+  "~/.config/nvim",
+  "~/.config/mise/config.toml",
+  "~/.config/sheldon",
+  "~/.config/starship.toml",
+  "~/.config/zsh",
+  "~/.zshrc",
+]
+
+[[profiles.work.after_sync]]
+program = "bash"
+args = ["scripts/switch-work-macos.sh"]
+cwd = "{repo}"
