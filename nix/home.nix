@@ -1,4 +1,4 @@
-{ inputs, pkgs, ... }:
+{ inputs, pkgs, workProfile ? false, ... }:
 let
   # グローバルに使うツールは unstable から取る。stable 26.05 では
   # llvmPackages_22.clang-tools が 22.1.5、gopls が 0.22.0 で、置き換え前の
@@ -72,7 +72,6 @@ let
   # yq は yq-go（pkgs.yq は別物の Python 実装）、delta は git-delta ではなく delta、
   # ykman は yubikey-manager、aws は awscli2（pkgs.awscli は v1）。
   cliTools = [
-    unstable.awscli2
     unstable.bat
     unstable.delta
     unstable.eza
@@ -84,13 +83,15 @@ let
     unstable.lazygit
     unstable.neovim-unwrapped
     unstable.ripgrep
-    unstable.saml2aws
     unstable.starship
     unstable.tree-sitter
     unstable.tmux
     unstable.yq-go
-    unstable.yubikey-manager
     unstable.zoxide
+  ] ++ pkgs.lib.optionals (!workProfile) [
+    unstable.awscli2
+    unstable.saml2aws
+    unstable.yubikey-manager
   ];
 
   # プロジェクト外のファイル向けフォールバック。プロジェクトが mise.toml /
@@ -120,6 +121,8 @@ let
   };
 in
 {
+  # The standalone macOS work profile excludes global language runtimes, databases,
+  # and personal cloud/security CLIs; editor tooling and container CLIs remain.
   home.stateVersion = "26.05";
 
   home.packages = [
@@ -130,6 +133,7 @@ in
     pkgs.zsh
     pkgs.podman
     pkgs.docker-compose # podman compose のプロバイダ（Docker API ソケット経由で接続）
+  ] ++ pkgs.lib.optionals (!workProfile) [
     pkgs.postgresql_18
     # pg gem 等の C 拡張が libpq-fe.h と pg_config を要求する。postgresql_18 は
     # outputsToInstall が ["out" "man"] で dev が profile に入らず、さらに nixpkgs は
@@ -138,7 +142,8 @@ in
     pkgs.libpq
     pkgs.libpq.dev
     pkgs.libpq.pg_config
-  ] ++ devTools ++ debugTools ++ cliTools ++ runtimes ++ pkgs.lib.optionals pkgs.stdenv.isLinux [
+  ] ++ devTools ++ debugTools ++ cliTools ++ pkgs.lib.optionals (!workProfile) runtimes
+    ++ pkgs.lib.optionals pkgs.stdenv.isLinux [
     dotfilesUpdate
     pkgs.gcc
     pkgs.wl-clipboard

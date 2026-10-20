@@ -1,0 +1,13 @@
+# Work Mac: minimal mise toolset; Nix Home Manager supplies all global
+# editor/LSP/formatter/debugger/utility/container CLI executables.
+# Language runtimes are intentionally not installed globally. Projects can
+# opt into their own versions with mise.toml / local mise files.
+[settings]
+experimental = true
+idiomatic_version_file_enable_tools = ["ruby", "node"]
+not_found_auto_install = false
+
+[tools]
+"github:uvu1/dotflow" = "0.1.1"
+"aqua:vercel-labs/agent-browser" = "latest"
+fastfetch = "latest"

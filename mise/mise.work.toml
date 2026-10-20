@@ -1,0 +1,9 @@
+# Work Mac: CLI/editor dotfiles only. No personal Git identity, AI account
+# settings, WezTerm/Karabiner GUI configurations, or OS-level preferences.
+[dotfiles]
+"~/.config/nvim" = { source = "dotfiles/.config/nvim", mode = "symlink" }
+"~/.config/mise/config.toml" = { source = "dotfiles/mise/config.work.toml", mode = "symlink" }
+"~/.config/sheldon" = { source = "dotfiles/.config/sheldon", mode = "symlink" }
+"~/.config/starship.toml" = { source = "dotfiles/.config/starship.toml", mode = "symlink" }
+"~/.config/zsh" = { source = "dotfiles/.config/zsh", mode = "symlink" }
+"~/.zshrc" = { source = "dotfiles/.zshrc", mode = "symlink" }
