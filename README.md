@@ -384,9 +384,10 @@ contain their own private runtimes; the global runtime executables are omitted.
 The work dotfile allowlist is `mise/mise.work.toml` (Neovim, mise work
 toolset, Sheldon, Starship, Zsh). It intentionally skips the personal Git
 identity/signing config, AI user/account configuration, Karabiner, WezTerm and
-macOS system preferences. The work mise toolset includes dotflow, Claude Code,
-Codex, cloudflared, agent-browser and fastfetch. Individual projects can
-install their own runtimes using local `mise.toml` files. The shared Zsh
+macOS system preferences. The work mise toolset includes only dotflow,
+agent-browser and fastfetch; it does **not** install Claude Code, Codex or
+cloudflared. Individual projects can install their own runtimes using local
+`mise.toml` files. The shared Zsh
 `Ctrl+K` Kubernetes binding needs `kubectl` installed separately if used.
 
 **Before installing:** get approval for Nix/Home Manager, developer tools, and
