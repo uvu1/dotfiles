@@ -326,6 +326,10 @@ macOS または WSL の Neovim で `<leader>mc`（`:RemoteSSHFSConnect`）を実
 `<leader>md` で切断します。
 接続先が一覧に出ない場合は `:RemoteSSHFSConnect user@host:/path` で直接指定します。
 
+`<leader>ff` と `<leader>fg` は、作業ディレクトリが接続中のマウント内なら遠隔検索に
+切り替わります。ローカルのディレクトリへ移動すると従来の Snacks 検索に戻ります。
+`<leader>mf` と `<leader>mg` は遠隔検索を直接呼びます。
+
 Git 操作は `:terminal ssh 接続先` で開く SSH 先の端末で行ってください。
 SSHFS 上で手元の Git や lazygit を実行すると、ファイルの多いリポジトリでは
 遅くなります。LSP は手元で動くため、SSH 先にしかない依存関係は参照できません。

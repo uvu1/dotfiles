@@ -5,6 +5,33 @@ local function jump_reference(direction)
   end
 end
 
+local function in_remote_mount()
+  -- 未接続時は SSHFS プラグインを読み込まず、ローカル検索を維持する。
+  local connections = package.loaded["remote-sshfs.connections"]
+  if not connections or not connections.is_connected() then
+    return false
+  end
+
+  local mount = connections.get_current_mount_point()
+  if not mount or mount == "" then
+    return false
+  end
+
+  mount = vim.fs.normalize(mount):gsub("/+$", "")
+  local cwd = vim.fs.normalize(vim.fn.getcwd())
+  return cwd == mount or vim.startswith(cwd, mount .. "/")
+end
+
+local function workspace_picker(remote_method, local_method)
+  return function()
+    if in_remote_mount() then
+      require("remote-sshfs.api")[remote_method]()
+    else
+      require("snacks").picker[local_method]()
+    end
+  end
+end
+
 return {
   {
     "folke/snacks.nvim",
@@ -254,16 +281,12 @@ return {
       },
       {
         "<leader>ff",
-        function()
-          require("snacks").picker.files()
-        end,
+        workspace_picker("find_files", "files"),
         desc = "Find files",
       },
       {
         "<leader>fg",
-        function()
-          require("snacks").picker.grep()
-        end,
+        workspace_picker("live_grep", "grep"),
         desc = "Grep",
       },
       {
