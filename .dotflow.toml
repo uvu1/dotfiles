@@ -19,6 +19,9 @@ args = ["switch", "--flake", "{repo}#uvu1@arch-wsl"]
 cwd = "{repo}"
 
 [[profiles.wsl.after_sync]]
+program = "wsl-fuse-setup"
+
+[[profiles.wsl.after_sync]]
 program = "bash"
 args = ["scripts/sync-ai-config.sh"]
 cwd = "{repo}"

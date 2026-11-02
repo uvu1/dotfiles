@@ -85,6 +85,7 @@ let
     unstable.neovim-unwrapped
     unstable.ripgrep
     unstable.saml2aws
+    unstable.sshfs
     unstable.starship
     unstable.tree-sitter
     unstable.tmux
@@ -118,6 +119,32 @@ let
       export PATH="$HOME/.local/share/mise/shims:$PATH"
     '' + builtins.readFile ../scripts/update-wsl.sh;
   };
+  # Nix store は setuid にできない。FUSE のマウント補助は Nix の版を
+  # /usr/local/bin に配置し、版が変わったときだけ sudo を使う。
+  wslFuseSetup = pkgs.writeShellApplication {
+    name = "wsl-fuse-setup";
+    runtimeInputs = [ pkgs.coreutils pkgs.diffutils ];
+    text = ''
+      if [ "$#" -gt 1 ] || { [ "$#" -eq 1 ] && [ "$1" != --dry-run ]; }; then
+        echo "Usage: wsl-fuse-setup [--dry-run]" >&2
+        exit 2
+      fi
+      helper=${unstable.fuse3.bin}/bin/fusermount3
+      target=/usr/local/bin/fusermount3
+      if [ -L "$target" ]; then
+        echo "Refusing to replace symlink: $target" >&2
+        exit 1
+      fi
+      if [ -f "$target" ] && [ -u "$target" ] && [ "$(stat -c %u "$target")" = 0 ] && cmp -s "$helper" "$target"; then
+        exit 0
+      fi
+      if [ "$#" -eq 1 ]; then
+        echo "Would install Nix-managed fusermount3 to $target with setuid root"
+        exit 0
+      fi
+      sudo install -o root -g root -m 4755 "$helper" "$target"
+    '';
+  };
 in
 {
   home.stateVersion = "26.05";
@@ -140,6 +167,7 @@ in
     pkgs.libpq.pg_config
   ] ++ devTools ++ debugTools ++ cliTools ++ runtimes ++ pkgs.lib.optionals pkgs.stdenv.isLinux [
     dotfilesUpdate
+    wslFuseSetup
     pkgs.gcc
     pkgs.wl-clipboard
     pkgs.passt

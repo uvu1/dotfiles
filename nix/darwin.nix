@@ -51,6 +51,7 @@
       "google-chrome@canary"
       "hiddenbar"
       "karabiner-elements"
+      "macfuse"
       "microsoft-office"
       "obsidian"
       "raycast"
