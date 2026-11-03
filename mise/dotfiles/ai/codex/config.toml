@@ -9,3 +9,13 @@ model_reasoning_effort = "xhigh"
 # nest した値は dotted key で書くこと(理由は AGENTS.md)。
 tui.notification_method = "bel"
 tui.notification_condition = "always"
+
+# 作業場所と残量を確認しやすい順に表示する。
+tui.status_line = [
+  "model-with-reasoning",
+  "current-dir",
+  "git-branch",
+  "context-remaining",
+  "five-hour-limit",
+]
+tui.status_line_use_colors = true
