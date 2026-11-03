@@ -7,3 +7,7 @@ model_reasoning_effort = "medium"
 model_providers.nekok.name = "Nekok"
 model_providers.nekok.env_key = "NEKO_API"
 model_providers.nekok.wire_api = "responses"
+
+[tui.model_availability_nux]
+"gpt-5.6-sol" = 2
+"gpt-6.1-sol" = 3

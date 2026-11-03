@@ -2,11 +2,15 @@
 let
   # グローバルに使うツールは unstable から取る。stable 26.05 では
   # llvmPackages_22.clang-tools が 22.1.5、gopls が 0.22.0 で、置き換え前の
-  # mise の版に届かない。copilot-language-server だけ unfree なので
+  # mise の版に届かない。copilot-language-server と 1password-cli は unfree なので
   # legacyPackages では評価できず、predicate で当該パッケージのみ許可する。
   unstable = import inputs.nixpkgs-unstable {
     system = pkgs.stdenv.hostPlatform.system;
-    config.allowUnfreePredicate = p: pkgs.lib.getName p == "copilot-language-server";
+    config.allowUnfreePredicate = p:
+      builtins.elem (pkgs.lib.getName p) [
+        "1password-cli"
+        "copilot-language-server"
+      ];
   };
   misePackage = unstable.mise;
 
@@ -165,7 +169,9 @@ in
     pkgs.libpq
     pkgs.libpq.dev
     pkgs.libpq.pg_config
-  ] ++ devTools ++ debugTools ++ cliTools ++ runtimes ++ pkgs.lib.optionals pkgs.stdenv.isLinux [
+  ] ++ devTools ++ debugTools ++ cliTools ++ runtimes ++ pkgs.lib.optionals pkgs.stdenv.isDarwin [
+    unstable._1password-cli
+  ] ++ pkgs.lib.optionals pkgs.stdenv.isLinux [
     dotfilesUpdate
     wslFuseSetup
     pkgs.gcc
