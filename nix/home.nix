@@ -210,6 +210,13 @@ in
         exec ${pkgs.openssh}/bin/ssh-keygen "$@"
       '';
     };
+    ".local/bin/ssh-keyscan" = {
+      executable = true;
+      text = ''
+        #!/bin/sh
+        exec ${pkgs.openssh}/bin/ssh-keyscan "$@"
+      '';
+    };
   };
 
   systemd.user = pkgs.lib.mkIf pkgs.stdenv.isLinux {
