@@ -9,8 +9,8 @@ vim.opt.signcolumn = "yes"
 -- ハイライトが行選択（V）と見分けられない。行位置は relativenumber で足りる。
 vim.opt.cursorline = false
 
-vim.opt.pumblend = 10
-vim.opt.winblend = 10
+vim.opt.pumblend = 20
+vim.opt.winblend = 20
 
 -- フロート枠の正本。blink・overseer・vim.lsp.util.open_floating_preview は
 -- border 未指定なら winborder を読むので、プラグイン側に "rounded" を書かない。
