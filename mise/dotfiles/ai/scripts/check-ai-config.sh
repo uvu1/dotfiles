@@ -55,4 +55,5 @@ fi
 
 git -C "$repo_root" diff --check
 bash -n "$repo_root/scripts/sync-ai-config.sh"
+python3 "$repo_root/scripts/test_sync_ai_config.py"
 echo "AI configuration checks passed"

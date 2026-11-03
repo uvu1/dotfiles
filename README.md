@@ -89,6 +89,9 @@ Codexの`config.toml`はproject trustなどの端末固有状態も保持する�
 symlinkしません。`scripts/sync-ai-config.sh`が`mise/dotfiles/ai/codex/config.toml`の
 既定値だけをmarker付きblockとして同期し、その他の設定は保持します。この同期は
 `dotflow update`のmacOS/WSL hookでも実行されます。
+同期はNixで供給するPythonの標準TOML parserで検証し、marker内に混在した端末固有設定も
+保持します。管理対象外の値が変わる場合は書き込みを中止します。
+`bash scripts/sync-ai-config.sh --dry-run`で、変更せずに同期可否を確認できます。
 
 Codex rulesは`dotfiles.rules`だけを共通baselineとして個別symlinkします。Codexが
 approval時に更新する`default.rules`は端末固有fileとして残るため、追加のapprovalを
