@@ -1,0 +1,9 @@
+#:schema https://developers.openai.com/codex/config-schema.json
+model_provider = "nekok"
+model = "gpt-6.1-sol"
+model_reasoning_effort = "medium"
+
+# base_url は zsh の codex 関数が起動時に 1Password から取得して渡す。
+model_providers.nekok.name = "Nekok"
+model_providers.nekok.env_key = "NEKO_API"
+model_providers.nekok.wire_api = "responses"

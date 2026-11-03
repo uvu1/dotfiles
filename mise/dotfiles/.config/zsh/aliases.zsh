@@ -21,17 +21,34 @@ alias rg="rg --color=always"
 alias ls="eza --icons --group-directories-first --color=always"
 
 codex() {
-  if [[ "$1" == "--profile" && "$2" == "nekok" ]]; then
-    local neko_ref='op://Personal/Nekok Free-Codex/credential'
-    if [[ -n ${WSL_DISTRO_NAME:-} ]]; then
-      # Windows の op.exe run は WSL 側の codex を起動できない。
-      local neko_api
-      neko_api=$(op read --no-newline "$neko_ref") || return
-      NEKO_API="$neko_api" command codex "$@"
-    else
-      NEKO_API="$neko_ref" op run -- codex "$@"
+  local selected_profile='' arg
+  local -i profile_next=0
+  for arg in "$@"; do
+    if (( profile_next )); then
+      selected_profile=$arg
+      profile_next=0
+      continue
     fi
-  else
+    case "$arg" in
+      --) break ;;
+      --profile|-p) profile_next=1 ;;
+      --profile=*) selected_profile=${arg#--profile=} ;;
+      -p?*) selected_profile=${arg#-p} ;;
+    esac
+  done
+  if [[ "$selected_profile" != nekok ]]; then
     command codex "$@"
+    return
   fi
+
+  # op read は macOS の op と WSL の Windows op.exe の両方で使える。
+  local neko_endpoint neko_api
+  neko_endpoint=$(op read --no-newline 'op://Personal/Nekok Free-Codex/username') || return
+  neko_api=$(op read --no-newline 'op://Personal/Nekok Free-Codex/credential') || return
+  if [[ -z "$neko_endpoint" || -z "$neko_api" ]]; then
+    print -u2 'nekok: 1Password の endpoint または API キーが空です。'
+    return 1
+  fi
+  # URL は TOML の値として解釈できないため、Codex が文字列として受け取る。
+  NEKO_API="$neko_api" command codex --config "model_providers.nekok.base_url=$neko_endpoint" "$@"
 }

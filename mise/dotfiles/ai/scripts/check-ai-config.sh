@@ -11,6 +11,7 @@ required_paths=(
   "$ai_dir/common/AGENTS.md"
   "$ai_dir/codex/AGENTS.md"
   "$ai_dir/codex/config.toml"
+  "$ai_dir/codex/nekok.config.toml"
   "$ai_dir/codex/rules/dotfiles.rules"
   "$ai_dir/claude/CLAUDE.md"
   "$ai_dir/claude/settings.json"
@@ -28,9 +29,11 @@ done
 
 jq empty "$ai_dir/claude/settings.json"
 
-nix eval --impure --expr \
-  "builtins.fromTOML (builtins.readFile \"$ai_dir/codex/config.toml\")" \
-  >/dev/null
+for config in "$ai_dir"/codex/*.toml; do
+  nix eval --impure --expr \
+    "builtins.fromTOML (builtins.readFile \"$config\")" \
+    >/dev/null
+done
 
 for skill in "$ai_dir"/skills/common/*/SKILL.md; do
   rg -q '^name: [a-z0-9-]+$' "$skill"

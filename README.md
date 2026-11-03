@@ -93,6 +93,14 @@ symlinkしません。`scripts/sync-ai-config.sh`が`mise/dotfiles/ai/codex/conf
 保持します。管理対象外の値が変わる場合は書き込みを中止します。
 `bash scripts/sync-ai-config.sh --dry-run`で、変更せずに同期可否を確認できます。
 
+`nekok`プロファイルは`~/.codex/nekok.config.toml`へsymlinkします。
+zshで`codex --profile nekok`（`-p nekok`も可）を実行すると、1Password CLIの
+`op read`で`op://Personal/Nekok Free-Codex/username`からendpoint、
+`op://Personal/Nekok Free-Codex/credential`からAPIキーを取得します。
+endpointは起動時のconfig override、APIキーは子プロセスの`NEKO_API`環境変数で渡し、
+値をdotfilesやローカルconfigへ書き込みません。macOSでは1Password CLI、WSLでは
+既存の`op` aliasが参照するWindows側のCLIが利用可能で、認証済みである必要があります。
+
 Codex rulesは`dotfiles.rules`だけを共通baselineとして個別symlinkします。Codexが
 approval時に更新する`default.rules`は端末固有fileとして残るため、追加のapprovalを
 行ってもrepositoryはdirtyになりません。
