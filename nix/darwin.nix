@@ -43,6 +43,7 @@
 
   homebrew = {
     enable = true;
+    taps = [ "netbirdio/tap" ];
     casks = [
       "1password"
       "adobe-creative-cloud"
@@ -53,6 +54,7 @@
       "karabiner-elements"
       "macfuse"
       "microsoft-office"
+      "netbirdio/tap/netbird-ui"
       "obsidian"
       "raycast"
       "readdle-spark"
