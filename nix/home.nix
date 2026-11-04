@@ -1,4 +1,4 @@
-{ inputs, pkgs, ... }:
+{ config, inputs, pkgs, ... }:
 let
   # グローバルに使うツールは unstable から取る。stable 26.05 では
   # llvmPackages_22.clang-tools が 22.1.5、gopls が 0.22.0 で、置き換え前の
@@ -149,6 +149,71 @@ let
       sudo install -o root -g root -m 4755 "$helper" "$target"
     '';
   };
+  # 非 NixOS の WSL に、Nix 管理の CCID ドライバーと pcscd を接続する。
+  # uaccess はログイン seat のない WSL では使えないため、所有者を明示する。
+  wslYkmanRules = pkgs.writeText "70-wsl-ykman.rules" ''
+    SUBSYSTEM=="usb", ENV{DEVTYPE}=="usb_device", ATTR{idVendor}=="1050", OWNER="${config.home.username}", MODE="0600"
+    KERNEL=="hidraw*", ATTRS{idVendor}=="1050", OWNER="${config.home.username}", MODE="0600"
+  '';
+  wslYkmanService = pkgs.writeText "wsl-ykman-pcscd.service" ''
+    [Unit]
+    Description=PC/SC for YubiKey on WSL (Nix managed)
+    After=systemd-udevd.service
+    Conflicts=pcscd.service pcscd.socket
+
+    [Service]
+    Type=simple
+    RuntimeDirectory=pcscd
+    Environment=PCSCLITE_HP_DROPDIR=${unstable.ccid}/pcsc/drivers
+    ExecStart=${unstable.pcsclite}/bin/pcscd --foreground --config ${pkgs.writeText "wsl-ykman-reader.conf" ""}
+    Restart=on-failure
+
+    [Install]
+    WantedBy=multi-user.target
+  '';
+  wslYkmanSetup = pkgs.writeShellApplication {
+    name = "wsl-ykman-setup";
+    runtimeInputs = [ pkgs.coreutils pkgs.diffutils ];
+    text = ''
+      if [ "$#" -gt 1 ] || { [ "$#" -eq 1 ] && [ "$1" != --dry-run ]; }; then
+        echo "Usage: wsl-ykman-setup [--dry-run]" >&2
+        exit 2
+      fi
+      service=/etc/systemd/system/wsl-ykman-pcscd.service
+      rules=/etc/udev/rules.d/70-wsl-ykman.rules
+      changed=false
+      for target in "$service" "$rules"; do
+        if [ -L "$target" ]; then
+          echo "Refusing to replace symlink: $target" >&2
+          exit 1
+        fi
+      done
+      if ! cmp -s ${wslYkmanService} "$service" || ! cmp -s ${wslYkmanRules} "$rules"; then
+        changed=true
+      fi
+      if [ "$#" -eq 1 ]; then
+        echo "Would install/update pcscd service and YubiKey udev rules: $changed"
+        echo "Would enable and start wsl-ykman-pcscd.service"
+        exit 0
+      fi
+      if systemctl is-active --quiet pcscd.service pcscd.socket; then
+        echo "An existing pcscd is active; resolve it before enabling wsl-ykman-pcscd." >&2
+        exit 1
+      fi
+      if "$changed"; then
+        sudo install -D -o root -g root -m 0644 ${wslYkmanService} "$service"
+        sudo install -D -o root -g root -m 0644 ${wslYkmanRules} "$rules"
+        sudo systemctl daemon-reload
+        sudo udevadm control --reload-rules
+        sudo udevadm trigger --subsystem-match=usb --attr-match=idVendor=1050
+        sudo udevadm trigger --subsystem-match=hidraw
+        sudo systemctl restart wsl-ykman-pcscd.service
+      fi
+      if ! systemctl is-enabled --quiet wsl-ykman-pcscd.service || ! systemctl is-active --quiet wsl-ykman-pcscd.service; then
+        sudo systemctl enable --now wsl-ykman-pcscd.service
+      fi
+    '';
+  };
 in
 {
   home.stateVersion = "26.05";
@@ -174,6 +239,7 @@ in
   ] ++ pkgs.lib.optionals pkgs.stdenv.isLinux [
     dotfilesUpdate
     wslFuseSetup
+    wslYkmanSetup
     pkgs.gcc
     pkgs.wl-clipboard
     pkgs.passt

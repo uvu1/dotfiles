@@ -285,6 +285,8 @@ systemctl is-active nix-daemon.socket
 ```sh
 nix run home-manager/release-26.05 -- switch --flake .#uvu1@arch-wsl
 wsl-fuse-setup
+wsl-ykman-setup --dry-run
+wsl-ykman-setup
 mise --version
 grep -qxF /home/uvu1/.nix-profile/bin/zsh /etc/shells || \
   echo /home/uvu1/.nix-profile/bin/zsh | sudo tee -a /etc/shells
@@ -314,6 +316,49 @@ WSL 側で FUSE を利用可能にしてから接続してください。SSHFS �
 マウントに必要な権限付き `fusermount3` は、`wsl-fuse-setup` が Nix で固定した
 実体から配置します。初回と版の変更時だけ sudo を使い、`dotflow update` では
 Home Manager の適用後に実行します。
+
+### WSL で YubiKey を使う
+
+`ykman` は Nix の `yubikey-manager` が供給します。WSL 2 では Windows からの
+USB 転送が別途必要です。Windows 側に [usbipd-win](https://github.com/dorssel/usbipd-win)
+の公式インストーラーでドライバーとサービスを導入してください。これは Nix/mise で
+供給するユーザー用 CLI とは別の、Windows 側の USB 転送基盤です。
+転送手順は [Microsoft の公式ドキュメント](https://learn.microsoft.com/windows/wsl/connect-usb)
+を参照します。以下は usbipd-win 4 以降のコマンドです。
+
+YubiKey を挿し、管理者 PowerShell で一覧の BUSID を確認して共有します。
+`<BUSID>` は YubiKey の値に置き換えます。
+
+```powershell
+usbipd list
+usbipd bind --busid <BUSID>
+```
+
+WSL を起動したまま、通常の PowerShell で転送します。
+
+```powershell
+usbipd attach --wsl --busid <BUSID>
+```
+
+WSL 側で構成を適用し、PC/SC サービスと USB/HID の権限を設定します。
+`wsl-ykman-setup` は Nix で固定した `pcsclite` と `ccid` を使い、初回と設定・版の
+変更時に sudo で systemd unit と udev rule を配置します。既存の `pcscd.service` /
+`pcscd.socket` が稼働中なら競合を避けるため処理を中断します。以後の `dotflow update` でも
+Home Manager の適用後に設定を更新します。
+
+```sh
+cd ~/dotfiles
+home-manager switch --flake .#uvu1@arch-wsl
+wsl-ykman-setup --dry-run
+wsl-ykman-setup
+ykman list
+ykman info
+```
+
+USB 転送中は Windows 側のアプリからその YubiKey を使えません。Windows に戻す場合は
+PowerShell で `usbipd detach --busid <BUSID>` を実行します。抜き差しや WSL 再起動後は
+再度 attach が必要です。`ykman list` が空なら `usbipd list` の Attached 状態を確認し、
+PC/SC のエラーなら `systemctl status wsl-ykman-pcscd.service` を確認してください。
 
 ### WSL の更新
 

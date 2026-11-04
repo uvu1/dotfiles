@@ -22,6 +22,9 @@ cwd = "{repo}"
 program = "wsl-fuse-setup"
 
 [[profiles.wsl.after_sync]]
+program = "wsl-ykman-setup"
+
+[[profiles.wsl.after_sync]]
 program = "bash"
 args = ["scripts/sync-ai-config.sh"]
 cwd = "{repo}"
