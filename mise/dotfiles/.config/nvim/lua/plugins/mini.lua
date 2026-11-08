@@ -10,13 +10,6 @@ return {
     end,
   },
   {
-    "nvim-mini/mini.surround",
-    -- 既定キー sa/sd/sr は維持。ただし InsertEnter だと初回インサート前は未マップで
-    -- flash の s が即発火してしまうため、VeryLazy へ変更（Finding 5#6）。
-    event = "VeryLazy",
-    opts = {},
-  },
-  {
     "nvim-mini/mini.icons",
     event = "VeryLazy",
     config = function()

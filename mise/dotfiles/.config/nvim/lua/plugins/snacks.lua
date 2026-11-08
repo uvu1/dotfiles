@@ -214,21 +214,21 @@ return {
       {
         "<leader>grn",
         function()
-          require("snacks").lsp.rename()
+          vim.lsp.buf.rename()
         end,
         desc = "Rename symbol",
       },
       {
         "<leader>gci",
         function()
-          require("snacks").lsp.incoming_calls()
+          require("snacks").picker.lsp_incoming_calls()
         end,
         desc = "Incoming calls",
       },
       {
         "<leader>gco",
         function()
-          require("snacks").lsp.outgoing_calls()
+          require("snacks").picker.lsp_outgoing_calls()
         end,
         desc = "Outgoing calls",
       },
