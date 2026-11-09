@@ -112,6 +112,71 @@ mise/dotfiles/ai/scripts/check-ai-config.sh
 mise -C mise -E unix dotfiles status
 ```
 
+## Takumi Guard
+
+[Takumi Guard](https://shisho.dev/docs/ja/t/guard/)はnpm、PyPI、RubyGems、Goの
+registryを仲介して悪性packageのinstallをblockするsecurity proxyです。macOSとWSLでは
+`scripts/sync-takumi-guard.sh`が唯一の供給元で、`dotflow update`のafter_sync hookから
+毎回再適用されます。Windows profileはnode / go / ruby / pythonを持たないため対象外です。
+
+適用先は次のとおりです。いずれも各tool公式の方法で書き込み、他の設定keyは壊しません。
+
+- npm / pnpm / yarn v1: `~/.npmrc`の`registry`と`//npm.flatt.tech/:_authToken`
+- RubyGems: `~/.bundle/config`の`mirror.https://rubygems.org`（`Gemfile`の変更は不要）
+- Go: `go env -w`による`GOPROXY`と、`~/.netrc`の`machine golang.flatt.tech`
+- PyPI: pipの`index-url`と、uvの`[[index]]`（どちらも先頭のmarker行で所有を示し、
+  markerの無い既存fileは上書きせず中止する）
+
+これらのfileはすべてtokenを含むため、端末ローカルに留めrepositoryでは追跡しません。
+mise dotfilesにも載せません。
+
+tokenは`TAKUMI_GUARD_TOKEN`、無ければ1Password CLIの`op read`で
+`op://Personal/Takumi Guard/credential`から取得します。WSLでは`op` aliasと同じく
+Windows側のCLIを使います。どちらからも取得できない場合は、未設定の対象だけ匿名
+（token無し）で有効化して終了します。1Password未sign inの端末で`dotflow update`を
+止めず、blockだけは必ず効く状態にするためです。既にtoken付きで設定済みの対象は、
+その回では変更しません。
+
+tokenの取得は一度だけ手で行います。利用規約とprivacy policyに同意のうえ、
+
+```sh
+curl -X POST https://npm.flatt.tech/api/v1/tokens \
+  -H 'Content-Type: application/json' \
+  -d '{"email": "<アドレス>", "language": "ja"}'
+```
+
+を実行し、welcome mailに届く`tg_anon_...`を1Passwordの`Personal`金庫にitem名
+`Takumi Guard`で保存します。1つのtokenでnpm / PyPI / RubyGems / Go共通に使えます。
+
+手で確認・適用する場合は次を実行します。
+
+```sh
+bash scripts/sync-takumi-guard.sh --dry-run
+bash scripts/sync-takumi-guard.sh
+```
+
+注意点があります。
+
+- npm 11.15.0以降は、設定中に追加・更新された`package-lock.json`のentryに
+  `npm.flatt.tech`が記録されます。team共有のrepositoryでは、project側の`.npmrc`に
+  `registry=https://registry.npmjs.org/`を置いて打ち消すか、その差分をcommitしない
+  運用が必要です。pnpmはlock fileにregistry URLを記録しません。
+- `GOPROXY`に`,direct`のfallbackは付けません（block対象がVCS経由で迂回されうるため
+  公式が禁じています）。社内のprivate moduleがある場合は`go env -w GOPRIVATE=...`を
+  別途設定します。
+- 取得先に到達できないとinstallは完了しません。公式registryへの自動fallbackはありません。
+- macOSのpipは`~/Library/Application Support/pip`が存在するとそちらを優先するため、
+  scriptはdirectoryの有無を見て書き込み先を選びます。
+- yarn berryの`.yarnrc.yml`はproject単位のため、global適用の対象外です。
+
+動作確認は公式のtest packageで行います。いずれも403で失敗すれば有効です。
+
+```sh
+cd $(mktemp -d) && npm install @panda-guard/test-malicious
+cd $(mktemp -d) && go mod init verify-takumi-guard && go get github.com/flatt-security/hola-takumi-go@v0.1.0
+cd $(mktemp -d) && printf 'source "https://rubygems.org"\ngem "hola-takumi", "0.1.0"\n' > Gemfile && bundle install
+```
+
 ## dotflow
 
 [dotflow](https://github.com/uvu1/dotflow) は WSL、macOS、Windows 共通の更新・編集

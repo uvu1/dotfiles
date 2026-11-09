@@ -29,6 +29,11 @@ program = "bash"
 args = ["scripts/sync-ai-config.sh"]
 cwd = "{repo}"
 
+[[profiles.wsl.after_sync]]
+program = "bash"
+args = ["scripts/sync-takumi-guard.sh"]
+cwd = "{repo}"
+
 [profiles.macos]
 platform = "macos"
 arch = "aarch64"
@@ -49,6 +54,11 @@ cwd = "{repo}"
 [[profiles.macos.after_sync]]
 program = "bash"
 args = ["scripts/sync-ai-config.sh"]
+cwd = "{repo}"
+
+[[profiles.macos.after_sync]]
+program = "bash"
+args = ["scripts/sync-takumi-guard.sh"]
 cwd = "{repo}"
 
 [profiles.windows]
