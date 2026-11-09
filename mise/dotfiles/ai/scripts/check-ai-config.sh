@@ -15,6 +15,7 @@ required_paths=(
   "$ai_dir/codex/rules/dotfiles.rules"
   "$ai_dir/claude/CLAUDE.md"
   "$ai_dir/claude/settings.json"
+  "$ai_dir/claude/statusline.sh"
   "$ai_dir/skills/common/dotfiles-maintenance/SKILL.md"
   "$ai_dir/skills/codex/dotfiles-maintenance"
   "$ai_dir/skills/claude/dotfiles-maintenance"
@@ -28,6 +29,7 @@ for path in "${required_paths[@]}"; do
 done
 
 jq empty "$ai_dir/claude/settings.json"
+sh -n "$ai_dir/claude/statusline.sh"
 
 for config in "$ai_dir"/codex/*.toml; do
   nix eval --impure --expr \
