@@ -34,7 +34,7 @@ decorations = "Buttonless"
 # フォント Moralerspace（半角:全角 = 3:5）を使う。macOS は nix/darwin.nix の moralerspace、
 # Windows は winget に無いので手動で入れる（README の Windows 節）。
 [fonts]
-size = 16
+size = 18
 family = "Moralerspace Neon"
 # Monaspace のコード用リガチャは ss01〜ss10 に分かれていて既定では無効。calt はテクスチャ
 # ヒーリング。Monaspace の README の推奨設定に ss10（#[ など）を足したもの。
