@@ -39,6 +39,9 @@ new_workspace = "prefix+shift+w"
 rename_workspace = "prefix+shift+e"
 previous_workspace = "prefix+["
 next_workspace = "prefix+]"
+# shift+[ / shift+] は legacy key encoding では { / } として届く。
+previous_agent = "prefix+{"
+next_agent = "prefix+}"
 
 # 既定の copy_mode (prefix+[) は previous_workspace に譲る。split_vertical を / に
 # 移して空いた v と、ctrl+shift+x に割り当てる。
