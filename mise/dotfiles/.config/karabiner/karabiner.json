@@ -24,6 +24,7 @@
                                     {
                                         "bundle_identifiers": [
                                             "^com\\.github\\.wez\\.wezterm$",
+                                            "^com\\.raphaelamorim\\.rio$",
                                             "^com\\.apple\\.Terminal$"
                                         ],
                                         "type": "frontmost_application_unless"
@@ -49,6 +50,7 @@
                                     {
                                         "bundle_identifiers": [
                                             "^com\\.github\\.wez\\.wezterm$",
+                                            "^com\\.raphaelamorim\\.rio$",
                                             "^com\\.apple\\.Terminal$"
                                         ],
                                         "type": "frontmost_application_unless"
@@ -74,6 +76,7 @@
                                     {
                                         "bundle_identifiers": [
                                             "^com\\.github\\.wez\\.wezterm$",
+                                            "^com\\.raphaelamorim\\.rio$",
                                             "^com\\.apple\\.Terminal$"
                                         ],
                                         "type": "frontmost_application_unless"
@@ -99,6 +102,7 @@
                                     {
                                         "bundle_identifiers": [
                                             "^com\\.github\\.wez\\.wezterm$",
+                                            "^com\\.raphaelamorim\\.rio$",
                                             "^com\\.apple\\.Terminal$"
                                         ],
                                         "type": "frontmost_application_unless"
@@ -124,6 +128,7 @@
                                     {
                                         "bundle_identifiers": [
                                             "^com\\.github\\.wez\\.wezterm$",
+                                            "^com\\.raphaelamorim\\.rio$",
                                             "^com\\.apple\\.Terminal$"
                                         ],
                                         "type": "frontmost_application_unless"
@@ -149,6 +154,7 @@
                                     {
                                         "bundle_identifiers": [
                                             "^com\\.github\\.wez\\.wezterm$",
+                                            "^com\\.raphaelamorim\\.rio$",
                                             "^com\\.apple\\.Terminal$"
                                         ],
                                         "type": "frontmost_application_unless"
@@ -174,6 +180,7 @@
                                     {
                                         "bundle_identifiers": [
                                             "^com\\.github\\.wez\\.wezterm$",
+                                            "^com\\.raphaelamorim\\.rio$",
                                             "^com\\.apple\\.Terminal$"
                                         ],
                                         "type": "frontmost_application_unless"
@@ -199,6 +206,7 @@
                                     {
                                         "bundle_identifiers": [
                                             "^com\\.github\\.wez\\.wezterm$",
+                                            "^com\\.raphaelamorim\\.rio$",
                                             "^com\\.apple\\.Terminal$"
                                         ],
                                         "type": "frontmost_application_unless"
@@ -224,6 +232,7 @@
                                     {
                                         "bundle_identifiers": [
                                             "^com\\.github\\.wez\\.wezterm$",
+                                            "^com\\.raphaelamorim\\.rio$",
                                             "^com\\.apple\\.Terminal$"
                                         ],
                                         "type": "frontmost_application_unless"
@@ -249,6 +258,7 @@
                                     {
                                         "bundle_identifiers": [
                                             "^com\\.github\\.wez\\.wezterm$",
+                                            "^com\\.raphaelamorim\\.rio$",
                                             "^com\\.apple\\.Terminal$"
                                         ],
                                         "type": "frontmost_application_unless"
@@ -274,6 +284,7 @@
                                     {
                                         "bundle_identifiers": [
                                             "^com\\.github\\.wez\\.wezterm$",
+                                            "^com\\.raphaelamorim\\.rio$",
                                             "^com\\.apple\\.Terminal$"
                                         ],
                                         "type": "frontmost_application_unless"
@@ -299,6 +310,7 @@
                                     {
                                         "bundle_identifiers": [
                                             "^com\\.github\\.wez\\.wezterm$",
+                                            "^com\\.raphaelamorim\\.rio$",
                                             "^com\\.apple\\.Terminal$"
                                         ],
                                         "type": "frontmost_application_unless"
@@ -324,6 +336,7 @@
                                     {
                                         "bundle_identifiers": [
                                             "^com\\.github\\.wez\\.wezterm$",
+                                            "^com\\.raphaelamorim\\.rio$",
                                             "^com\\.apple\\.Terminal$"
                                         ],
                                         "type": "frontmost_application_unless"
@@ -347,6 +360,7 @@
                                     {
                                         "bundle_identifiers": [
                                             "^com\\.github\\.wez\\.wezterm$",
+                                            "^com\\.raphaelamorim\\.rio$",
                                             "^com\\.apple\\.Terminal$"
                                         ],
                                         "type": "frontmost_application_unless"

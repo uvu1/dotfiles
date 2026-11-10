@@ -41,4 +41,9 @@ cloudflared = "latest"
 # bin が `#!/usr/bin/env node` の shim（engines: node>=24）なので codex と同じく
 # aqua backend で GitHub リリースのネイティブバイナリを取る。
 "aqua:vercel-labs/agent-browser" = "latest"
+# AI エージェント向けのターミナル多重化。rio の中で動かし、分割・タブ・ワークスペース・
+# セッション永続化を担わせる（.config/herdr/config.toml）。nixpkgs 未収録で、公式 flake は
+# rust-overlay ごとソースビルドになるため、公式が案内する mise の registry 経由で
+# リリースバイナリを取る。v0.x で更新が速いので latest で追従する。
+herdr = "latest"
 fastfetch = "latest"

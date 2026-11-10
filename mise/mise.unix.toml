@@ -14,6 +14,10 @@
 "~/.codex/nekok.config.toml" = { source = "dotfiles/ai/codex/nekok.config.toml", mode = "symlink" }
 "~/.codex/rules" = { source = "dotfiles/ai/codex/rules", mode = "symlink-each" }
 "~/.config/mise/config.toml" = { source = "dotfiles/mise/config.unix.toml", mode = "symlink" }
+# herdr は設定画面や onboarding で ~/.config/herdr に書き込むため、ディレクトリごとではなく
+# 管理するものだけをファイル単位で置く。
+"~/.config/herdr/config.toml" = { source = "dotfiles/.config/herdr/config.toml", mode = "symlink" }
+"~/.config/herdr/scripts" = { source = "dotfiles/.config/herdr/scripts", mode = "symlink" }
 "~/.config/sheldon" = { source = "dotfiles/.config/sheldon", mode = "symlink" }
 "~/.config/starship.toml" = { source = "dotfiles/.config/starship.toml", mode = "symlink" }
 "~/.config/zsh" = { source = "dotfiles/.config/zsh", mode = "symlink" }

@@ -22,7 +22,7 @@ chezmoi 管理の設定を Nix、Home Manager、nix-darwin、mise dotfiles へ�
 - `docs/`: 設計と移行計画
 
 macOS と WSL は共通の unix toolset（mise 環境 `unix`）を利用します。macOS は
-加えて `darwin` 環境で wezterm 設定を配置します。Windows は単一の `windows`
+加えて `darwin` 環境で wezterm と rio（試用中）の設定を配置します。Windows は単一の `windows`
 環境でNeovim、PowerShell profile、Windows用CLI、通常のdotfilesを管理します。
 GUIアプリ、Git、mise、PowerShell、WezTermの導入はWinGet Configurationが担当します。
 
@@ -508,7 +508,7 @@ nix --extra-experimental-features 'nix-command flakes' build .#darwinConfigurati
 nix --extra-experimental-features 'nix-command flakes' build '.#homeConfigurations."uvu1@arch-wsl".activationPackage'
 export MISE_EXPERIMENTAL=1
 mise -C mise -E unix dotfiles status --missing
-mise -C mise -E darwin dotfiles status --missing   # macOS のみ (wezterm)
+mise -C mise -E darwin dotfiles status --missing   # macOS のみ (wezterm, rio)
 ```
 
 Windows では次を実行します。

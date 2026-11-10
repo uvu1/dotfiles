@@ -44,7 +44,12 @@ mise_environment = "unix"
 
 [[profiles.macos.environments]]
 mise_environment = "darwin"
-targets = ["~/.config/karabiner", "~/.config/wezterm"]
+targets = [
+  "~/.config/karabiner",
+  "~/.config/wezterm",
+  "~/.config/rio/config.toml",
+  "~/.config/rio/background.jpg",
+]
 
 [[profiles.macos.after_sync]]
 program = "sudo"

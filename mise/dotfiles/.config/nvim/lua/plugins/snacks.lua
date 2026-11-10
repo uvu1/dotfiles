@@ -99,7 +99,8 @@ return {
         enabled = true,
         ui_select = true,
 
-        -- WezTerm が CTRL+q を自身の leader にしているため（wezterm/keybinds.lua）、
+        -- WezTerm が CTRL+q を自身の leader に、herdr が prefix にしているため
+        -- （wezterm/keybinds.lua、herdr/config.toml）、
         -- picker 既定の <c-q> = qflist は nvim に永久に届かない。届く別名を足す。
         -- 既定の <a-h>/<a-i>/<a-p> 等と同じ Alt 系なので到達性は揃う。
         win = {

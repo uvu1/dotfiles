@@ -4,3 +4,7 @@
 # karabiner.json は保存時に rename されるため、file 単位ではなく directory 単位で symlink する。
 "~/.config/karabiner" = { source = "dotfiles/.config/karabiner", mode = "symlink" }
 "~/.config/wezterm" = { source = "dotfiles/.config/wezterm", mode = "symlink" }
+# rio は試用中。背景画像は wezterm のものを共有し、複製しない。rio は画像パスを展開
+# しないので、config.toml はこの配置先を絶対パスで参照している。
+"~/.config/rio/config.toml" = { source = "dotfiles/.config/rio/config.toml", mode = "symlink" }
+"~/.config/rio/background.jpg" = { source = "dotfiles/.config/wezterm/resources/background.jpg", mode = "symlink" }

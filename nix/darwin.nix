@@ -56,6 +56,8 @@
       "obsidian"
       "raycast"
       "readdle-spark"
+      # nixpkgs は stable / unstable とも 0.4.7 で upstream (0.5.x) から大きく遅れるため cask で入れる。
+      "rio"
       "scroll-reverser"
       "slack"
       "spotify"
@@ -72,6 +74,9 @@
 
   fonts.packages = [
     pkgs.nerd-fonts.jetbrains-mono
+    # rio 用。rio はフォントごとの拡大率を調整できず、fallback のヒラギノは英字と高さが
+    # 揃わないため、JetBrains Mono + BIZ UD ゴシック + Nerd Fonts の合成フォントを使う。
+    pkgs.udev-gothic-nf
   ];
 
   home-manager = {
