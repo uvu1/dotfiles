@@ -39,9 +39,9 @@ properties:
         useLatest: true
     - resource: Microsoft.WinGet.DSC/WinGetPackage
       directives:
-        description: Install WezTerm
+        description: Install Rio
       settings:
-        id: wez.wezterm
+        id: raphamorim.rio
         source: winget
         useLatest: true
 

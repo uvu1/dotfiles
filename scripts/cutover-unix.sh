@@ -17,7 +17,7 @@ if [[ -z "${HOME:-}" || "$HOME" == "/" ]]; then
   exit 1
 fi
 
-# macOS は共有 unix 環境に加えて darwin 環境(wezterm)を適用する。
+# macOS は共有 unix 環境に加えて darwin 環境(karabiner, rio)を適用する。
 # WSL は unix 環境のみ。互換のため linux も unix として受け付ける。
 case "$selector" in
   darwin)
@@ -28,7 +28,6 @@ case "$selector" in
       "$HOME/.config/sheldon"
       "$HOME/.config/zsh"
       "$HOME/.config/starship.toml"
-      "$HOME/.config/wezterm"
       "$HOME/.zshrc"
       "$HOME/.gitconfig"
     )

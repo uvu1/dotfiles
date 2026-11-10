@@ -1,17 +1,17 @@
 # herdr の設定（全項目は `herdr --default-config`、検証は `herdr config check`）。
 # rio の中で動かし、分割・タブ・ワークスペース・セッション永続化を任せる。
-# キー割り当ては wezterm/keybinds.lua の LEADER 操作に揃えてある。
+# macOS は rio が zsh から、Windows は rio が WSL の zsh から起動する（rio/config.toml）。
 #
 # herdr は設定画面や onboarding でこのファイルを書き戻すため、~/.config/herdr へは
 # ディレクトリごとではなくファイル単位で symlink している（mise/mise.unix.toml）。
 
 # 初回の onboarding はこのファイルへ書き込み、integration 設定画面を開く。
-# integration は ~/.claude/settings.json（repo への symlink）や ~/.codex を書き換えるので、
-# 試用中は入れない。
+# integration は ~/.claude/settings.json（repo への symlink）や ~/.codex を書き換えるので入れない。
+# エージェントの状態は integration が無くても画面から検出される。
 onboarding = false
 
 [keys]
-# wezterm の leader と同じ。nvim 側の回避（nvim/lua/plugins/snacks.lua の <a-q>）もそのまま効く。
+# nvim 側は picker の <c-q> が届かない前提で <a-q> を足してある（nvim/lua/plugins/snacks.lua）。
 prefix = "ctrl+q"
 
 focus_pane_left = "prefix+h"
@@ -21,14 +21,14 @@ focus_pane_right = "prefix+l"
 zoom = "prefix+z"
 close_pane = "prefix+x"
 resize_mode = "prefix+r"
-# wezterm と同じく / で左右、- で上下に割る。
+# / で左右、- で上下に割る。
 split_vertical = "prefix+/"
 split_horizontal = "prefix+minus"
-# wezterm の PaneSelect（LEADER Space）と同じく、一覧からペインを選んで飛ぶ。
+# 一覧からペインやエージェントを選んで飛ぶ。
 goto = "prefix+space"
 
-# prefix+c は下の copy-last-output に使うので、wezterm の CTRL+SHIFT t に寄せて t にする。
-# rio の CTRL+SHIFT t / CTRL+SHIFT w / CTRL+数字 は prefix+t / prefix+shift+x（close_tab 既定）/
+# prefix+c は下の copy-last-output に使うので t にする。
+# rio の Ctrl+Shift+T / Ctrl+Shift+W / Ctrl+数字 は prefix+t / prefix+shift+x（close_tab 既定）/
 # prefix+数字（switch_tab 既定）を送っている（rio/config.toml）。prefix・new_tab・close_tab・
 # switch_tab を変えるときは rio 側も揃えること。
 new_tab = "prefix+t"
@@ -41,17 +41,17 @@ previous_workspace = "prefix+["
 next_workspace = "prefix+]"
 
 # 既定の copy_mode (prefix+[) は previous_workspace に譲る。split_vertical を / に
-# 移して空いた v と、wezterm の ActivateCopyMode と同じ ctrl+shift+x に割り当てる。
+# 移して空いた v と、ctrl+shift+x に割り当てる。
 copy_mode = ["prefix+v", "ctrl+shift+x"]
 
-# 直前のコマンドの出力をコピーする（wezterm の LEADER c）。
+# 直前のコマンドの出力をコピーする。
 [[keys.command]]
 key = "prefix+c"
 type = "shell"
 command = "~/.config/herdr/scripts/copy-last-output.sh"
 description = "copy last command output"
 
-# ghq のリポジトリを選んで workspace として開く（wezterm の LEADER g）。
+# ghq のリポジトリを選んで workspace として開く。
 # 既定の goto (prefix+g) は上で prefix+space に移してある。
 [[keys.command]]
 key = "prefix+g"
@@ -62,7 +62,7 @@ width = "80%"
 height = "80%"
 
 [ui.toast]
-# wezterm の bell.lua（非フォーカスのペインで鳴ったらトースト）の代わり。
+# 背面のエージェントが完了・入力待ちになったら OS の通知を出す。
 delivery = "system"
 
 [ui]

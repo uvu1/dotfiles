@@ -46,7 +46,6 @@ mise_environment = "unix"
 mise_environment = "darwin"
 targets = [
   "~/.config/karabiner",
-  "~/.config/wezterm",
   "~/.config/rio/config.toml",
   "~/.config/rio/background.jpg",
 ]

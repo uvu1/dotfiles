@@ -61,7 +61,6 @@
       "scroll-reverser"
       "slack"
       "spotify"
-      "wezterm@nightly"
       "zen@twilight"
       "zoom"
     ];

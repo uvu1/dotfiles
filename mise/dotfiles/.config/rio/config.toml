@@ -1,52 +1,49 @@
-# rio の設定（試用中。wezterm の設定は残したまま並存させている）。
+# rio の設定（macOS と Windows で共有。Windows は %USERPROFILE%\AppData\Local\rio へ copy 配置）。
 # 描画だけを rio に任せ、分割・タブ・ワークスペース・セッション永続化は herdr が持つ
 # （.config/herdr/config.toml）。キー名・値は rio v0.5.29 のソース
 # （rio-backend/src/config/*.rs）に合わせてある。man ページ rio(5) は古く、
 # fonts.extras のように実在しない項目が載り、[hints] が載っていないので参照しない。
 #
+# OS ごとの違いは末尾の [platform.macos] / [platform.windows] に書く。上書きできるのは
+# shell / window / navigation / renderer / env-vars / theme だけで、fonts は共通になる
+# （rio-backend/src/config/platform.rs）。
+#
 # 先頭キーは [section] より前に書くこと。後ろに書くと直前のテーブルの中身になる。
 
-# 左 Option を Alt として送る。nvim の <a-q> など Alt 系のキーマップのため。
+# 左 Option を Alt として送る（macOS のみ有効）。nvim の <a-q> など Alt 系のキーマップのため。
 option-as-alt = "left"
 # セッションは herdr のサーバが保持するので、閉じても失うものがない。
 confirm-before-quit = false
-# wezterm の「左ドラッグで選択した時点でコピー」と同じ。
+# 左ドラッグで選択した時点でコピーする。
 copy-on-select = true
 
 [window]
-# 起動時からフルスクリーン（macOS のネイティブ全画面。Ctrl+Shift+Enter で切り替え）。
+# 起動時からフルスクリーン（Ctrl+Shift+Enter で切り替え）。macOS はネイティブ全画面、
+# Windows は今のモニターを覆う枠なしウィンドウになる（どちらも Fullscreen::Borderless）。
 mode = "Fullscreen"
 # フルスクリーンを解除したときのウィンドウの大きさ。
 columns = 120
 rows = 32
 opacity = 0.9
 blur = true
-# wezterm の window_decorations = "RESIZE" と同じくタイトルバーのボタンを出さない。
+# タイトルバーのボタンを出さない。
 decorations = "Buttonless"
-
-# rio は path を展開せずそのまま開く（sugarloaf の set_background_image が
-# image_rs::open(&image.path) を呼ぶだけ）ので、~ も相対パスも使えない。macOS の
-# ホームは nix/darwin.nix の user = "uvu1" で固定なので絶対パスで書く。画像は wezterm の
-# resources/background.jpg を mise/mise.darwin.toml で symlink して共有している。
-[window.background-image]
-path = "/Users/uvu1/.config/rio/background.jpg"
-opacity = 0.12
 
 # rio はフォントごとの拡大率や位置を調整できず、fallback（fonts.symbol-map）で振った
 # ヒラギノは JetBrains Mono と文字の高さが揃わない。英字と日本語の高さを揃えた合成フォント
 # （JetBrains Mono + BIZ UD ゴシック + Nerd Fonts）を使う。半角:全角 = 3:5 の 35 版は、
-# 1:2 版より英字が元の JetBrains Mono の幅に近い。nix/darwin.nix の udev-gothic-nf。
+# 1:2 版より英字が元の JetBrains Mono の幅に近い。macOS は nix/darwin.nix の udev-gothic-nf、
+# Windows は winget に無いので手動で入れる（README の Windows 節）。
 [fonts]
 size = 16
 family = "UDEV Gothic 35NF"
 
 [colors]
 # rio の既定のカーソル色はマゼンタ (#F712FF)。IME の変換中の文字列もカーソル色の
-# ブロックで描かれる（rio-grid/src/preedit.rs）ので、wezterm の既定のカーソル色に揃える。
+# ブロックで描かれる（rio-grid/src/preedit.rs）ので、落ち着いた緑にする。
 cursor = "#52ad70"
 
 [cursor]
-# wezterm の default_cursor_style = "SteadyBar" と同じ。
 shape = "beam"
 blinking = false
 
@@ -55,13 +52,8 @@ blinking = false
 mode = "Plain"
 use-split = false
 
-[shell]
-# herdr は mise 管理で、mise activate は .zshrc（sheldon）で行うため対話シェルで起動する。
-# herdr が無い環境では素の login shell に落とす。
-program = "/bin/zsh"
-args = ["-lic", "command -v herdr >/dev/null && exec herdr; exec zsh -l"]
-
-# wezterm の SHIFT+Enter と同じく ESC+CR を送り、Claude Code で送信ではなく改行にする。
+# Shift+Enter で ESC+CR を送り、Claude Code で送信ではなく改行にする。生バイト送出なので
+# Windows のキーエンコードにも左右されない。zsh では ^[^M が self-insert-unmeta で改行挿入になる。
 [[bindings.keys]]
 key = "enter"
 with = "shift"
@@ -70,7 +62,7 @@ esc = "\u001b\r"
 # macOS でもショートカットに Cmd を使わない。rio の macOS 既定は Super(Cmd) 系なので、
 # rio 自身の Linux 既定（frontends/rioterm/src/bindings/mod.rs の platform_key_bindings）と
 # 同じ Ctrl 系を足す。karabiner の ctrl -> cmd 置換は rio を除外しているので Ctrl のまま届く。
-# Ctrl+英字はシェルやエディタが使うため、英字には Shift を足して衝突を避ける（wezterm と同じ）。
+# Ctrl+英字はシェルやエディタが使うため、英字には Shift を足して衝突を避ける。
 # タブ・分割系は herdr が持つので足さない。Cmd 系の既定はそのまま残る。
 [[bindings.keys]]
 key = "p"
@@ -133,7 +125,7 @@ key = "-"
 with = "control"
 action = "DecreaseFontSize"
 
-# タブは herdr が持つので、wezterm の CTRL+SHIFT t / CTRL+数字 を herdr の prefix 操作に
+# タブは herdr が持つので、Ctrl+Shift+T / Ctrl+Shift+W / Ctrl+数字 を herdr の prefix 操作に
 # 変換して送る。従来のキーエンコードでは Ctrl+1 は 1、Ctrl+Shift+T は Ctrl+T と区別できず
 # herdr に直接は割り当てられないため。\u0011 は herdr の prefix (ctrl+q) なので、
 # herdr/config.toml の prefix・new_tab・close_tab・switch_tab を変えたらここも揃えること。
@@ -142,7 +134,7 @@ key = "t"
 with = "control | shift"
 esc = "\u0011t" # new_tab = "prefix+t"
 
-# wezterm の CTRL+SHIFT w（タブを閉じる）。Shift+x は大文字 X として届く。
+# タブを閉じる。Shift+x は大文字 X として届く。
 [[bindings.keys]]
 key = "w"
 with = "control | shift"
@@ -200,10 +192,10 @@ hyperlinks = true
 action = "Open"
 binding = { key = "o", mods = ["Control", "Shift"] }
 
-# wezterm の QuickSelect（CTRL+SHIFT Space）と quick_select_patterns の代わり。
+# 画面上の SHA・URL・パスなどをラベルで選んでコピーする（Ctrl+Shift+Space）。
 # 正規表現は oniguruma。(?x) で空白と改行を無視させ、1 行 1 パターンで並べる。
 # (?x) では # がコメントになるので、owner/repo#123 の # は \# と書く。
-# wezterm はパターンごとに照合するが、ここは 1 本の選択なので左にある候補が先に勝つ。
+# 1 本の選択なので左にある候補が先に勝つ。
 # 長く取りたいもの（file:line, IPv4:port）を、その一部に当たる短いもの
 # （namespace/name, domain）より前に置くこと。
 [[hints.rules]]
@@ -224,3 +216,26 @@ regex = '''(?x)
 action = "Copy"
 mouse = { enabled = false }
 binding = { key = "space", mods = ["Control", "Shift"] }
+
+# rio は画像の path を展開せずそのまま開く（sugarloaf の set_background_image が
+# image_rs::open(&image.path) を呼ぶだけ）ので、~ も相対パスも使えない。どちらの OS も
+# ユーザー名は uvu1 で固定（nix/darwin.nix、.gitconfig.tmpl）なので絶対パスで書く。
+# 画像は mise の dotfiles が config.toml の隣に置く（mise.darwin.toml / mise.windows.toml）。
+#
+# herdr は mise 管理で、mise activate は .zshrc（sheldon）で行うため対話シェルで起動する。
+# herdr が無い環境では素の login shell に落とす。Windows は WSL の中で同じことをする。
+[platform.macos.shell]
+program = "/bin/zsh"
+args = ["-lic", "command -v herdr >/dev/null && exec herdr; exec zsh -l"]
+
+[platform.macos.window.background-image]
+path = "/Users/uvu1/.config/rio/background.jpg"
+opacity = 0.12
+
+[platform.windows.shell]
+program = "wsl.exe"
+args = ["--cd", "~", "--exec", "zsh", "-lic", "command -v herdr >/dev/null && exec herdr; exec zsh -l"]
+
+[platform.windows.window.background-image]
+path = "C:/Users/uvu1/AppData/Local/rio/background.jpg"
+opacity = 0.12

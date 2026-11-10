@@ -22,9 +22,9 @@ chezmoi 管理の設定を Nix、Home Manager、nix-darwin、mise dotfiles へ�
 - `docs/`: 設計と移行計画
 
 macOS と WSL は共通の unix toolset（mise 環境 `unix`）を利用します。macOS は
-加えて `darwin` 環境で wezterm と rio（試用中）の設定を配置します。Windows は単一の `windows`
+加えて `darwin` 環境で Karabiner と Rio の設定を配置します。Windows は単一の `windows`
 環境でNeovim、PowerShell profile、Windows用CLI、通常のdotfilesを管理します。
-GUIアプリ、Git、mise、PowerShell、WezTermの導入はWinGet Configurationが担当します。
+GUIアプリ、Git、mise、PowerShell、Rioの導入はWinGet Configurationが担当します。
 
 ### nix と mise の責務
 
@@ -262,8 +262,8 @@ sudo darwin-rebuild switch --flake .#uvu1-mac
 
 この適用では `nix-homebrew` が Apple Silicon 用 Homebrew を `/opt/homebrew` に導入し、
 1Password、Adobe Creative Cloud、ATOK、Cloudflare One Client、Discord Canary、
-Google Chrome Canary、macFUSE、Microsoft Office、Obsidian、Scroll Reverser、Slack、Spark、
-Spotify、WezTerm Nightly、Zen Twilight、Zoom を
+Google Chrome Canary、macFUSE、Microsoft Office、Obsidian、Rio、Scroll Reverser、Slack、Spark、
+Spotify、Zen Twilight、Zoom を
 Homebrew Cask で導入・更新します。Nix の宣言にない Homebrew package は削除しません。
 
 macFUSE は SSHFS で遠隔ファイルを開くために使います。初回は macOS のシステム設定で
@@ -477,7 +477,7 @@ WinGet Configurationはbootstrap基盤、Windows環境、ブラウザ、日常�
 導入済みのアプリは自動ではアンインストールされません。OS component、runtime、ゲーム、
 chezmoi、miseと重複するCLIは宣言対象外です。
 
-- bootstrap基盤: 1Password、7-Zip、Git、mise、PowerShell、WezTerm
+- bootstrap基盤: 1Password、7-Zip、Git、mise、PowerShell、Rio
 - Windows環境: WSL、Windows Terminal、PowerToys
 - ブラウザ: Chrome、Firefox Developer Edition/Nightly、Zen Browser/Twilight
 - 日常アプリ: Obsidian、Slack、Zoom、Spark、Spotify、Discord Canary
@@ -494,12 +494,26 @@ dotfiles-update
 ```
 
 `dotfiles-update` は互換aliasとして `dotflow update` を実行します。Windows profileは
-単一の `windows` mise環境をinstallし、Neovim、gitconfig、WezTerm、combined mise
+単一の `windows` mise環境をinstallし、Neovim、gitconfig、Rio、combined mise
 config、starship、PowerShell profileをまとめてapplyします。通常更新では重い
 `winget configure`を再実行しません。
 
-Windows の Git と WezTerm は winget で導入し、mise では管理しません。Nvim と
-WezTerm の設定は、Windows の symlink 権限に依存しない copy 配置です。
+Windows の Git と Rio は winget で導入し、mise では管理しません。Nvim と
+Rio の設定は、Windows の symlink 権限に依存しない copy 配置です。Rio は WSL を開き、
+WSL 内で herdr を起動します。PowerShell は WSL から `pwsh.exe` として呼び出します。
+
+### Windows のフォント
+
+Rio は macOS と同じ `UDEV Gothic 35NF` を使います。winget では配布されていないため、
+初回だけ手動で導入します。
+
+1. [yuru7/udev-gothic の Releases](https://github.com/yuru7/udev-gothic/releases) から
+   `UDEVGothic_NF_v2.2.0.zip` を取得して展開する
+2. `UDEVGothic35NF-*.ttf`（Regular / Bold / Italic / BoldItalic）を選び、右クリックの
+   「インストール」で導入する
+3. Rio を開き直す
+
+フォントが無い場合、Rio は既定のフォントで表示します。
 
 ## 検証
 
@@ -508,7 +522,7 @@ nix --extra-experimental-features 'nix-command flakes' build .#darwinConfigurati
 nix --extra-experimental-features 'nix-command flakes' build '.#homeConfigurations."uvu1@arch-wsl".activationPackage'
 export MISE_EXPERIMENTAL=1
 mise -C mise -E unix dotfiles status --missing
-mise -C mise -E darwin dotfiles status --missing   # macOS のみ (wezterm, rio)
+mise -C mise -E darwin dotfiles status --missing   # macOS のみ (karabiner, rio)
 ```
 
 Windows では次を実行します。

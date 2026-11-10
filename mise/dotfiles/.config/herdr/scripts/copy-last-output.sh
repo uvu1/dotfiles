@@ -1,16 +1,16 @@
 #!/usr/bin/env bash
 # 直前のコマンドの出力をクリップボードへコピーする（herdr の [[keys.command]] prefix+c）。
 #
-# wezterm/keybinds.lua の copy_last_output と同じ規則で範囲を割り出す。starship の
-# プロンプトが「空行 / 情報行 / ❯ 行」で固定なことを利用する。記号と行の形の出所は
-# starship.toml の format / add_newline / [character] なので、変えるときは 3 つを揃えること。
+# starship のプロンプトが「空行 / 情報行 / ❯ 行」で固定なことを利用して範囲を割り出す。
+# 記号と行の形の出所は starship.toml の format / add_newline / [character] なので、
+# そちらを変えるときはこのスクリプトも揃えること。
 #
 #   copy-last-output.sh          herdr から現在のペインを読んでコピーする
 #   copy-last-output.sh --stdin  標準入力の画面テキストから出力部分だけを標準出力へ出す（検証用）
 set -euo pipefail
 
 readonly PROMPT_SYMBOL="❯"
-# プロンプトを探して遡る上限。wezterm 側の MAX_LOOKBACK_ROWS と同じ。
+# プロンプトを探して遡る上限。scrollback 全体を毎回読むと重いので頭打ちにする。
 readonly MAX_LOOKBACK_ROWS=2000
 
 # 画面テキスト（折り返しを論理行に戻したもの）を受け取り、直前の出力を返す。
@@ -64,7 +64,7 @@ herdr=${HERDR_BIN_PATH:-herdr}
 pane=${HERDR_ACTIVE_PANE_ID:?herdr の custom command から実行してください}
 
 # 範囲を割り出せたときだけクリップボードへ書く。パイプで直結すると失敗時に空文字で
-# クリップボードを潰してしまう。成功時は無言、失敗したときだけ通知する（wezterm 版と同じ）。
+# クリップボードを潰してしまう。成功時は無言、失敗したときだけ通知する。
 notify() {
   "$herdr" notification show "herdr" --body "$1" >/dev/null
 }

@@ -3,8 +3,7 @@
 # （herdr の [[keys.command]] prefix+g、type = "popup"）。
 #
 # 選択 UI は zsh/ghq.zsh の ghq-fzf と同じ（ghq list | fzf + README プレビュー）。
-# workspace 名は wezterm/workspaces.lua の workspace_name と同じく owner/repo にし、
-# 同名の workspace が既にあれば新しく作らずそこへ移る。
+# workspace 名は owner/repo にし、同名の workspace が既にあれば新しく作らずそこへ移る。
 set -euo pipefail
 
 herdr=${HERDR_BIN_PATH:-herdr}

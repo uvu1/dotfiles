@@ -62,6 +62,5 @@
   "tui": "default",
   "skipDangerousModePermissionPrompt": true,
   "theme": "dark",
-  "preferredNotifChannel": "terminal_bell",
   "agentPushNotifEnabled": true
 }

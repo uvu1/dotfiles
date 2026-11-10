@@ -1,10 +1,8 @@
 # macOS 固有の dotfile のみ。共有 toolset / dotfiles は mise.unix.toml を参照。
-# macos profile は mise 環境 "unix"（共有）と "darwin"（この wezterm）を順に適用する。
+# macos profile は mise 環境 "unix"（共有）と "darwin"（karabiner, rio）を順に適用する。
 [dotfiles]
 # karabiner.json は保存時に rename されるため、file 単位ではなく directory 単位で symlink する。
 "~/.config/karabiner" = { source = "dotfiles/.config/karabiner", mode = "symlink" }
-"~/.config/wezterm" = { source = "dotfiles/.config/wezterm", mode = "symlink" }
-# rio は試用中。背景画像は wezterm のものを共有し、複製しない。rio は画像パスを展開
-# しないので、config.toml はこの配置先を絶対パスで参照している。
+# rio は画像パスを展開しないので、config.toml の [platform.macos] はこの配置先を絶対パスで参照している。
 "~/.config/rio/config.toml" = { source = "dotfiles/.config/rio/config.toml", mode = "symlink" }
-"~/.config/rio/background.jpg" = { source = "dotfiles/.config/wezterm/resources/background.jpg", mode = "symlink" }
+"~/.config/rio/background.jpg" = { source = "dotfiles/.config/rio/background.jpg", mode = "symlink" }
