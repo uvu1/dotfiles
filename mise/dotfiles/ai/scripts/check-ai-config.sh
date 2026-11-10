@@ -22,6 +22,9 @@ required_paths=(
   "$ai_dir/skills/common/dotfiles-maintenance/SKILL.md"
   "$ai_dir/skills/codex/dotfiles-maintenance"
   "$ai_dir/skills/claude/dotfiles-maintenance"
+  "$ai_dir/skills/common/herdr/SKILL.md"
+  "$ai_dir/skills/codex/herdr"
+  "$ai_dir/skills/claude/herdr"
 )
 
 for path in "${required_paths[@]}"; do

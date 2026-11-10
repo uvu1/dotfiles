@@ -27,7 +27,8 @@
       "Bash(agent-browser console:*)",
       "Bash(agent-browser errors:*)",
       "Bash(agent-browser tab:*)",
-      "Bash(agent-browser close:*)"
+      "Bash(agent-browser close:*)",
+      "Bash(herdr --skill)"
     ],
     "deny": [
       "Read(./.env)",
