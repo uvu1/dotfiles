@@ -1,13 +1,14 @@
 #!/bin/sh
 # Claude Code の statusLine。starship プロンプト (dotfiles/.config/starship.toml) の
-# 見た目をそのまま踏襲し、シェルには出せない情報 (モデル / コンテキスト残量 /
-# 5h 上限) を区切りの右側に並べる。
+# 見た目をそのまま踏襲し、シェルには出せない情報 (モデル / effort /
+# コンテキスト残量 / 5h 上限) を区切りの右側に並べる。
 #
-# stdin の JSON は Claude Code 2.1.316 の statusLine ペイロード。
+# stdin の JSON は Claude Code 2.1.319 の statusLine ペイロード。
 #   https://code.claude.com/docs/en/statusline
 # rate_limits は claude.ai の Pro / Max / Ultra でのみ、かつセッション最初の API
 # 応答以降にしか現れない。context_window の割合もセッション開始直後は null に
-# なりうる。どちらも欠けたらその区画ごと省く。
+# なりうる。effort はモデルが effort パラメータ非対応だと現れない。
+# いずれも欠けたらその区画ごと省く。
 set -u
 
 esc=$(printf '\033')
@@ -44,6 +45,7 @@ tilde() {
 fields=$(jq -r '
   def pct: if . == null then "" else (. | round) end;
   [ .model.display_name // ""
+  , .effort.level // ""
   , .workspace.current_dir // .cwd // ""
   , (.context_window.remaining_percentage | pct)
   , (.rate_limits.five_hour.used_percentage | pct)
@@ -53,6 +55,7 @@ fields=$(jq -r '
 
 {
   read -r model
+  read -r effort
   read -r dir
   read -r ctx_left
   read -r five_used
@@ -86,6 +89,8 @@ printf ' at %s' "$(date +%H:%M)"
 
 # --- Claude 固有の右側 -----------------------------------------------------
 printf ' %s|%s %s[2;33m%s%s' "$dim" "$reset" "$esc" "$model" "$reset"
+
+[ -n "$effort" ] && printf ' %s·%s effort %s[36m%s%s' "$dim" "$reset" "$esc" "$effort" "$reset"
 
 if [ -n "$ctx_left" ]; then
   printf ' %s·%s ctx %s[%sm%s%%%s' \
