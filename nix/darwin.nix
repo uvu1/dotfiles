@@ -34,6 +34,13 @@
 
   services.tailscale.enable = true;
 
+  # herdr のペインは GUI セッションから切り離されたサーバー配下で動くため、
+  # pam_reattach で再接続しないと pam_tid の Touch ID が失敗する。
+  security.pam.services.sudo_local = {
+    touchIdAuth = true;
+    reattach = true;
+  };
+
   nix-homebrew = {
     enable = true;
     enableRosetta = false;
