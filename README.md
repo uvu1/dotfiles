@@ -504,12 +504,12 @@ WSL 内で herdr を起動します。PowerShell は WSL から `pwsh.exe` と�
 
 ### Windows のフォント
 
-Rio は macOS と同じ `UDEV Gothic 35NF` を使います。winget では配布されていないため、
+Rio は macOS と同じ `Moralerspace Neon` を使います。winget では配布されていないため、
 初回だけ手動で導入します。
 
-1. [yuru7/udev-gothic の Releases](https://github.com/yuru7/udev-gothic/releases) から
-   `UDEVGothic_NF_v2.2.0.zip` を取得して展開する
-2. `UDEVGothic35NF-*.ttf`（Regular / Bold / Italic / BoldItalic）を選び、右クリックの
+1. [yuru7/moralerspace の Releases](https://github.com/yuru7/moralerspace/releases) から
+   `Moralerspace_v2.0.0.zip` を取得して展開する
+2. `MoralerspaceNeon-*.ttf`（Regular / Bold / Italic / BoldItalic）を選び、右クリックの
    「インストール」で導入する
 3. Rio を開き直す
 

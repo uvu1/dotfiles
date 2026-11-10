@@ -81,8 +81,8 @@
   fonts.packages = [
     pkgs.nerd-fonts.jetbrains-mono
     # rio 用。rio はフォントごとの拡大率を調整できず、fallback のヒラギノは英字と高さが
-    # 揃わないため、JetBrains Mono + BIZ UD ゴシック + Nerd Fonts の合成フォントを使う。
-    pkgs.udev-gothic-nf
+    # 揃わないため、Monaspace + IBM Plex Sans JP + Nerd Fonts の合成フォントを使う。
+    pkgs.moralerspace
   ];
 
   home-manager = {

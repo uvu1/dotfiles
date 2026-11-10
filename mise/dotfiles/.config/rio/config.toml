@@ -30,13 +30,15 @@ blur = true
 decorations = "Buttonless"
 
 # rio はフォントごとの拡大率や位置を調整できず、fallback（fonts.symbol-map）で振った
-# ヒラギノは JetBrains Mono と文字の高さが揃わない。英字と日本語の高さを揃えた合成フォント
-# （JetBrains Mono + BIZ UD ゴシック + Nerd Fonts）を使う。半角:全角 = 3:5 の 35 版は、
-# 1:2 版より英字が元の JetBrains Mono の幅に近い。macOS は nix/darwin.nix の udev-gothic-nf、
+# ヒラギノは英字と文字の高さが揃わない。Monaspace + IBM Plex Sans JP + Nerd Fonts の合成
+# フォント Moralerspace（半角:全角 = 3:5）を使う。macOS は nix/darwin.nix の moralerspace、
 # Windows は winget に無いので手動で入れる（README の Windows 節）。
 [fonts]
 size = 16
-family = "UDEV Gothic 35NF"
+family = "Moralerspace Neon"
+# Monaspace のコード用リガチャは ss01〜ss10 に分かれていて既定では無効。calt はテクスチャ
+# ヒーリング。Monaspace の README の推奨設定に ss10（#[ など）を足したもの。
+features = ["calt", "liga", "ss01", "ss02", "ss03", "ss04", "ss05", "ss06", "ss07", "ss08", "ss09", "ss10"]
 
 [colors]
 # rio の既定のカーソル色はマゼンタ (#F712FF)。IME の変換中の文字列もカーソル色の
