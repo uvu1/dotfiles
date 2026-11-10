@@ -25,11 +25,52 @@ local function bridge_highlight()
   }
 end
 
-local function setup_bridge_highlights()
+local tab_groups = {
+  active = "StatuslineTabActive",
+  inactive = "StatuslineTabInactive",
+}
+
+local function setup_highlights()
   local colors = state.colors
+  local tab_colors = {
+    active = { fg = colors.text, bg = colors.active, bold = true },
+    inactive = { fg = colors.inactive_text, bg = colors.inactive },
+  }
 
   vim.api.nvim_set_hl(0, bridge_groups.editor, { fg = colors.inactive_text, bg = colors.inactive })
   vim.api.nvim_set_hl(0, bridge_groups.clear, { fg = colors.inactive, bg = "NONE" })
+
+  for kind, group in pairs(tab_groups) do
+    vim.api.nvim_set_hl(0, group, tab_colors[kind])
+    vim.api.nvim_set_hl(0, group .. "Cap", { fg = tab_colors[kind].bg, bg = "NONE" })
+  end
+end
+
+--- lualine の buffers はバッファ間に section/component_separators しか挟めず、
+--- pill の separator はコンポーネント全体の両端にしか付かない（全体が 1 本の帯になる）。
+--- fmt で各バッファを個別の pill に包み、透明な空白で離す。
+local function pill_markup(group, label)
+  local cap = "%#" .. group .. "Cap#"
+
+  return cap .. util.caps.left .. "%#" .. group .. "# " .. label .. " " .. cap .. util.caps.right .. " "
+end
+
+local function tab_pill(name, buffer)
+  -- アイコンと変更マークは fmt の後で apply_mode が pill の外側に付けるので、
+  -- ここで取り込んで空にする（Buffer は再描画のたびに作り直される）。
+  local label = buffer.icon .. name .. buffer.modified_icon
+  buffer.icon, buffer.modified_icon = "", ""
+
+  return pill_markup(tab_groups[buffer.current and "active" or "inactive"], label)
+end
+
+--- lualine は fmt の戻り値の文字数で max_length（既定は画面幅の 2/3）を判定するので、
+--- 表示されない %#...# の分をバッファ数だけ足す。長い inactive 側で見積もる。
+local function tab_max_length()
+  local sample = pill_markup(tab_groups.inactive, "")
+  local hidden = vim.fn.strchars(sample) - vim.api.nvim_eval_statusline(sample, { use_tabline = true }).width
+
+  return math.floor(2 * vim.o.columns / 3) + hidden * #vim.fn.getbufinfo({ buflisted = 1 })
 end
 
 function M.sections()
@@ -106,6 +147,23 @@ function M.winbar()
   }
 end
 
+--- バッファをタブ風に並べる。各バッファを statusline と同じ色の pill にする（tab_pill）。
+function M.tabline()
+  return {
+    lualine_a = {
+      {
+        "buffers",
+        mode = 0,
+        show_filename_only = true,
+        symbols = { alternate_file = "" },
+        padding = 0,
+        fmt = tab_pill,
+        max_length = tab_max_length,
+      },
+    },
+  }
+end
+
 function M.theme()
   local function section()
     return { fg = state.colors.inactive, bg = state.colors.transparent }
@@ -122,7 +180,7 @@ function M.theme()
 end
 
 function M.setup()
-  setup_bridge_highlights()
+  setup_highlights()
 
   clock.setup()
 
@@ -142,7 +200,7 @@ function M.setup()
   vim.api.nvim_create_autocmd("ColorScheme", {
     group = group,
     callback = function()
-      setup_bridge_highlights()
+      setup_highlights()
       util.refresh_statusline()
     end,
   })

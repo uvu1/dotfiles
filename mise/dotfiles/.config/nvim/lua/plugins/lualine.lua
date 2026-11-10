@@ -47,7 +47,7 @@ return {
         },
         sections = sections,
         inactive_sections = vim.deepcopy(sections),
-        tabline = {},
+        tabline = statusline.tabline(),
         winbar = statusline.winbar(),
         inactive_winbar = {},
       })

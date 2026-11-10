@@ -21,12 +21,15 @@ function M.refresh_statusline()
   vim.cmd.redrawstatus()
 end
 
+-- pill の丸い両端（Nerd Fonts の U+E0B6 / U+E0B4）。
+M.caps = { left = "", right = "" }
+
 function M.pill(component, opts)
   opts = opts or {}
 
   return vim.tbl_extend("force", {
     component,
-    separator = { left = "", right = "" },
+    separator = vim.deepcopy(M.caps),
     padding = { left = 1, right = 1 },
   }, opts)
 end

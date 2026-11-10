@@ -61,6 +61,18 @@ key = "enter"
 with = "shift"
 esc = "\u001b\r"
 
+# Alt+[ / Alt+] は従来のエンコードでは ESC [ (CSI) / ESC ] (OSC) の開始と区別できないので、
+# kitty の CSI u（修飾 3 = Alt）で送る。nvim のバッファ移動（nvim/lua/config/keymaps.lua）用。
+[[bindings.keys]]
+key = "["
+with = "alt"
+esc = "\u001b[91;3u"
+
+[[bindings.keys]]
+key = "]"
+with = "alt"
+esc = "\u001b[93;3u"
+
 # macOS でもショートカットに Cmd を使わない。rio の macOS 既定は Super(Cmd) 系なので、
 # rio 自身の Linux 既定（frontends/rioterm/src/bindings/mod.rs の platform_key_bindings）と
 # 同じ Ctrl 系を足す。karabiner の ctrl -> cmd 置換は rio を除外しているので Ctrl のまま届く。

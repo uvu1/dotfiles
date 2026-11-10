@@ -8,6 +8,12 @@ vim.keymap.set({ "n", "t" }, "<C-l>", "<Cmd>wincmd l<CR>", opts("move to right w
 vim.keymap.set({ "n", "t" }, "<C-j>", "<Cmd>wincmd j<CR>", opts("move to lower window"))
 vim.keymap.set({ "n", "t" }, "<C-k>", "<Cmd>wincmd k<CR>", opts("move to upper window"))
 
+-- buffer navigation（並びは tabline の buffers と同じ listed バッファの番号順）。
+-- 従来のエンコードでは Alt+[ / Alt+] が CSI / OSC の開始と区別できないので、
+-- rio が CSI u で送っている（.config/rio/config.toml）。
+vim.keymap.set("n", "<M-[>", "<Cmd>bprevious<CR>", opts("previous buffer"))
+vim.keymap.set("n", "<M-]>", "<Cmd>bnext<CR>", opts("next buffer"))
+
 -- clear search highlight
 vim.keymap.set("n", "<Esc>", "<cmd>nohlsearch<CR>", opts("Clear search highlights"))
 
