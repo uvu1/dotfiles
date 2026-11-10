@@ -16,6 +16,9 @@ required_paths=(
   "$ai_dir/claude/CLAUDE.md"
   "$ai_dir/claude/settings.json"
   "$ai_dir/claude/statusline.sh"
+  "$ai_dir/claude/hooks/herdr-agent-state.sh"
+  "$ai_dir/codex/herdr-agent-state.sh"
+  "$ai_dir/codex/hooks.json"
   "$ai_dir/skills/common/dotfiles-maintenance/SKILL.md"
   "$ai_dir/skills/codex/dotfiles-maintenance"
   "$ai_dir/skills/claude/dotfiles-maintenance"
@@ -28,8 +31,10 @@ for path in "${required_paths[@]}"; do
   fi
 done
 
-jq empty "$ai_dir/claude/settings.json"
-sh -n "$ai_dir/claude/statusline.sh"
+jq empty "$ai_dir/claude/settings.json" "$ai_dir/codex/hooks.json"
+for script in "$ai_dir/claude/statusline.sh" "$ai_dir/claude/hooks/herdr-agent-state.sh" "$ai_dir/codex/herdr-agent-state.sh"; do
+  sh -n "$script"
+done
 
 for config in "$ai_dir"/codex/*.toml; do
   nix eval --impure --expr \

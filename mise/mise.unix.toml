@@ -10,7 +10,12 @@
 "~/.claude/settings.json" = { source = "dotfiles/ai/claude/settings.json", mode = "symlink" }
 "~/.claude/skills" = { source = "dotfiles/ai/skills/claude", mode = "symlink-each" }
 "~/.claude/statusline.sh" = { source = "dotfiles/ai/claude/statusline.sh", mode = "symlink" }
+# herdr の integration。herdr integration install は ~/.claude/settings.json（repo への symlink）に
+# 絶対パスを書き込むため使わず、herdr が生成する hook script を取り込んで配る。
+"~/.claude/hooks/herdr-agent-state.sh" = { source = "dotfiles/ai/claude/hooks/herdr-agent-state.sh", mode = "symlink" }
 "~/.codex/AGENTS.md" = { source = "dotfiles/ai/codex/AGENTS.md", mode = "symlink" }
+"~/.codex/herdr-agent-state.sh" = { source = "dotfiles/ai/codex/herdr-agent-state.sh", mode = "symlink" }
+"~/.codex/hooks.json" = { source = "dotfiles/ai/codex/hooks.json", mode = "symlink" }
 "~/.codex/nekok.config.toml" = { source = "dotfiles/ai/codex/nekok.config.toml", mode = "symlink" }
 "~/.codex/rules" = { source = "dotfiles/ai/codex/rules", mode = "symlink-each" }
 "~/.config/mise/config.toml" = { source = "dotfiles/mise/config.unix.toml", mode = "symlink" }

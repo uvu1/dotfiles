@@ -3,6 +3,9 @@ model = "gpt-5.6-sol"
 model_reasoning_effort = "xhigh"
 
 # nest した値は dotted key で書くこと(理由は AGENTS.md)。
+# herdr の integration（hooks.json の SessionStart）を動かすために hooks を有効にする。
+features.hooks = true
+
 # 作業場所と残量を確認しやすい順に表示する。
 tui.status_line = [
   "model-with-reasoning",
