@@ -82,3 +82,10 @@ apply = ["defer"]
 local = "~/.config/zsh"
 use = ["kubernetes.zsh"]
 apply = ["defer"]
+
+# zoxide の初期化はシェル設定の最後に置くことが求められ、補完登録には compinit が
+# 必要なので、completion を含む他のプラグインより後に置く。
+[plugins.zoxide]
+local = "~/.config/zsh"
+use = ["zoxide.zsh"]
+apply = ["defer"]
