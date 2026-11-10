@@ -47,21 +47,21 @@
       "Bash(agent-browser state:*)"
     ]
   },
-  "model": "claude-opus-5",
+  "model": "opus",
   "statusLine": {
     "type": "command",
     "command": "~/.claude/statusline.sh",
     "refreshInterval": 30
   },
   "effortLevel": "xhigh",
-  "tui": "default",
-  "skipDangerousModePermissionPrompt": true,
-  "theme": "dark",
-  "preferredNotifChannel": "terminal_bell",
-  "agentPushNotifEnabled": true,
   "modelSettings": {
     "claude-opus-5": {
       "effortLevel": "xhigh"
     }
-  }
+  },
+  "tui": "default",
+  "skipDangerousModePermissionPrompt": true,
+  "theme": "dark",
+  "preferredNotifChannel": "terminal_bell",
+  "agentPushNotifEnabled": true
 }
