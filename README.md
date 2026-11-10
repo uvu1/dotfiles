@@ -80,6 +80,8 @@ cache、生成memory、端末固有のtrust状態をローカルに残します�
 - Claude Code: `~/.claude/CLAUDE.md`、`~/.claude/settings.json`
 - 共通skills: `mise/dotfiles/ai/skills/common/`を正本とし、Codex用とClaude用の
   viewから参照
+- このrepository向けの指示: `AGENTS.md`には全体の方針と索引だけを置き、
+  component固有の注意点は`docs/agents/`に分けて編集時だけ読ませる
 
 CodexのMCP tokenはconfigへ直接書かず環境変数から渡します。Claude Codeのuser scope
 MCPは認証状態を含む`~/.claude.json`へ保存されるため、このfile自体は管理しません。
