@@ -1,4 +1,4 @@
-{ inputs, pkgs, ... }:
+{ inputs, lib, pkgs, ... }:
 {
   nixpkgs.hostPlatform = "aarch64-darwin";
 
@@ -13,6 +13,11 @@
 
     defaults = {
       finder.AppleShowAllFiles = true;
+
+      # AeroSpace 公式ガイドの推奨値。spans-displays は「ディスプレイごとに個別の
+      # 操作スペース」を無効化する（反映には再ログインが必要）。
+      spaces.spans-displays = true;
+      dock.expose-group-apps = true;
 
       # 漢字が PingFang SC(簡体字) で描画されるのを防ぐ。CoreText のフォント
       # フォールバックは優先言語リスト全体を見るため、ja を2番目に置けば
@@ -33,6 +38,59 @@
   users.users.uvu1.home = "/Users/uvu1";
 
   services.tailscale.enable = true;
+
+  # 設定はモジュールが settings から TOML を生成して --config-path で渡すため、
+  # mise/dotfiles ではなくここで一元管理する。起動は launchd が担う。
+  services.aerospace =
+    let
+      # ワークスペース名 → 自動で送るアプリの Bundle ID。
+      # ctrl+opt+<小文字> で移動、ctrl+opt+shift+<小文字> でフォーカス中のウィンドウを送る。
+      workspaces = {
+        T = [ "com.raphaelamorim.rio" ];
+        B = [ "app.zen-browser.zen" ];
+        C = [
+          "com.tinyspeck.slackmacgap"
+          "com.hnc.DiscordCanary"
+        ];
+        M = [ "md.obsidian" ];
+      };
+      # 上のどれにも当てはまらないウィンドウの受け皿。タイル分割せず floating で置く。
+      fallback = "O";
+    in
+    {
+      enable = true;
+      settings = {
+        mode.main.binding = lib.concatMapAttrs (
+          ws: _:
+          let
+            key = lib.toLower ws;
+          in
+          {
+            "ctrl-alt-${key}" = "workspace ${ws}";
+            "ctrl-alt-shift-${key}" = "move-node-to-workspace ${ws}";
+          }
+        ) (workspaces // { ${fallback} = [ ]; });
+        # 最初に当てはまったルールで止まるので、受け皿は必ず最後に置く。
+        on-window-detected =
+          lib.concatLists (
+            lib.mapAttrsToList (
+              ws:
+              map (id: {
+                "if".app-id = id;
+                run = "move-node-to-workspace ${ws}";
+              })
+            ) workspaces
+          )
+          ++ [
+            {
+              run = [
+                "layout floating"
+                "move-node-to-workspace ${fallback}"
+              ];
+            }
+          ];
+      };
+    };
 
   # herdr のペインは GUI セッションから切り離されたサーバー配下で動くため、
   # pam_reattach で再接続しないと pam_tid の Touch ID が失敗する。
