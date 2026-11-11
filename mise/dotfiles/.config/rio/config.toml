@@ -238,6 +238,9 @@ binding = { key = "space", mods = ["Control", "Shift"] }
 #
 # herdr は mise 管理で、mise activate は .zshrc（sheldon）で行うため対話シェルで起動する。
 # herdr が無い環境では素の login shell に落とす。Windows は WSL の中で同じことをする。
+# wsl.exe --exec はシェルを介さず WSL 既定の PATH で探すため、Nix の zsh は絶対パスで書く。
+# Windows の rio は args をクォートせず空白で連結してコマンドラインにする
+# （teletypewriter/src/windows/mod.rs の create_pty）ので、空白を含む引数は自分で "" で囲む。
 [platform.macos.shell]
 program = "/bin/zsh"
 args = ["-lic", "command -v herdr >/dev/null && exec herdr; exec zsh -l"]
@@ -248,7 +251,7 @@ opacity = 0.12
 
 [platform.windows.shell]
 program = "wsl.exe"
-args = ["--cd", "~", "--exec", "zsh", "-lic", "command -v herdr >/dev/null && exec herdr; exec zsh -l"]
+args = ["--cd", "~", "--exec", "/home/uvu1/.nix-profile/bin/zsh", "-lic", "\"command -v herdr >/dev/null && exec herdr; exec zsh -l\""]
 
 [platform.windows.window.background-image]
 path = "C:/Users/uvu1/AppData/Local/rio/background.jpg"
