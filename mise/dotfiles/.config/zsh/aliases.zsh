@@ -3,7 +3,7 @@ alias code="nvim"
 alias vim="nvim"
 
 if [[ -n ${WSL_DISTRO_NAME:-} ]]; then
-  alias op="/mnt/c/Users/${USER}/AppData/Local/Microsoft/WinGet/Links/op.exe"
+  alias op="op.exe"
 fi
 
 alias ga="git add"

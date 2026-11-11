@@ -1,3 +1,9 @@
+-- neovim-unwrapped は provider を使えない。python3 の検出だけで .py を開くたびに
+-- 約 140ms かかっていたため、4 つとも検出させない。
+for _, provider in ipairs({ "python3", "ruby", "perl", "node" }) do
+  vim.g["loaded_" .. provider .. "_provider"] = 0
+end
+
 vim.opt.number = true
 vim.opt.relativenumber = true
 

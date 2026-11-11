@@ -123,6 +123,22 @@ let
       export PATH="$HOME/.local/share/mise/shims:$PATH"
     '' + builtins.readFile ../scripts/update-wsl.sh;
   };
+  winHome = "/mnt/c/Users/${config.home.username}";
+  # WSL の ~/.local/bin に置くラッパ（名前 → 実体）。zsh は Windows の PATH を
+  # 外すので（sheldon の wsl-local-bin）、名前で呼ぶ Windows コマンドはここに足す。
+  wslCommands = {
+    ssh = "/mnt/c/Windows/System32/OpenSSH/ssh.exe";
+    ssh-keygen = "${pkgs.openssh}/bin/ssh-keygen";
+    ssh-keyscan = "${pkgs.openssh}/bin/ssh-keyscan";
+    "cmd.exe" = "/mnt/c/Windows/System32/cmd.exe";
+    "explorer.exe" = "/mnt/c/Windows/explorer.exe";
+    "powershell.exe" = "/mnt/c/Windows/System32/WindowsPowerShell/v1.0/powershell.exe";
+    "sudo.exe" = "/mnt/c/Windows/System32/sudo.exe";
+    "wsl.exe" = "/mnt/c/Windows/System32/wsl.exe";
+    "usbipd.exe" = "/mnt/c/Program Files/usbipd-win/usbipd.exe";
+    "winget.exe" = "${winHome}/AppData/Local/Microsoft/WindowsApps/winget.exe";
+    "op.exe" = "${winHome}/AppData/Local/Microsoft/WinGet/Links/op.exe";
+  };
   # Nix store は setuid にできない。FUSE のマウント補助は Nix の版を
   # /usr/local/bin に配置し、版が変わったときだけ sudo を使う。
   wslFuseSetup = pkgs.writeShellApplication {
@@ -245,7 +261,7 @@ in
     pkgs.passt
   ];
 
-  home.file = pkgs.lib.optionalAttrs pkgs.stdenv.isLinux {
+  home.file = pkgs.lib.optionalAttrs pkgs.stdenv.isLinux ({
     # WSLの日本語文字化け対策。programs.zsh 未使用で hm-session-vars.sh が
     # 読まれないため、zshが最初に読む .zshenv でロケールを明示する。
     # en_US.UTF-8 は Nix パッチ済み glibc しか LOCALE_ARCHIVE から解決できず、
@@ -267,29 +283,14 @@ in
     ".config/containers/registries.conf".text = ''
       unqualified-search-registries = ["docker.io"]
     '';
-
-    ".local/bin/ssh" = {
+  } // pkgs.lib.mapAttrs' (name: target:
+    pkgs.lib.nameValuePair ".local/bin/${name}" {
       executable = true;
       text = ''
         #!/bin/sh
-        exec /mnt/c/Windows/System32/OpenSSH/ssh.exe "$@"
+        exec "${target}" "$@"
       '';
-    };
-    ".local/bin/ssh-keygen" = {
-      executable = true;
-      text = ''
-        #!/bin/sh
-        exec ${pkgs.openssh}/bin/ssh-keygen "$@"
-      '';
-    };
-    ".local/bin/ssh-keyscan" = {
-      executable = true;
-      text = ''
-        #!/bin/sh
-        exec ${pkgs.openssh}/bin/ssh-keyscan "$@"
-      '';
-    };
-  };
+    }) wslCommands);
 
   systemd.user = pkgs.lib.mkIf pkgs.stdenv.isLinux {
     # 非NixOSのArchではNixのpodmanが同梱するuser unitがsystemd探索パスに入らないため、

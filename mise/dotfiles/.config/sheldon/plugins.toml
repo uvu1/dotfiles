@@ -6,12 +6,19 @@ defer = "{% for file in files %}zsh-defer source \"{{ file }}\"\n{% endfor %}"
 [plugins]
 # mise より先に前置する。mise activate は起動時の PATH を __MISE_ORIG_PATH に
 # 捕まえ、以後のフックはそれを土台に組み直すため、後ろに置くと ~/.local/bin
-# （home.nix が置く Windows の ssh.exe ラッパ）が失われうる。
+# （home.nix の wslCommands が置く Windows コマンドのラッパ）が失われうる。
+#
+# WSL が足す Windows の PATH（/mnt/c 配下）は zsh の中だけで外す。9P 越しの
+# 走査が遅く、mise activate と初回 hook で約 80ms、$commands のハッシュで約 40ms、
+# starship の os モジュールでプロンプト毎に約 18ms かかっていた。名前で呼ぶ
+# Windows コマンドは home.nix の wslCommands に足す。mise activate は既存の
+# __MISE_ORIG_PATH を土台にするので、親プロセスから継承した値からも外す。
 [plugins.wsl-local-bin]
 inline = '''
 if [[ -n "${WSL_DISTRO_NAME:-}" ]]; then
   typeset -U path PATH
-  path=("$HOME/.local/bin" $path)
+  path=("$HOME/.local/bin" ${path:#/mnt/[a-z]/*})
+  [[ -n "${__MISE_ORIG_PATH:-}" ]] && __MISE_ORIG_PATH=${(j.:.)${(s.:.)__MISE_ORIG_PATH}:#/mnt/[a-z]/*}
 fi
 '''
 
