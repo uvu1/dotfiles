@@ -18,8 +18,8 @@ confirm-before-quit = false
 copy-on-select = true
 
 [window]
-# 起動時からフルスクリーン（Ctrl+Shift+Enter で切り替え）。macOS はネイティブ全画面、
-# Windows は今のモニターを覆う枠なしウィンドウになる（どちらも Fullscreen::Borderless）。
+# 起動時からフルスクリーン（Ctrl+Shift+Enter で切り替え）。macOS はネイティブ全画面。
+# Windows は [platform.windows.window] でウィンドウ表示に変えている。
 mode = "Fullscreen"
 # フルスクリーンを解除したときのウィンドウの大きさ。
 columns = 120
@@ -252,6 +252,15 @@ opacity = 0.12
 [platform.windows.shell]
 program = "wsl.exe"
 args = ["--cd", "~", "--exec", "/home/uvu1/.nix-profile/bin/zsh", "-lic", "\"command -v herdr >/dev/null && exec herdr; exec zsh -l\""]
+
+# Windows の Fullscreen は枠なしで、rio 自前の帯をつかんでウィンドウを動かす処理は
+# macOS 専用（Buttonless も macOS 以外では通常の枠）。ウィンドウ表示にして OS のタイトルバーで
+# 動かす。大きさは [window] の columns / rows で、rio は生成後にこの大きさへ変えて中央に置く
+# （router/mod.rs）ので、Maximized にしても最大化は外れる。Windows だけ一回り大きくする。
+[platform.windows.window]
+mode = "Windowed"
+columns = 174
+rows = 49
 
 [platform.windows.window.background-image]
 path = "C:/Users/uvu1/AppData/Local/rio/background.jpg"
