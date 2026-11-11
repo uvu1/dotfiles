@@ -34,6 +34,7 @@ decorations = "Buttonless"
 # フォント Moralerspace（半角:全角 = 3:5）を使う。macOS は nix/darwin.nix の moralerspace、
 # Windows は winget に無いので手動で入れる（README の Windows 節）。
 [fonts]
+# Windows は config.windows.toml.tmpl がこの行を 19 に置き換える。
 size = 16
 family = "Moralerspace Neon"
 # Monaspace のコード用リガチャは ss01〜ss10 に分かれていて既定では無効。calt はテクスチャ
@@ -256,11 +257,12 @@ args = ["--cd", "~", "--exec", "/home/uvu1/.nix-profile/bin/zsh", "-lic", "\"com
 # Windows の Fullscreen は枠なしで、rio 自前の帯をつかんでウィンドウを動かす処理は
 # macOS 専用（Buttonless も macOS 以外では通常の枠）。ウィンドウ表示にして OS のタイトルバーで
 # 動かす。大きさは [window] の columns / rows で、rio は生成後にこの大きさへ変えて中央に置く
-# （router/mod.rs）ので、Maximized にしても最大化は外れる。Windows だけ一回り大きくする。
+# （router/mod.rs）ので、Maximized にしても最大化は外れる。Windows だけ一回り大きくする（19pt の文字で
+# 約 1660x1010px になる列数と行数）。
 [platform.windows.window]
 mode = "Windowed"
-columns = 174
-rows = 49
+columns = 144
+rows = 42
 
 [platform.windows.window.background-image]
 path = "C:/Users/uvu1/AppData/Local/rio/background.jpg"

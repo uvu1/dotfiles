@@ -1,0 +1,8 @@
+{#- rio の [platform.windows] は fonts を上書きできない（rio-backend/src/config/platform.rs）ので、
+    共通の config.toml を読み込んで文字の大きさだけ置き換える。置換元が一か所でなければ止める。 -#}
+{%- set config = read_file(path="dotfiles/.config/rio/config.toml") -%}
+{%- set from = "size = 16" -%}
+{%- if config | split(pat=from) | length != 2 -%}
+{{ throw(message="rio/config.toml must contain exactly one '" ~ from ~ "'") }}
+{%- endif -%}
+{{ config | replace(from=from, to="size = 19") -}}
