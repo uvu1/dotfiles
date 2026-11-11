@@ -23,7 +23,7 @@ idiomatic_version_file_enable_tools = ["ruby", "node"]
 not_found_auto_install = false
 
 [tools]
-"github:uvu1/dotflow" = "0.1.1"
+"github:uvu1/dotflow" = "0.2.0"
 
 # --- vendor CLI ---------------------------------------------------------------
 # 再現性より鮮度を優先して latest のままにする。nix に移すと nixpkgs の追従待ちで

@@ -182,7 +182,7 @@ cd $(mktemp -d) && printf 'source "https://rubygems.org"\ngem "hola-takumi", "0.
 ## dotflow
 
 [dotflow](https://github.com/uvu1/dotflow) は WSL、macOS、Windows 共通の更新・編集
-インターフェースです。このリポジトリでは GitHub release の `0.1.0` に固定しており、
+インターフェースです。このリポジトリでは GitHub release の `0.2.0` に固定しており、
 `latest` へ自動追従しません。crates.io への公開は release asset の利用とは別の手動作業で、
 このリポジトリの導入・更新手順には含みません。
 
@@ -209,8 +209,11 @@ commit、push、stash、reset、rebase、ファイル削除は行わず、dirty 
 - `dotflow status` / `dotflow status --check`: Gitとmiseの状態を表示・検査する
 - `dotflow apply`: pullやtool installをせず、選択profileのdotfilesを適用する
 - `dotflow doctor`: config、repository、依存command、選択環境を診断する
+- `dotflow check`: 手元の `origin/master` が `HEAD` より進んでいれば `dotflow update` を促す。
+  networkには触れず、前回のfetchから6時間以上経っていれば裏でfetchする
 - `dotflow completion SHELL`: 静的completionを生成する
-- `dotflow shell-init SHELL`: `dotflow cd` 対応wrapperを生成する
+- `dotflow shell-init SHELL`: `dotflow cd` 対応wrapperと、起動時の `dotflow check` を生成する
+  （`--no-check` で起動時の更新通知を無効化）
 
 zshと管理対象のPowerShell profileは、mise activation直後に `shell-init` を読み込みます。
 互換command `dotfiles-update` も残してあり、引数なしで `dotflow update` を呼びます。
@@ -222,7 +225,7 @@ trustし、固定版をinstallしてからOS別cutoverを行います。
 export MISE_EXPERIMENTAL=1
 mise -C mise trust mise.toml
 mise -C mise install github:uvu1/dotflow
-mise -C mise x github:uvu1/dotflow@0.1.0 -- dotflow init "$PWD"
+mise -C mise x github:uvu1/dotflow@0.2.0 -- dotflow init "$PWD"
 dotflow doctor
 dotflow update --dry-run
 ```

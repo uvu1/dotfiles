@@ -23,6 +23,10 @@ fi
 [plugins.mise]
 inline = 'eval "$(mise activate zsh)"'
 
+# shell-init は `dotflow cd` 用の wrapper に加えて起動時の `dotflow check` も出力する。
+# check は network に触れず手元の origin/master と HEAD を比べ、遅れていれば
+# `dotflow update` を促す（fetch は前回から 6 時間以上経ったときだけ裏で走る）。
+# 通知をプロンプトより前に出すため defer しない。
 [plugins.dotflow]
 inline = 'eval "$(dotflow shell-init zsh)"'
 
