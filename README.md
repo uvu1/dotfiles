@@ -97,8 +97,8 @@ symlinkしません。`scripts/sync-ai-config.sh`が`mise/dotfiles/ai/codex/conf
 
 `nekok`プロファイルは`~/.codex/nekok.config.toml`へsymlinkします。
 zshで`codex --profile nekok`（`-p nekok`も可）を実行すると、1Password CLIの
-`op read`で`op://Personal/Nekok Free-Codex/username`からendpoint、
-`op://Personal/Nekok Free-Codex/credential`からAPIキーを取得します。
+`op read`で`op://Private/Nekok Free-Codex/username`からendpoint、
+`op://Private/Nekok Free-Codex/credential`からAPIキーを取得します。
 endpointは起動時のconfig override、APIキーは子プロセスの`NEKO_API`環境変数で渡し、
 値をdotfilesやローカルconfigへ書き込みません。macOSでは1Password CLI、WSLでは
 既存の`op` aliasが参照するWindows側のCLIが利用可能で、認証済みである必要があります。
@@ -133,7 +133,7 @@ registryを仲介して悪性packageのinstallをblockするsecurity proxyです
 mise dotfilesにも載せません。
 
 tokenは`TAKUMI_GUARD_TOKEN`、無ければ1Password CLIの`op read`で
-`op://Personal/Takumi Guard/credential`から取得します。WSLでは`op` aliasと同じく
+`op://Private/Takumi Guard/credential`から取得します。WSLでは`op` aliasと同じく
 Windows側のCLIを使います。どちらからも取得できない場合は、未設定の対象だけ匿名
 （token無し）で有効化して終了します。1Password未sign inの端末で`dotflow update`を
 止めず、blockだけは必ず効く状態にするためです。既にtoken付きで設定済みの対象は、
@@ -147,7 +147,7 @@ curl -X POST https://npm.flatt.tech/api/v1/tokens \
   -d '{"email": "<アドレス>", "language": "ja"}'
 ```
 
-を実行し、welcome mailに届く`tg_anon_...`を1Passwordの`Personal`金庫にitem名
+を実行し、welcome mailに届く`tg_anon_...`を1Passwordの`Private`金庫にitem名
 `Takumi Guard`で保存します。1つのtokenでnpm / PyPI / RubyGems / Go共通に使えます。
 
 手で確認・適用する場合は次を実行します。

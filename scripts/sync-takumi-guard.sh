@@ -11,7 +11,7 @@
 # 端末で dotflow update を止めず、かつブロック機能だけは必ず効く状態にするため。
 set -euo pipefail
 
-op_item='op://Personal/Takumi Guard/credential'
+op_item='op://Private/Takumi Guard/credential'
 npm_registry='https://npm.flatt.tech/'
 npm_auth_key='//npm.flatt.tech/:_authToken'
 rubygems_mirror_key='mirror.https://rubygems.org'

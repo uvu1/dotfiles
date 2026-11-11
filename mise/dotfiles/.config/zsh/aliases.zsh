@@ -43,8 +43,8 @@ codex() {
 
   # op read は macOS の op と WSL の Windows op.exe の両方で使える。
   local neko_endpoint neko_api
-  neko_endpoint=$(op read --no-newline 'op://Personal/Nekok Free-Codex/username') || return
-  neko_api=$(op read --no-newline 'op://Personal/Nekok Free-Codex/credential') || return
+  neko_endpoint=$(op read --no-newline 'op://Private/Nekok Free-Codex/username') || return
+  neko_api=$(op read --no-newline 'op://Private/Nekok Free-Codex/credential') || return
   if [[ -z "$neko_endpoint" || -z "$neko_api" ]]; then
     print -u2 'nekok: 1Password の endpoint または API キーが空です。'
     return 1
