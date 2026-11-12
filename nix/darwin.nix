@@ -58,7 +58,10 @@
       fallback = "O";
       # 受け皿へ送ると表示中でないワークスペースに隠れてしまう認証ダイアログ等の Bundle ID。
       # ワークスペースを移さず、いま見ている画面に floating で出す。
-      floatInPlace = [ "com.1password.1password" ];
+      floatInPlace = [
+        "com.1password.1password"
+        "com.apple.SecurityAgent" # sudo (pam_tid) の Touch ID などの認証ダイアログ
+      ];
     in
     {
       enable = true;
