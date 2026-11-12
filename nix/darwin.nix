@@ -56,6 +56,9 @@
       };
       # 上のどれにも当てはまらないウィンドウの受け皿。タイル分割せず floating で置く。
       fallback = "O";
+      # 受け皿へ送ると表示中でないワークスペースに隠れてしまう認証ダイアログ等の Bundle ID。
+      # ワークスペースを移さず、いま見ている画面に floating で出す。
+      floatInPlace = [ "com.1password.1password" ];
     in
     {
       enable = true;
@@ -72,7 +75,11 @@
         ) (workspaces // { ${fallback} = [ ]; });
         # 最初に当てはまったルールで止まるので、受け皿は必ず最後に置く。
         on-window-detected =
-          lib.concatLists (
+          map (id: {
+            "if".app-id = id;
+            run = "layout floating";
+          }) floatInPlace
+          ++ lib.concatLists (
             lib.mapAttrsToList (
               ws:
               map (id: {
