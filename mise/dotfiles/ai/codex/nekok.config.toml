@@ -3,11 +3,10 @@ model_provider = "nekok"
 model = "gpt-6.1-sol"
 model_reasoning_effort = "medium"
 
+# 起動時のモデル案内と、その表示回数の書き戻しを無効にする。
+tui.show_tooltips = false
+
 # base_url は zsh の codex 関数が起動時に 1Password から取得して渡す。
 model_providers.nekok.name = "Nekok"
 model_providers.nekok.env_key = "NEKO_API"
 model_providers.nekok.wire_api = "responses"
-
-[tui.model_availability_nux]
-"gpt-5.6-sol" = 2
-"gpt-6.1-sol" = 3
