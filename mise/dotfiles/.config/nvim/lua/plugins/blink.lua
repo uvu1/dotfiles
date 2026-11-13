@@ -10,7 +10,9 @@ return {
     },
 
     build = function()
-      require("blink.cmp").build():wait(60000)
+      if not require("remote_dev.profile").enabled then
+        require("blink.cmp").build():wait(60000)
+      end
     end,
 
     event = { "InsertEnter", "CmdlineEnter" },
@@ -119,7 +121,7 @@ return {
       },
 
       fuzzy = {
-        implementation = "rust",
+        implementation = require("remote_dev.profile").enabled and "lua" or "rust",
         max_typos = function(keyword)
           return math.floor(#keyword / 4)
         end,

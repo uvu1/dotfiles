@@ -134,6 +134,14 @@ return {
         lint.try_lint(names, {
           cwd = dir,
           filter = function(linter)
+            if
+              require("remote_dev.profile").enabled
+              and type(linter.cmd) == "string"
+              and vim.fn.executable(linter.cmd) == 0
+              and not (linter.name == "haml_lint" and dir and project.bundles(dir, "haml_lint"))
+            then
+              return false
+            end
             local gate = gates[linter.name]
             return gate == nil or gate(bufnr, dir)
           end,

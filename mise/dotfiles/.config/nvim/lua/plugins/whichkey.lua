@@ -13,7 +13,7 @@ return {
   opts = {
     spec = {
       { "<leader>f", group = "Find" },
-      { "<leader>m", group = "Mount" },
+      { "<leader>m", group = "Remote" },
       { "<leader>g", group = "Goto/LSP" },
       { "<leader>s", group = "Symbols" },
       { "<leader>d", group = "Git/Diff" },

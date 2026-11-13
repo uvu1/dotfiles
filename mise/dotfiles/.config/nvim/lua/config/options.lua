@@ -57,7 +57,32 @@ vim.opt.jumpoptions = "clean,view"
 vim.opt.sessionoptions = "buffers,curdir,folds,help,tabpages,winsize,localoptions"
 
 -- for WSL
-if vim.fn.has("wsl") == 1 then
+if require("remote_dev.profile").enabled then
+  -- OSC52 writes reach the local TUI. Paste with the terminal's normal paste
+  -- shortcut; querying OSC52 is unsupported by some terminals and can block.
+  local clipboard = { {}, "v" }
+  local function copy(register)
+    local write = require("vim.ui.clipboard.osc52").copy(register)
+    return function(lines, regtype)
+      clipboard = { lines, regtype }
+      write(lines)
+    end
+  end
+  local function paste()
+    return clipboard
+  end
+  vim.g.clipboard = {
+    name = "Remote OSC52",
+    copy = {
+      ["+"] = copy("+"),
+      ["*"] = copy("*"),
+    },
+    paste = {
+      ["+"] = paste,
+      ["*"] = paste,
+    },
+  }
+elseif vim.fn.has("wsl") == 1 then
   if vim.fn.executable("wl-copy") == 0 then
     print("wl-copy is not installed, clipboard integration will not work")
   else
@@ -86,7 +111,7 @@ end
 -- append にして、既に載っている具体パスの解決を優先させる。
 do
   local shims = vim.fs.joinpath(vim.uv.os_homedir(), ".local/share/mise/shims")
-  if vim.uv.fs_stat(shims) and not vim.env.PATH:find(shims, 1, true) then
+  if not require("remote_dev.profile").enabled and vim.uv.fs_stat(shims) and not vim.env.PATH:find(shims, 1, true) then
     vim.env.PATH = vim.env.PATH .. ":" .. shims
   end
 end

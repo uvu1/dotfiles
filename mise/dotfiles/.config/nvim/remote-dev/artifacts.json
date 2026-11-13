@@ -1,0 +1,190 @@
+{
+  "remote_nvim_commit": "2971ffe74ad14b09c82dbc217ac9f7a0f6003c13",
+  "nvim_version": "v0.12.4",
+  "platforms": {
+    "linux-x86_64": {
+      "rg": {
+        "url": "https://github.com/BurntSushi/ripgrep/releases/download/15.1.0/ripgrep-15.1.0-x86_64-unknown-linux-musl.tar.gz",
+        "sha256": "1c9297be4a084eea7ecaedf93eb03d058d6faae29bbc57ecdaf5063921491599"
+      },
+      "fd": {
+        "url": "https://github.com/sharkdp/fd/releases/download/v10.3.0/fd-v10.3.0-x86_64-unknown-linux-gnu.tar.gz",
+        "sha256": "c3c2bc79f838e780173fc8f18b337ec273e7ba17c7ff8f551be29fc3c19b7916"
+      },
+      "stylua": {
+        "url": "https://github.com/JohnnyMorganz/StyLua/releases/download/v2.3.1/stylua-linux-x86_64.zip",
+        "sha256": "f0cfea40b3d72223497fa1650061f866e0d19a93a871aae22d3849f1bc9c2722"
+      },
+      "biome": {
+        "url": "https://github.com/biomejs/biome/releases/download/%40biomejs/biome%402.4.6/biome-linux-x64",
+        "sha256": "6bc192f1f0b3495443472d95bd4dbfc9372c17f7ac51256d635192ca525da59d"
+      },
+      "ruff": {
+        "url": "https://github.com/astral-sh/ruff/releases/download/0.15.5/ruff-x86_64-unknown-linux-gnu.tar.gz",
+        "sha256": "ac0336520fd986b3bd7c510b1f9d3049e0d150ddaab754cfa5c5eaf8cbb840ce"
+      },
+      "lua-language-server": {
+        "url": "https://github.com/LuaLS/lua-language-server/releases/download/3.17.0/lua-language-server-3.17.0-linux-x64.tar.gz",
+        "sha256": "71df0d68ddca0bd32d4a8e73075110af5a119f8fa54025eb52bc6293b03e5ae4"
+      },
+      "rust-analyzer": {
+        "url": "https://github.com/rust-lang/rust-analyzer/releases/download/2026-11-02/rust-analyzer-x86_64-unknown-linux-gnu.gz",
+        "sha256": "5249da68c3f36bb77ea7d401824f5e8bd8d0a47a162daf5f72208eb7c1bf1500"
+      },
+      "nvim": {
+        "url": "https://github.com/neovim/neovim/releases/download/v0.12.4/nvim-linux-x86_64.tar.gz",
+        "sha256": "012bf3fcac5ade43914df3f174668bf64d05e049a4f032a388c027b1ebd78628"
+      },
+      "clangd": {
+        "url": "https://github.com/clangd/clangd/releases/download/23.1.0/clangd-linux-23.1.0.zip",
+        "sha256": "e53b1a96196095faedb7642cf64964f7fb9ad4a0c1f00dd2c172a3d9dcbafdfd"
+      },
+      "node": {
+        "url": "https://nodejs.org/dist/v24.22.2/node-v24.22.2-linux-x64.tar.gz",
+        "sha256": "361718c444e49af2ca5a110c83ba6a8901143f23ab285ebbef0341f391f482a9"
+      },
+      "tree-sitter": {
+        "url": "https://github.com/tree-sitter/tree-sitter/releases/download/v0.27.2/tree-sitter-linux-x64.gz",
+        "sha256": "7ed56d152c52437397b9fcaa43cf341f49933cecc1ca291843f0d347c6e2cb3a"
+      }
+    },
+    "linux-arm64": {
+      "rg": {
+        "url": "https://github.com/BurntSushi/ripgrep/releases/download/15.1.0/ripgrep-15.1.0-aarch64-unknown-linux-gnu.tar.gz",
+        "sha256": "2b661c6ef508e902f388e9098d9c4c5aca72c87b55922d94abdba830b4dc885e"
+      },
+      "fd": {
+        "url": "https://github.com/sharkdp/fd/releases/download/v10.3.0/fd-v10.3.0-aarch64-unknown-linux-gnu.tar.gz",
+        "sha256": "66f297e404400a3358e9a0c0b2f3f4725956e7e4435427a9ae56e22adbe73a68"
+      },
+      "stylua": {
+        "url": "https://github.com/JohnnyMorganz/StyLua/releases/download/v2.3.1/stylua-linux-aarch64.zip",
+        "sha256": "21908eec45ff9666d4ae72825b81faa7fc4119124ed656eb1d470cbf9ed41bc9"
+      },
+      "biome": {
+        "url": "https://github.com/biomejs/biome/releases/download/%40biomejs/biome%402.4.6/biome-linux-arm64",
+        "sha256": "2da0b8d028e77f778900ac84e1d44bbc70332da9ffdae3ec3aa04355f339fa7a"
+      },
+      "ruff": {
+        "url": "https://github.com/astral-sh/ruff/releases/download/0.15.5/ruff-aarch64-unknown-linux-gnu.tar.gz",
+        "sha256": "cd01e3c9df2d6c1324744883a796e6693642494f2f6222a4f158da36f84908ce"
+      },
+      "lua-language-server": {
+        "url": "https://github.com/LuaLS/lua-language-server/releases/download/3.17.0/lua-language-server-3.17.0-linux-arm64.tar.gz",
+        "sha256": "2421621858a1d86fc60e38c30e9a9ae07e7432fd5954a1622aa98956ba891d99"
+      },
+      "rust-analyzer": {
+        "url": "https://github.com/rust-lang/rust-analyzer/releases/download/2026-11-02/rust-analyzer-aarch64-unknown-linux-gnu.gz",
+        "sha256": "4f8699eaee4231df5a5ffd477106ecae3bf6328918a60de742798912ecff6869"
+      },
+      "nvim": {
+        "url": "https://github.com/neovim/neovim/releases/download/v0.12.4/nvim-linux-arm64.tar.gz",
+        "sha256": "ceb7e88c6b681f0515d135dcdfad54f5eb4373b25ce6172197cd9a69c758063f"
+      },
+      "clangd": {
+        "url": "https://github.com/llvm/llvm-project/releases/download/llvmorg-22.1.5/LLVM-22.1.5-Linux-ARM64.tar.xz",
+        "sha256": "05e303cf01a97ca2a11e42e75ade839e85af274f84573554c5e5c05f714be989"
+      },
+      "node": {
+        "url": "https://nodejs.org/dist/v24.22.2/node-v24.22.2-linux-arm64.tar.gz",
+        "sha256": "95c264150aceb7f3437a29fd6984924f5f8d1511ea3cbd6c508b83f6c555dae2"
+      },
+      "tree-sitter": {
+        "url": "https://github.com/tree-sitter/tree-sitter/releases/download/v0.27.2/tree-sitter-linux-arm64.gz",
+        "sha256": "34fcc5c4fa7bdd2058a2a45a03b6eb9a49b03a93b6d52ec750f99b1516d98d33"
+      }
+    },
+    "macos-x86_64": {
+      "rg": {
+        "url": "https://github.com/BurntSushi/ripgrep/releases/download/15.1.0/ripgrep-15.1.0-x86_64-apple-darwin.tar.gz",
+        "sha256": "64811cb24e77cac3057d6c40b63ac9becf9082eedd54ca411b475b755d334882"
+      },
+      "fd": {
+        "url": "https://github.com/sharkdp/fd/releases/download/v10.3.0/fd-v10.3.0-x86_64-apple-darwin.tar.gz",
+        "sha256": "50d30f13fe3d5914b14c4fff5abcbd4d0cdab4b855970a6956f4f006c17117a3"
+      },
+      "stylua": {
+        "url": "https://github.com/JohnnyMorganz/StyLua/releases/download/v2.3.1/stylua-macos-x86_64.zip",
+        "sha256": "16f661951bfc984ea6e0157f9495c8192b91f9c2f3b27e6b46db95c315281e92"
+      },
+      "biome": {
+        "url": "https://github.com/biomejs/biome/releases/download/%40biomejs/biome%402.4.6/biome-darwin-x64",
+        "sha256": "169f3f31d1bd8be09f184eca55184e71d0449ef57c79ea56d0202358709431fb"
+      },
+      "ruff": {
+        "url": "https://github.com/astral-sh/ruff/releases/download/0.15.5/ruff-x86_64-apple-darwin.tar.gz",
+        "sha256": "1e01b0d6354f14dac0f4de7a89488d18e00f8aa37ce3635b55bcaf1357b2a375"
+      },
+      "lua-language-server": {
+        "url": "https://github.com/LuaLS/lua-language-server/releases/download/3.17.0/lua-language-server-3.17.0-darwin-x64.tar.gz",
+        "sha256": "31223241492e187155c63dac176a7717e295e28c480e4db04823091075cf1feb"
+      },
+      "rust-analyzer": {
+        "url": "https://github.com/rust-lang/rust-analyzer/releases/download/2026-11-02/rust-analyzer-x86_64-apple-darwin.gz",
+        "sha256": "2c3d6c564f9b2734085cf6439c78896545e86b54ebb63870ba701e12ca582b22"
+      },
+      "nvim": {
+        "url": "https://github.com/neovim/neovim/releases/download/v0.12.4/nvim-macos-x86_64.tar.gz",
+        "sha256": "03fe16f8dd9f1e9eaf52d5e294913a39917b9e2faea30d7fb0fb385fbd36fe59"
+      },
+      "clangd": {
+        "url": "https://github.com/clangd/clangd/releases/download/23.1.0/clangd-mac-23.1.0.zip",
+        "sha256": "1082e6638223b785ca2daf0939f13afcd0bb95c84ee9a4bbaff4745365159253"
+      },
+      "node": {
+        "url": "https://nodejs.org/dist/v24.22.2/node-v24.22.2-darwin-x64.tar.gz",
+        "sha256": "d5e336d588c45be0c37dbd52cc29895593009ca4997a77a1fd02815131ed0e52"
+      },
+      "tree-sitter": {
+        "url": "https://github.com/tree-sitter/tree-sitter/releases/download/v0.27.2/tree-sitter-macos-x64.gz",
+        "sha256": "fefe3a26e93d4ef7a16711c18587801d7d96c3dec3305db112fe4143cd900d91"
+      }
+    },
+    "macos-arm64": {
+      "rg": {
+        "url": "https://github.com/BurntSushi/ripgrep/releases/download/15.1.0/ripgrep-15.1.0-aarch64-apple-darwin.tar.gz",
+        "sha256": "378e973289176ca0c6054054ee7f631a065874a352bf43f0fa60ef079b6ba715"
+      },
+      "fd": {
+        "url": "https://github.com/sharkdp/fd/releases/download/v10.3.0/fd-v10.3.0-aarch64-apple-darwin.tar.gz",
+        "sha256": "0570263812089120bc2a5d84f9e65cd0c25e4a4d724c80075c357239c74ae904"
+      },
+      "stylua": {
+        "url": "https://github.com/JohnnyMorganz/StyLua/releases/download/v2.3.1/stylua-macos-aarch64.zip",
+        "sha256": "e212e6c21e76c2b1d0f10f8dcf50ec3b5f03f02da7597e0679f539eb18ba0d53"
+      },
+      "biome": {
+        "url": "https://github.com/biomejs/biome/releases/download/%40biomejs/biome%402.4.6/biome-darwin-arm64",
+        "sha256": "8452b1175f297b69c5b71fe3bd044b381a78c812d7c0f437638fcb3a325973c9"
+      },
+      "ruff": {
+        "url": "https://github.com/astral-sh/ruff/releases/download/0.15.5/ruff-aarch64-apple-darwin.tar.gz",
+        "sha256": "f39400f9504c940fa4eb46b02e2d4889a9f86b81ce4c57bda02ea3568894d094"
+      },
+      "lua-language-server": {
+        "url": "https://github.com/LuaLS/lua-language-server/releases/download/3.17.0/lua-language-server-3.17.0-darwin-arm64.tar.gz",
+        "sha256": "8c31e7b2743ae2f4d335dc0c03baa00f20abce747c6ba1949684ff882f3b73a6"
+      },
+      "rust-analyzer": {
+        "url": "https://github.com/rust-lang/rust-analyzer/releases/download/2026-11-02/rust-analyzer-aarch64-apple-darwin.gz",
+        "sha256": "d10ca0a10e386f74ca36847b3df2ad5ab6f1328feeb1591467b3724f3fd8e8cf"
+      },
+      "nvim": {
+        "url": "https://github.com/neovim/neovim/releases/download/v0.12.4/nvim-macos-arm64.tar.gz",
+        "sha256": "51ab83afa66d663627c2ab1be43209b0f4e81360d4598b53efaa4d8195f24c89"
+      },
+      "clangd": {
+        "url": "https://github.com/clangd/clangd/releases/download/23.1.0/clangd-mac-23.1.0.zip",
+        "sha256": "1082e6638223b785ca2daf0939f13afcd0bb95c84ee9a4bbaff4745365159253"
+      },
+      "node": {
+        "url": "https://nodejs.org/dist/v24.22.2/node-v24.22.2-darwin-arm64.tar.gz",
+        "sha256": "aa9549349e47dffaa42dcf95d6e06ade8c4bdafc980979883b88767670df385a"
+      },
+      "tree-sitter": {
+        "url": "https://github.com/tree-sitter/tree-sitter/releases/download/v0.27.2/tree-sitter-macos-arm64.gz",
+        "sha256": "5a08b66e5713b0c69691611250b2191d07139647a3c6e39ba85954284b634d2d"
+      }
+    }
+  }
+}

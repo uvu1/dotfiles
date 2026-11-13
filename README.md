@@ -444,23 +444,26 @@ pull後に `home-manager switch --flake ~/dotfiles#uvu1@arch-wsl` を実行し�
 
 ## Neovim から SSH 先を編集
 
-macOS または WSL の Neovim で `<leader>mc`（`:RemoteSSHFSConnect`）を実行し、SSH 接続先と
-マウントするディレクトリを選びます。WSL では Windows 側の SSH config を読み、
-同じ `ssh.exe` で接続します。接続先には SSH/SFTP が必要ですが、Neovim や dotfiles
-の導入は不要です。接続後は通常の Explorer、`<leader>mf`（遠隔ファイル検索）、
-`<leader>mg`（遠隔 grep）でファイルを操作できます。終了時は
-`<leader>md` で切断します。
-接続先が一覧に出ない場合は `:RemoteSSHFSConnect user@host:/path` で直接指定します。
+macOS または WSL の Neovim で `<leader>mc`（`:RemoteDevConnect`）を実行し、
+SSH 接続先と作業ディレクトリを選びます。配置内容の確認後、`remote.nvim` が
+SSH 先の `~/.remote-nvim/releases/` に Neovim・設定・プラグイン・開発ツールを配置し、
+手元の UI を SSH 先の Neovim に接続します。LSP・整形・検索・ターミナルは SSH 先で動きます。
+SSH 先への Nix・mise・npm・Go コンパイラの導入は不要です。
 
-`<leader>ff` と `<leader>fg` は、作業ディレクトリが接続中のマウント内なら遠隔検索に
-切り替わります。ローカルのディレクトリへ移動すると従来の Snacks 検索に戻ります。
-`<leader>mf` と `<leader>mg` は遠隔検索を直接呼びます。
+`<leader>md` で手元へ戻り、`<leader>mr` で前回のセッションへ再接続します。
+手元へ戻っても SSH 先の Neovim と未保存バッファは残ります。
+`<leader>mp` は通信しない配置予定の表示、`<leader>mh` は環境の確認です。
 
-Git 操作は `:terminal ssh 接続先` で開く SSH 先の端末で行ってください。
-SSHFS 上で手元の Git や lazygit を実行すると、ファイルの多いリポジトリでは
-遅くなります。LSP は手元で動くため、SSH 先にしかない依存関係は参照できません。
-検索コマンドは SSH 先に `rg` があれば遠隔で実行でき、ない場合は手元の
-Snacks 検索でマウント先を検索します。
+接続には Home Manager が用意する Unix 版 OpenSSH と `~/.ssh/config` を使います。
+WSL では Home Manager が `~/.ssh/config` を Windows 側の
+`/mnt/c/Users/uvu1/.ssh/config` へ symlink します。既存の `~/.ssh/config` と
+競合する場合は上書きせず停止します。鍵・agent は Linux 側の設定を使うため、
+config 内の Windows 固有パスは Linux からも使える指定にする必要があります。
+対象は Linux glibc / macOS の x86_64 / ARM64 です。初回準備、言語ごとの依存関係、
+更新と制約は [Neovim Remote development](docs/nvim-remote-dev.md) を参照してください。
+
+導入不要の SSHFS 接続も `:RemoteSSHFSConnect` / `:RemoteSSHFSDisconnect` で利用できます。
+こちらでは LSP が手元で動きます。
 
 ## Windows
 

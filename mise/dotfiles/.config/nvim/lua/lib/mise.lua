@@ -31,6 +31,9 @@ local FAIL_FAST = {
 --- なので、その時は継承した PATH をそのまま使う。
 --- @return string
 local function base_path()
+  if require("remote_dev.profile").enabled then
+    return vim.env.PATH
+  end
   local orig = vim.env.__MISE_ORIG_PATH
 
   if type(orig) == "string" and orig ~= "" then
@@ -67,7 +70,7 @@ end
 
 --- @return boolean
 function M.available()
-  return vim.fn.executable("mise") == 1
+  return not require("remote_dev.profile").enabled and vim.fn.executable("mise") == 1
 end
 
 --- `mise x -C <dir> -- <argv...>`。dir が無い、または mise が無い場合は素の argv。
@@ -101,6 +104,16 @@ local function notify_early_exit(dispatchers, label, dir)
       -- on_exit は fast event context で呼ばれるので notify は schedule する。
       if code ~= 0 and vim.uv.hrtime() - started < 5e9 then
         vim.schedule(function()
+          if require("remote_dev.profile").enabled then
+            vim.notify(
+              ("%s が起動できなかった (exit %d)。:RemoteDevHealth / :LspLogで確認してください。Rubyのgem等はプロジェクトのbundleに用意します。"):format(
+                label,
+                code
+              ),
+              vim.log.levels.ERROR
+            )
+            return
+          end
           vim.notify(
             ("%s が起動できなかった (exit %d)。`mise x -C %s -- %s` を手で実行して原因を見る。"):format(
               label,
@@ -180,7 +193,19 @@ end
 --- @return table
 function M.linter(linter, dir, bundled)
   -- 関数 cmd の linter は自前で解決しているので触らない。
-  if not dir or not M.available() or type(linter.cmd) ~= "string" then
+  if not dir or type(linter.cmd) ~= "string" then
+    return linter
+  end
+
+  if not M.available() then
+    local gem = bundled and bundled[linter.name]
+    if gem and require("lib.project").bundles(dir, gem) then
+      return vim.tbl_extend("force", linter, {
+        cmd = "bundle",
+        args = vim.list_extend({ "exec", linter.cmd }, linter.args or {}),
+        env = M.spawn_env(),
+      })
+    end
     return linter
   end
 

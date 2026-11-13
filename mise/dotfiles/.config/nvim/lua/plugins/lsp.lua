@@ -181,6 +181,28 @@ return {
         },
       })
 
+      if require("remote_dev.profile").enabled then
+        -- lspconfig's Rust root detection itself invokes rustc and cargo.
+        -- Missing project runtimes should leave the file editable.
+        local root_dir = vim.lsp.config.rust_analyzer.root_dir
+        local warned = false
+        vim.lsp.config("rust_analyzer", {
+          root_dir = function(bufnr, on_dir)
+            if vim.fn.executable("rustc") == 0 or vim.fn.executable("cargo") == 0 then
+              if not warned then
+                warned = true
+                vim.notify(
+                  "Rust LSPにはSSH先のrustcとcargoが必要です。:RemoteDevHealthでPATHを確認してください",
+                  vim.log.levels.WARN
+                )
+              end
+              return
+            end
+            root_dir(bufnr, on_dir)
+          end,
+        })
+      end
+
       -- gopls は go list を実行する。stdlib・build tag・module graph がすべて
       -- ツールチェイン由来。
       -- hints は gopls 0.23.0 の全 8 種（api-json で確認）。すべて既定 false なので

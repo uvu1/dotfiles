@@ -15,11 +15,9 @@ end
 vim.opt.rtp:prepend(lazypath)
 
 require("lazy").setup({
-  spec = {
-    { import = "plugins" },
-  },
+  spec = require("remote_dev.profile").spec(),
   defaults = { lazy = true, version = false },
-  install = { colorscheme = { "kawaii-theme" } },
+  install = { missing = not require("remote_dev.profile").enabled, colorscheme = { "kawaii-theme" } },
   checker = { enabled = false, notify = false, frequency = 86400 }, -- 86400s = 24h
   change_detection = { enabled = true, notify = false },
   performance = {

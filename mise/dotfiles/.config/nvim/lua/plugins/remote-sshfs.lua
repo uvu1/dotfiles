@@ -8,12 +8,6 @@ return {
     "RemoteSSHFSFindFiles",
     "RemoteSSHFSLiveGrep",
   },
-  keys = {
-    { "<leader>mc", "<cmd>RemoteSSHFSConnect<cr>", desc = "Connect SSH mount" },
-    { "<leader>md", "<cmd>RemoteSSHFSDisconnect<cr>", desc = "Disconnect SSH mount" },
-    { "<leader>mf", "<cmd>RemoteSSHFSFindFiles<cr>", desc = "Find remote files" },
-    { "<leader>mg", "<cmd>RemoteSSHFSLiveGrep<cr>", desc = "Grep remote files" },
-  },
   dependencies = { "folke/snacks.nvim", "nvim-lua/plenary.nvim" },
   opts = function()
     local connections = { sshfs_args = { "-o reconnect", "-o ConnectTimeout=5" } }
