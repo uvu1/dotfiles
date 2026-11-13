@@ -87,6 +87,7 @@ let
     unstable.jq
     unstable.lazygit
     unstable.neovim-unwrapped
+    unstable.openssh
     unstable.ripgrep
     unstable.saml2aws
     unstable.sshfs
@@ -261,7 +262,16 @@ in
     pkgs.passt
   ];
 
-  home.file = pkgs.lib.optionalAttrs pkgs.stdenv.isLinux ({
+  home.sessionVariables.NVIM_REMOTE_SSH_BIN = "${unstable.openssh}/bin/ssh";
+
+  # WSL does not source hm-session-vars.sh; nvim reads this fallback as well.
+  home.file = {
+    ".config/nvim-remote/ssh-path".text = "${unstable.openssh}/bin/ssh\n";
+  } // pkgs.lib.optionalAttrs pkgs.stdenv.isLinux ({
+    # Windows 側の設定を参照し、内容は Nix store に取り込まない。
+    ".ssh/config".source = config.lib.file.mkOutOfStoreSymlink
+      "${winHome}/.ssh/config";
+
     # WSLの日本語文字化け対策。programs.zsh 未使用で hm-session-vars.sh が
     # 読まれないため、zshが最初に読む .zshenv でロケールを明示する。
     # en_US.UTF-8 は Nix パッチ済み glibc しか LOCALE_ARCHIVE から解決できず、
