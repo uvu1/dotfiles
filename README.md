@@ -103,6 +103,11 @@ endpointは起動時のconfig override、APIキーは子プロセスの`NEKO_API
 値をdotfilesやローカルconfigへ書き込みません。macOSでは1Password CLI、WSLでは
 既存の`op` aliasが参照するWindows側のCLIが利用可能で、認証済みである必要があります。
 
+`mistral`プロファイルも同じ形で`~/.codex/mistral.config.toml`へsymlinkし、Mistralの
+Responses API（`https://api.mistral.ai/v1`）を使います。`codex --profile mistral`は
+`op://Private/Mistral-Vibe API/credential`からAPIキーを取得し、子プロセスの
+`MISTRAL_API_KEY`環境変数で渡します。
+
 Codex rulesは`dotfiles.rules`だけを共通baselineとして個別symlinkします。Codexが
 approval時に更新する`default.rules`は端末固有fileとして残るため、追加のapprovalを
 行ってもrepositoryはdirtyになりません。

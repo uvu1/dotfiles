@@ -11,6 +11,7 @@ required_paths=(
   "$ai_dir/common/AGENTS.md"
   "$ai_dir/codex/AGENTS.md"
   "$ai_dir/codex/config.toml"
+  "$ai_dir/codex/mistral.config.toml"
   "$ai_dir/codex/nekok.config.toml"
   "$ai_dir/codex/rules/dotfiles.rules"
   "$ai_dir/claude/CLAUDE.md"

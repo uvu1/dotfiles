@@ -20,6 +20,18 @@ alias fd="fd --color=always --hidden --exclude .git"
 alias rg="rg --color=always"
 alias ls="eza --icons --group-directories-first --color=always"
 
+# 1Password の参照を読み、空なら失敗する。
+# op read は macOS の op と WSL の Windows op.exe の両方で使える。
+_codex_secret() {
+  local value
+  value=$(op read --no-newline "$1") || return
+  if [[ -z "$value" ]]; then
+    print -u2 "codex: 1Password の $1 が空です。"
+    return 1
+  fi
+  print -rn -- "$value"
+}
+
 codex() {
   local selected_profile='' arg
   local -i profile_next=0
@@ -36,19 +48,20 @@ codex() {
       -p?*) selected_profile=${arg#-p} ;;
     esac
   done
-  if [[ "$selected_profile" != nekok ]]; then
-    command codex "$@"
-    return
-  fi
-
-  # op read は macOS の op と WSL の Windows op.exe の両方で使える。
-  local neko_endpoint neko_api
-  neko_endpoint=$(op read --no-newline 'op://Private/Nekok Free-Codex/username') || return
-  neko_api=$(op read --no-newline 'op://Private/Nekok Free-Codex/credential') || return
-  if [[ -z "$neko_endpoint" || -z "$neko_api" ]]; then
-    print -u2 'nekok: 1Password の endpoint または API キーが空です。'
-    return 1
-  fi
-  # URL は TOML の値として解釈できないため、Codex が文字列として受け取る。
-  NEKO_API="$neko_api" command codex --config "model_providers.nekok.base_url=$neko_endpoint" "$@"
+  local endpoint api
+  case "$selected_profile" in
+    nekok)
+      endpoint=$(_codex_secret 'op://Private/Nekok Free-Codex/username') || return
+      api=$(_codex_secret 'op://Private/Nekok Free-Codex/credential') || return
+      # URL は TOML の値として解釈できないため、Codex が文字列として受け取る。
+      NEKO_API="$api" command codex --config "model_providers.nekok.base_url=$endpoint" "$@"
+      ;;
+    mistral)
+      api=$(_codex_secret 'op://Private/Mistral-Vibe API/credential') || return
+      MISTRAL_API_KEY="$api" command codex "$@"
+      ;;
+    *)
+      command codex "$@"
+      ;;
+  esac
 }
