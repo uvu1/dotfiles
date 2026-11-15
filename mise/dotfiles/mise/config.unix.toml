@@ -46,4 +46,8 @@ cloudflared = "latest"
 # rust-overlay ごとソースビルドになるため、公式が案内する mise の registry 経由で
 # リリースバイナリを取る。v0.x で更新が速いので latest で追従する。
 herdr = "latest"
+# AI coding agent。registry の既定 backend は npm:@opencode/cli なので、codex と同じく
+# GitHub リリースのネイティブバイナリを配る aqua backend を明示する。
+# GitHub の latest 印は v1 系に付いたままなので、公式 README が案内する v2 系を追う。
+"aqua:anomalyco/opencode" = "2"
 fastfetch = "latest"
