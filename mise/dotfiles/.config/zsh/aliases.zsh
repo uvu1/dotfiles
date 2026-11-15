@@ -22,9 +22,11 @@ alias ls="eza --icons --group-directories-first --color=always"
 
 # 1Password の参照を読み、空なら失敗する。
 # op read は macOS の op と WSL の Windows op.exe の両方で使える。
+# 複数アカウントにサインインしていると op は account を選べず失敗するため、
+# 項目がある my.1password.com のアカウントを user ID で指定する（URL は 2 アカウントで重複）。
 _codex_secret() {
   local value
-  value=$(op read --no-newline "$1") || return
+  value=$(op read --account PT6SERF2IFGDLFMZ3URA3CTKLE --no-newline "$1") || return
   if [[ -z "$value" ]]; then
     print -u2 "codex: 1Password の $1 が空です。"
     return 1
