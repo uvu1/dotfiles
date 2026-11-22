@@ -34,6 +34,24 @@ program = "bash"
 args = ["scripts/sync-takumi-guard.sh"]
 cwd = "{repo}"
 
+[profiles.arch]
+platform = "linux"
+arch = "x86_64"
+add_environment = "unix"
+
+[[profiles.arch.environments]]
+mise_environment = "unix"
+
+[[profiles.arch.after_sync]]
+program = "home-manager"
+args = ["switch", "--flake", "{repo}#uvu1@fy-desktop"]
+cwd = "{repo}"
+
+[[profiles.arch.after_sync]]
+program = "bash"
+args = ["scripts/sync-ai-config.sh"]
+cwd = "{repo}"
+
 [profiles.macos]
 platform = "macos"
 arch = "aarch64"

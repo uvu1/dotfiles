@@ -154,7 +154,7 @@
   ];
 
   home-manager = {
-    extraSpecialArgs = { inherit inputs; };
+    extraSpecialArgs = { inherit inputs; wsl = false; };
     useGlobalPkgs = true;
     useUserPackages = true;
     users.uvu1 = {

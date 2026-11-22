@@ -278,6 +278,27 @@ Adobe 製品本体は Creative Cloud から選択して導入します。1Passwo
 Cloudflare、Office などのアカウント・ライセンス認証、macOS の権限許可、Cloudflare
 Zero Trust への端末登録、ATOK の入力ソース選択は各アプリの初回起動後に行います。
 
+## ネイティブ Arch Linux（fy-desktop）
+
+Nix を multi-user で導入し、`~/dotfiles` に clone してから適用します。
+
+```sh
+cd ~/dotfiles
+. /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh
+NIX_CONFIG='extra-experimental-features = nix-command flakes' \
+  nix run home-manager/release-26.05 -- switch --flake .#uvu1@fy-desktop
+mise -C mise trust -a
+mise -C mise -E unix dotfiles apply --dry-run --verbose
+mise -C mise -E unix dotfiles apply
+mise -C mise -E unix install
+bash scripts/sync-ai-config.sh
+```
+
+zsh をログインシェルにする場合は、`~/.nix-profile/bin/zsh` を
+`/etc/shells` に登録し、`chsh -s ~/.nix-profile/bin/zsh` を実行します。
+Git のコミット署名を使うには、1Password のデスクトップアプリにサインインし、
+同じ署名鍵を選び、開発者設定で SSH エージェントを有効にします。
+
 ## WSL Arch
 
 Windows 側で公式 distro 一覧に `ArchLinux` があることを確認して導入します。

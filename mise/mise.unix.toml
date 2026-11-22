@@ -1,5 +1,5 @@
-# macOS(darwin) と WSL(linux) 共通の unix dotfiles。
-# wsl / macos profile が mise 環境 "unix" として読み込む。
+# macOS / WSL / ネイティブ Linux 共通の unix dotfiles。
+# wsl / arch / macos profile が mise 環境 "unix" として読み込む。
 # unix の toolset は dotfiles/mise/config.unix.toml が唯一の正本。
 # それを ~/.config/mise/config.toml へ symlink するため、ここには toolset を
 # 重複して書かない。symlink なので pull した時点で toolset が反映され、

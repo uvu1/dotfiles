@@ -1,13 +1,15 @@
-{ config, inputs, pkgs, ... }:
+{ config, inputs, lib, pkgs, wsl, ... }:
 let
+  isNativeLinux = pkgs.stdenv.isLinux && !wsl;
   # グローバルに使うツールは unstable から取る。stable 26.05 では
   # llvmPackages_22.clang-tools が 22.1.5、gopls が 0.22.0 で、置き換え前の
-  # mise の版に届かない。copilot-language-server と 1password-cli は unfree なので
+  # mise の版に届かない。1Password と copilot-language-server は unfree なので
   # legacyPackages では評価できず、predicate で当該パッケージのみ許可する。
   unstable = import inputs.nixpkgs-unstable {
     system = pkgs.stdenv.hostPlatform.system;
     config.allowUnfreePredicate = p:
       builtins.elem (pkgs.lib.getName p) [
+        "1password"
         "1password-cli"
         "copilot-language-server"
       ];
@@ -36,7 +38,6 @@ let
     unstable.typescript-language-server
     unstable.vscode-langservers-extracted # jsonls / cssls / html / eslint の 4 本
     unstable.yaml-language-server
-    unstable.biome
     unstable.golangci-lint
     unstable.ruff
     unstable.yamllint
@@ -251,15 +252,18 @@ in
     pkgs.libpq
     pkgs.libpq.dev
     pkgs.libpq.pg_config
-  ] ++ devTools ++ debugTools ++ cliTools ++ runtimes ++ pkgs.lib.optionals pkgs.stdenv.isDarwin [
+  ] ++ devTools ++ debugTools ++ cliTools ++ runtimes ++ lib.optionals (!wsl) [
     unstable._1password-cli
-  ] ++ pkgs.lib.optionals pkgs.stdenv.isLinux [
+  ] ++ lib.optionals isNativeLinux [
+    unstable._1password-gui
+  ] ++ lib.optionals pkgs.stdenv.isLinux [
     dotfilesUpdate
-    wslFuseSetup
-    wslYkmanSetup
     pkgs.gcc
     pkgs.wl-clipboard
     pkgs.passt
+  ] ++ lib.optionals wsl [
+    wslFuseSetup
+    wslYkmanSetup
   ];
 
   home.sessionVariables.NVIM_REMOTE_SSH_BIN = "${unstable.openssh}/bin/ssh";
@@ -267,7 +271,25 @@ in
   # WSL does not source hm-session-vars.sh; nvim reads this fallback as well.
   home.file = {
     ".config/nvim-remote/ssh-path".text = "${unstable.openssh}/bin/ssh\n";
-  } // pkgs.lib.optionalAttrs pkgs.stdenv.isLinux ({
+  } // lib.optionalAttrs isNativeLinux {
+    ".config/nix/nix.conf".text = "extra-experimental-features = nix-command flakes\n";
+    ".zshenv".text = ''
+      if [[ -r /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh ]]; then
+        source /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh
+      fi
+      if [[ -z ''${SSH_AUTH_SOCK:-} && -S "$HOME/.1password/agent.sock" ]]; then
+        export SSH_AUTH_SOCK="$HOME/.1password/agent.sock"
+      fi
+    '';
+  } // lib.optionalAttrs pkgs.stdenv.isLinux {
+    # 非NixOSのArchではNixのpodmanが/etc/containers/policy.jsonを持たない。
+    ".config/containers/policy.json".text = ''
+      { "default": [ { "type": "insecureAcceptAnything" } ] }
+    '';
+    ".config/containers/registries.conf".text = ''
+      unqualified-search-registries = ["docker.io"]
+    '';
+  } // lib.optionalAttrs wsl ({
     # Windows 側の設定を参照し、内容は Nix store に取り込まない。
     ".ssh/config".source = config.lib.file.mkOutOfStoreSymlink
       "${winHome}/.ssh/config";
@@ -283,15 +305,6 @@ in
     ".zshenv".text = ''
       export LOCALE_ARCHIVE="${pkgs.glibcLocales}/lib/locale/locale-archive"
       export LANG=C.UTF-8
-    '';
-
-    # 非NixOSのArchではNixのpodmanが/etc/containers/policy.jsonを持たず
-    # `podman pull`が失敗するため、ユーザー設定として宣言する。
-    ".config/containers/policy.json".text = ''
-      { "default": [ { "type": "insecureAcceptAnything" } ] }
-    '';
-    ".config/containers/registries.conf".text = ''
-      unqualified-search-registries = ["docker.io"]
     '';
   } // pkgs.lib.mapAttrs' (name: target:
     pkgs.lib.nameValuePair ".local/bin/${name}" {

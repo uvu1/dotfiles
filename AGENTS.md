@@ -7,7 +7,7 @@
 - Keep mise for per-project version switching plus the vendor CLIs that must track upstream weekly (`claude`, `cloudflared`, `aqua:openai/codex`, `herdr`). Declare project runtimes in that project's own `mise.toml` or idiomatic version file, never in the global toolset.
 - Keep ordinary dotfiles in `mise/`.
 - Keep update orchestration in `.dotflow.toml` and `scripts/`; do not duplicate it in shell startup files.
-- Preserve the environment split: shared `unix` for macOS and WSL, `darwin` for macOS-only dotfiles (karabiner, rio), and `windows` for the complete native Windows environment including PowerShell.
+- Preserve the environment split: shared `unix` for macOS, WSL, and native Linux, `darwin` for macOS-only dotfiles (karabiner, rio), and `windows` for the complete native Windows environment including PowerShell. Keep Windows interop in the WSL Home Manager profile.
 
 ## Changes
 
