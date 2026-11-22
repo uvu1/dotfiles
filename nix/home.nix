@@ -1,16 +1,14 @@
 { config, inputs, lib, pkgs, wsl, ... }:
 let
-  isNativeLinux = pkgs.stdenv.isLinux && !wsl;
   # グローバルに使うツールは unstable から取る。stable 26.05 では
   # llvmPackages_22.clang-tools が 22.1.5、gopls が 0.22.0 で、置き換え前の
-  # mise の版に届かない。1Password と copilot-language-server は unfree なので
+  # mise の版に届かない。1Password CLI は unfree なので
   # legacyPackages では評価できず、predicate で当該パッケージのみ許可する。
   unstable = import inputs.nixpkgs-unstable {
     system = pkgs.stdenv.hostPlatform.system;
     config.allowUnfreePredicate = p:
       builtins.elem (lib.getName p) [
         "1password-cli"
-        "copilot-language-server"
       ];
   };
   misePackage = unstable.mise;
@@ -40,7 +38,6 @@ let
   # プロジェクトが古い node を pin していても影響を受けない。
   devTools = [
     unstable.basedpyright
-    unstable.copilot-language-server
     unstable.gopls
     unstable.llvmPackages_22.clang-tools # clangd + clang-format + clang-tidy を同一版で供給
     unstable.lua-language-server
@@ -86,9 +83,8 @@ let
 
   # 日常 CLI とエディタ。neovim は provider wrapper が付かない unwrapped を使う。
   # yq は yq-go（pkgs.yq は別物の Python 実装）、delta は git-delta ではなく delta、
-  # ykman は yubikey-manager、aws は awscli2（pkgs.awscli は v1）。
+  # ykman は yubikey-manager。
   cliTools = [
-    unstable.awscli2
     unstable.bat
     unstable.delta
     unstable.eza
@@ -101,11 +97,8 @@ let
     neovim
     unstable.openssh
     unstable.ripgrep
-    unstable.saml2aws
-    unstable.sshfs
     unstable.starship
     unstable.tree-sitter
-    unstable.tmux
     unstable.yq-go
     unstable.yubikey-manager
     unstable.zoxide
@@ -128,16 +121,6 @@ let
     unstable.clippy # rust_analyzer の check.command
     unstable.rust-analyzer
   ];
-  dotfilesUpdate = pkgs.writeShellApplication {
-    name = "dotfiles-update";
-    runtimeInputs = [
-      pkgs.git
-      misePackage
-    ];
-    text = ''
-      export PATH="$HOME/.local/share/mise/shims:$PATH"
-    '' + builtins.readFile ../scripts/update-wsl.sh;
-  };
   winHome = "/mnt/c/Users/${config.home.username}";
   # WSL の ~/.local/bin に置くラッパ（名前 → 実体）。zsh は Windows の PATH を
   # 外すので（sheldon の wsl-local-bin）、名前で呼ぶ Windows コマンドはここに足す。
@@ -153,32 +136,6 @@ let
     "usbipd.exe" = "/mnt/c/Program Files/usbipd-win/usbipd.exe";
     "winget.exe" = "${winHome}/AppData/Local/Microsoft/WindowsApps/winget.exe";
     "op.exe" = "${winHome}/AppData/Local/Microsoft/WinGet/Links/op.exe";
-  };
-  # Nix store は setuid にできない。FUSE のマウント補助は Nix の版を
-  # /usr/local/bin に配置し、版が変わったときだけ sudo を使う。
-  wslFuseSetup = pkgs.writeShellApplication {
-    name = "wsl-fuse-setup";
-    runtimeInputs = [ pkgs.coreutils pkgs.diffutils ];
-    text = ''
-      if [ "$#" -gt 1 ] || { [ "$#" -eq 1 ] && [ "$1" != --dry-run ]; }; then
-        echo "Usage: wsl-fuse-setup [--dry-run]" >&2
-        exit 2
-      fi
-      helper=${unstable.fuse3.bin}/bin/fusermount3
-      target=/usr/local/bin/fusermount3
-      if [ -L "$target" ]; then
-        echo "Refusing to replace symlink: $target" >&2
-        exit 1
-      fi
-      if [ -f "$target" ] && [ -u "$target" ] && [ "$(stat -c %u "$target")" = 0 ] && cmp -s "$helper" "$target"; then
-        exit 0
-      fi
-      if [ "$#" -eq 1 ]; then
-        echo "Would install Nix-managed fusermount3 to $target with setuid root"
-        exit 0
-      fi
-      sudo install -o root -g root -m 4755 "$helper" "$target"
-    '';
   };
   # 非 NixOS の WSL に、Nix 管理の CCID ドライバーと pcscd を接続する。
   # uaccess はログイン seat のない WSL では使えないため、所有者を明示する。
@@ -257,37 +214,17 @@ in
     pkgs.zsh
     pkgs.podman
     pkgs.docker-compose # podman compose のプロバイダ（Docker API ソケット経由で接続）
-    pkgs.postgresql_18
-    # pg gem 等の C 拡張が libpq-fe.h と pg_config を要求する。postgresql_18 は
-    # outputsToInstall が ["out" "man"] で dev が profile に入らず、さらに nixpkgs は
-    # out から pg_config を削除している（generic.nix の `rm "$out/bin/pg_config"`）。
-    # libpq も outputsToInstall が ["out"] だけなので dev を明示する。
-    pkgs.libpq
-    pkgs.libpq.dev
-    pkgs.libpq.pg_config
   ] ++ devTools ++ debugTools ++ cliTools ++ runtimes ++ lib.optionals (!wsl) [
     unstable._1password-cli
   ] ++ lib.optionals pkgs.stdenv.isLinux [
-    dotfilesUpdate
     pkgs.gcc
     pkgs.wl-clipboard
     pkgs.passt
   ] ++ lib.optionals wsl [
-    wslFuseSetup
     wslYkmanSetup
   ];
 
-  home.file = lib.optionalAttrs isNativeLinux {
-    ".config/nix/nix.conf".text = "extra-experimental-features = nix-command flakes\n";
-    ".zshenv".text = ''
-      if [[ -r /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh ]]; then
-        source /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh
-      fi
-      if [[ -z ''${SSH_AUTH_SOCK:-} && -S "$HOME/.1password/agent.sock" ]]; then
-        export SSH_AUTH_SOCK="$HOME/.1password/agent.sock"
-      fi
-    '';
-  } // lib.optionalAttrs pkgs.stdenv.isLinux {
+  home.file = lib.optionalAttrs pkgs.stdenv.isLinux {
     # 非NixOSのArchではNixのpodmanが/etc/containers/policy.jsonを持たない。
     ".config/containers/policy.json".text = ''
       { "default": [ { "type": "insecureAcceptAnything" } ] }

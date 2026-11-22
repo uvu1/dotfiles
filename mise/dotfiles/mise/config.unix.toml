@@ -29,7 +29,6 @@ not_found_auto_install = false
 # 再現性より鮮度を優先して latest のままにする。nix に移すと nixpkgs の追従待ちで
 # codex / claude の更新通知が出続ける（nixpkgs は upstream より数リリース遅れる）。
 claude = "latest"
-cloudflared = "latest"
 # レジストリ既定の npm:@openai/codex は bin/codex が
 # lib/node_modules/@openai/codex/bin/codex.js への symlink で `#!/usr/bin/env node`。
 # プロジェクトの node で動いてしまうため、GitHub リリースのネイティブバイナリを
@@ -50,4 +49,3 @@ herdr = "latest"
 # GitHub リリースのネイティブバイナリを配る aqua backend を明示する。
 # GitHub の latest 印は v1 系に付いたままなので、公式 README が案内する v2 系を追う。
 "aqua:anomalyco/opencode" = "2"
-fastfetch = "latest"

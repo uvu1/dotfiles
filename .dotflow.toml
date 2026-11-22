@@ -13,13 +13,17 @@ add_environment = "unix"
 [[profiles.wsl.environments]]
 mise_environment = "unix"
 
+[[profiles.wsl.environments]]
+mise_environment = "wsl"
+targets = [
+  "/mnt/c/Users/uvu1/AppData/Local/rio/config.toml",
+  "/mnt/c/Users/uvu1/AppData/Local/rio/background.jpg",
+]
+
 [[profiles.wsl.after_sync]]
 program = "home-manager"
 args = ["switch", "--flake", "{repo}#uvu1@arch-wsl"]
 cwd = "{repo}"
-
-[[profiles.wsl.after_sync]]
-program = "wsl-fuse-setup"
 
 [[profiles.wsl.after_sync]]
 program = "wsl-ykman-setup"
@@ -32,28 +36,6 @@ cwd = "{repo}"
 [[profiles.wsl.after_sync]]
 program = "bash"
 args = ["scripts/sync-takumi-guard.sh"]
-cwd = "{repo}"
-
-[profiles.arch]
-platform = "linux"
-arch = "x86_64"
-add_environment = "unix"
-
-[[profiles.arch.environments]]
-mise_environment = "unix"
-
-[[profiles.arch.environments]]
-mise_environment = "arch"
-targets = ["~/.config/rio/config.toml", "~/.config/rio/background.jpg"]
-
-[[profiles.arch.after_sync]]
-program = "home-manager"
-args = ["switch", "--flake", "{repo}#uvu1@fy-desktop"]
-cwd = "{repo}"
-
-[[profiles.arch.after_sync]]
-program = "bash"
-args = ["scripts/sync-ai-config.sh"]
 cwd = "{repo}"
 
 [profiles.macos]
@@ -86,10 +68,3 @@ cwd = "{repo}"
 program = "bash"
 args = ["scripts/sync-takumi-guard.sh"]
 cwd = "{repo}"
-
-[profiles.windows]
-platform = "windows"
-add_environment = "windows"
-
-[[profiles.windows.environments]]
-mise_environment = "windows"

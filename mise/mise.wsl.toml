@@ -1,0 +1,4 @@
+# Windows の Rio 設定だけを WSL から配布する。Windows 側のツールは管理しない。
+[dotfiles]
+"/mnt/c/Users/uvu1/AppData/Local/rio/config.toml" = { source = "dotfiles/.config/rio/config.windows.toml.tmpl", mode = "template" }
+"/mnt/c/Users/uvu1/AppData/Local/rio/background.jpg" = { source = "dotfiles/.config/rio/background.jpg", mode = "copy" }

@@ -5,14 +5,10 @@
 [gpg]
     format = ssh
 [gpg "ssh"]
-{% if os() == "linux" and get_env(name="WSL_DISTRO_NAME", default="") != "" %}
+{% if os() == "linux" %}
     program = "/mnt/c/Users/uvu1/AppData/Local/Microsoft/WindowsApps/op-ssh-sign-wsl.exe"
-{% elif os() == "linux" %}
-    program = "/opt/1Password/op-ssh-sign"
 {% elif os() == "macos" %}
     program = "/Applications/1Password.app/Contents/MacOS/op-ssh-sign"
-{% elif os() == "windows" %}
-    program = "C:/Users/uvu1/AppData/Local/Microsoft/WindowsApps/op-ssh-sign.exe"
 {% endif %}
 [commit]
     gpgsign = true
@@ -21,13 +17,9 @@
 [ghq]
     root = ~/repo
 
-{% if os() != "macos" %}
 [core]
-{% if os() == "windows" %}
-    sshCommand = "C:/Windows/System32/OpenSSH/ssh.exe"
-{% elif os() == "linux" %}
+{% if os() == "linux" %}
     sshCommand = ssh
 {% endif %}
     pager = delta
-{% endif %}
     editor = nvim

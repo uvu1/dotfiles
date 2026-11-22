@@ -1,4 +1,4 @@
-# rio の設定（macOS、Windows、ネイティブ Arch で共有）。
+# rio の設定（macOS、Windows で共有）。
 # 描画だけを rio に任せ、分割・タブ・ワークスペース・セッション永続化は herdr が持つ
 # （.config/herdr/config.toml）。キー名・値は rio v0.5.29 のソース
 # （rio-backend/src/config/*.rs）に合わせてある。man ページ rio(5) は古く、
@@ -32,7 +32,7 @@ decorations = "Buttonless"
 # rio はフォントごとの拡大率や位置を調整できず、fallback（fonts.symbol-map）で振った
 # ヒラギノは英字と文字の高さが揃わない。Monaspace + IBM Plex Sans JP + Nerd Fonts の合成
 # フォント Moralerspace（半角:全角 = 3:5）を使う。macOS は nix/darwin.nix の moralerspace、
-# Arch は nix/arch-gui.nix、Windows は手動で入れる（README の Windows 節）。
+# Windows は手動で入れる（README の Windows 節）。
 [fonts]
 # Windows は config.windows.toml.tmpl がこの行を 19 に置き換える。
 size = 16
@@ -244,7 +244,7 @@ binding = { key = "space", mods = ["Control", "Shift"] }
 # rio は画像の path を展開せずそのまま開く（sugarloaf の set_background_image が
 # image_rs::open(&image.path) を呼ぶだけ）ので、~ も相対パスも使えない。どちらの OS も
 # ユーザー名は uvu1 で固定（nix/darwin.nix、.gitconfig.tmpl）なので絶対パスで書く。
-# 画像は mise の dotfiles が config.toml の隣に置く（mise.darwin.toml / mise.windows.toml）。
+# 画像は mise の dotfiles が config.toml の隣に置く（mise.darwin.toml / mise.wsl.toml）。
 #
 # herdr は mise 管理で、mise activate は .zshrc（sheldon）で行うため対話シェルで起動する。
 # herdr が無い環境では素の login shell に落とす。Windows は WSL の中で同じことをする。
@@ -257,14 +257,6 @@ args = ["-lic", "command -v herdr >/dev/null && exec herdr; exec zsh -l"]
 
 [platform.macos.window.background-image]
 path = "/Users/uvu1/.config/rio/background.jpg"
-opacity = 0.12
-
-[platform.linux.shell]
-program = "/home/uvu1/.nix-profile/bin/zsh"
-args = ["-lic", "command -v herdr >/dev/null && exec herdr; exec zsh -l"]
-
-[platform.linux.window.background-image]
-path = "/home/uvu1/.config/rio/background.jpg"
 opacity = 0.12
 
 [platform.windows.shell]

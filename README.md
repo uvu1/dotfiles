@@ -1,12 +1,8 @@
 # dotfiles
 
-`github.com/uvu1/dotfiles` の `chezmoi-master`（旧 `master`）を移行元正本として、
-chezmoi 管理の設定を Nix、Home Manager、nix-darwin、mise dotfiles へ移行した構成です。
-
-移植時に参照した正本コミットは
-`44ae8668a39989d0bfba1572ae869da3fb4b22f5` です。設定を更新するときは、
-移行元を再確認する場合は `chezmoi-master` を参照します。移行後の正本は
-このリポジトリの `master` です。
+macOS と Arch WSL の開発環境を Nix、Home Manager、nix-darwin、mise dotfiles で管理します。
+設定の正本はこのリポジトリの `master` です。ネイティブ Arch は管理しません。
+Windows には Rio の設定と背景画像だけを WSL から配布します。
 
 ## 構成
 
@@ -17,14 +13,12 @@ chezmoi 管理の設定を Nix、Home Manager、nix-darwin、mise dotfiles へ�
 - `mise/dotfiles/ai/`: Codex/Claude Codeの個人設定、共通skills、検証script
 - `AGENTS.md` / `CLAUDE.md`: このrepository固有のagent向け指示
 - `bootstrap/wsl/`: WSL の systemd、interop、既定ユーザー設定
-- `.config/configuration.winget`: Windows のGUIアプリとbootstrap基盤
-- `scripts/`: 初期構築と更新をまとめるスクリプト
-- `docs/`: 設計と移行計画
+- `scripts/`: AI 設定と Takumi Guard の同期・検証
+- `docs/`: 運用手順とコンポーネントの注意点
 
-macOS と WSL は共通の unix toolset（mise 環境 `unix`）を利用します。macOS は
-加えて `darwin` 環境で Karabiner と Rio の設定を配置します。Windows は単一の `windows`
-環境でNeovim、PowerShell profile、Windows用CLI、通常のdotfilesを管理します。
-GUIアプリ、Git、mise、PowerShell、Rioの導入はWinGet Configurationが担当します。
+macOS と WSL は共通の `unix` mise 環境を利用します。macOS は `darwin` 環境で
+Karabiner と Rio を配置し、WSL は `wsl` 環境で Windows の Rio 設定を配置します。
+Windows 側のアプリ導入、PowerShell、開発ツールは管理しません。
 
 ### nix と mise の責務
 
@@ -40,9 +34,8 @@ miseが担うのは次の2つだけです。
    gem製のLSPはインタプリタがビルド時のrubyに固定されるため、Gemfileが別のrubyを
    pinしているプロジェクトでは `mise.local.toml` に `gem:ruby-lsp` を宣言します
    （詳細と症状は `docs/nvim-lsp-audit.md` の「既知の罠」）。
-2. **vendor CLI。** `claude` / `cloudflared` / `aqua:openai/codex` はサービスに接続する
-   クライアントで提供元の出荷に追従したいため、再現性より鮮度を取って `latest` の
-   まま mise に残しています。
+2. **vendor CLI。** Claude、Codex、herdr、agent-browser、OpenCode は mise で管理します。
+   提供元の出荷に追従するため基本は `latest`、OpenCode はメジャー版 `2` を指定しています。
 
 sheldonはmiseを `mise activate zsh`（PATH activation）で有効化します。`--shims` は
 版が未解決のときPATHの後方へフォールスルーせず `No version is set for shim: <tool>`
@@ -54,6 +47,9 @@ miseはinstallディレクトリをNix profileより前に置くので、mise側
 この分割は2026-07-31にmiseからnixへ移して成立したものです。nvimの設定を触る場合は
 `docs/nvim-tooling-migration.md` に変更点と版の差分、`lib/mise.lua` の `base_path()` が
 必須である理由がまとまっています。
+
+PostgreSQL 本体と libpq（開発ヘッダー・`pg_config` を含む）はグローバル供給しません。
+必要なプロジェクトの Nix devShell 等で宣言します。既存 DB や導入済みパッケージの削除は行いません。
 
 `bun` と `uv` はグローバルtoolsetに含めません。必要なプロジェクトのルートで
 それぞれ次を実行し、プロジェクトの `mise.toml` に追加します。
@@ -75,8 +71,7 @@ macOSとWSLでは、mise dotfilesがCodexとClaude Codeの個人設定を個別f
 symlinkします。`~/.codex`や`~/.claude`全体は管理対象にせず、認証、履歴、session、
 cache、生成memory、端末固有のtrust状態をローカルに残します。
 
-- Codex: `~/.codex/AGENTS.md`、`~/.codex/config.toml`内の管理block、
-  `~/.codex/rules/`
+- Codex: `~/.codex/AGENTS.md`、`~/.codex/config.toml`内の管理block
 - Claude Code: `~/.claude/CLAUDE.md`、`~/.claude/settings.json`
 - 共通skills: `mise/dotfiles/ai/skills/common/`を正本とし、Codex用とClaude用の
   viewから参照
@@ -95,16 +90,7 @@ symlinkしません。`scripts/sync-ai-config.sh`が`mise/dotfiles/ai/codex/conf
 保持します。管理対象外の値が変わる場合は書き込みを中止します。
 `bash scripts/sync-ai-config.sh --dry-run`で、変更せずに同期可否を確認できます。
 
-`mistral`プロファイルは`~/.codex/mistral.config.toml`へsymlinkし、Mistralの
-Responses API（`https://api.mistral.ai/v1`）を使います。zshで`codex --profile mistral`
-（`-p mistral`も可）を実行すると、1Password CLIの`op read`で
-`op://Private/Mistral-Vibe API/credential`からAPIキーを取得し、子プロセスの
-`MISTRAL_API_KEY`環境変数で渡します。macOSでは1Password CLI、WSLでは
-既存の`op` aliasが参照するWindows側のCLIが利用可能で、認証済みである必要があります。
-
-Codex rulesは`dotfiles.rules`だけを共通baselineとして個別symlinkします。Codexが
-approval時に更新する`default.rules`は端末固有fileとして残るため、追加のapprovalを
-行ってもrepositoryはdirtyになりません。
+Codex の個別操作許可（`~/.codex/rules/`）は端末ローカルで管理し、共通配布しません。
 
 AI設定を変更した後は次を実行します。
 
@@ -118,7 +104,7 @@ mise -C mise -E unix dotfiles status
 [Takumi Guard](https://shisho.dev/docs/ja/t/guard/)はnpm、PyPI、RubyGems、Goの
 registryを仲介して悪性packageのinstallをblockするsecurity proxyです。macOSとWSLでは
 `scripts/sync-takumi-guard.sh`が唯一の供給元で、`dotflow update`のafter_sync hookから
-毎回再適用されます。Windows profileはnode / go / ruby / pythonを持たないため対象外です。
+毎回再適用されます。
 
 適用先は次のとおりです。いずれも各tool公式の方法で書き込み、他の設定keyは壊しません。
 
@@ -180,7 +166,7 @@ cd $(mktemp -d) && printf 'source "https://rubygems.org"\ngem "hola-takumi", "0.
 
 ## dotflow
 
-[dotflow](https://github.com/uvu1/dotflow) は WSL、macOS、Windows 共通の更新・編集
+[dotflow](https://github.com/uvu1/dotflow) は WSL と macOS の更新・編集
 インターフェースです。このリポジトリでは GitHub release の `0.2.0` に固定しており、
 `latest` へ自動追従しません。crates.io への公開は release asset の利用とは別の手動作業で、
 このリポジトリの導入・更新手順には含みません。
@@ -201,7 +187,8 @@ commit、push、stash、reset、rebase、ファイル削除は行わず、dirty 
 主なコマンドは次のとおりです。
 
 - `dotflow add TARGET...`: base mise環境へ対象を追加する。`--profile` を明示した場合は、
-  WSL=`linux`、macOS=`darwin`、Windows=`windows` のprofile固有環境へ追加する
+  WSL=`unix`、macOS=`unix` の共有環境へ追加する。OS固有の配置は
+  `mise.wsl.toml` / `mise.darwin.toml` に明示する
 - `dotflow edit TARGET`: 選択profileの追加先環境で対象を編集する
 - `dotflow root`: 登録済みリポジトリの絶対pathを表示する
 - `dotflow cd`: shell integration経由でリポジトリへ移動する
@@ -214,11 +201,11 @@ commit、push、stash、reset、rebase、ファイル削除は行わず、dirty 
 - `dotflow shell-init SHELL`: `dotflow cd` 対応wrapperと、起動時の `dotflow check` を生成する
   （`--no-check` で起動時の更新通知を無効化）
 
-zshと管理対象のPowerShell profileは、mise activation直後に `shell-init` を読み込みます。
-互換command `dotfiles-update` も残してあり、引数なしで `dotflow update` を呼びます。
+zsh は mise activation 直後に `shell-init` を読み込みます。更新コマンドは
+`dotflow update` に統一しています。
 
-初回導入または旧更新scriptからの切り替えでは、cloneしたリポジトリでbase configを
-trustし、固定版をinstallしてからOS別cutoverを行います。
+初回導入では、下記の OS 別手順で Nix と dotfiles を配置した後、clone した
+リポジトリで base config を trust し、固定版の dotflow を登録します。
 
 ```sh
 export MISE_EXPERIMENTAL=1
@@ -230,8 +217,8 @@ dotflow update --dry-run
 ```
 
 既に `~/dotfiles` が既定pathならlocator登録は必須ではありません。`init` は既存cloneを
-登録するだけで、cloneやGit初期化は行いません。過去のchezmoi移行経緯と対象の詳細は
-下記の各OS手順および `docs/dotfiles-migration-plan.md` に残しています。
+登録するだけで、cloneやGit初期化は行いません。既存の設定と競合した場合は強制上書きせず、
+内容を確認してから適用します。
 
 ## 前提
 
@@ -239,8 +226,7 @@ dotflow update --dry-run
 - WSL から
   `/mnt/c/Users/uvu1/AppData/Local/Microsoft/WindowsApps/op-ssh-sign-wsl.exe`
   を実行できること
-- Windows では OpenSSH Clientと、WinGet Configuration対応のwinget
-  (`1.6.2631`以上)を利用できること
+- Windows では OpenSSH Client と Rio、必要なフォントを別途導入すること
 
 ## macOS
 
@@ -251,9 +237,11 @@ Nix を導入し、Command Line Tools の Git、または Nix の Git でこの
 sudo nix --extra-experimental-features 'nix-command flakes' run nix-darwin/nix-darwin-26.05#darwin-rebuild -- switch --flake .#uvu1-mac
 export MISE_EXPERIMENTAL=1
 mise -C mise trust -a
-# unix の toolset は ~/.config/mise/config.toml が正本で、cutover の apply が
-# それを symlink する。install はその後に実行する。
-bash scripts/cutover-unix.sh darwin
+# 共有設定を配置してから、そのグローバル toolset を install する。
+mise -C mise -E unix dotfiles apply --dry-run
+mise -C mise -E unix dotfiles apply
+mise -C mise -E darwin dotfiles apply --dry-run ~/.config/karabiner ~/.config/rio/config.toml ~/.config/rio/background.jpg
+mise -C mise -E darwin dotfiles apply ~/.config/karabiner ~/.config/rio/config.toml ~/.config/rio/background.jpg
 mise -C mise -E unix install
 mise -C mise -E unix ls --current
 ```
@@ -265,64 +253,10 @@ sudo darwin-rebuild switch --flake .#uvu1-mac
 ```
 
 この適用では `nix-homebrew` が Apple Silicon 用 Homebrew を `/opt/homebrew` に導入し、
-1Password、Adobe Creative Cloud、ATOK、Cloudflare One Client、Discord Canary、
-Google Chrome Canary、macFUSE、Microsoft Office、Obsidian、Rio、Scroll Reverser、Slack、Spark、
-Spotify、Zen Twilight、Zoom を
-Homebrew Cask で導入・更新します。Nix の宣言にない Homebrew package は削除しません。
-
-macFUSE は SSHFS で遠隔ファイルを開くために使います。初回は macOS のシステム設定で
-拡張機能を許可し、指示されたら再起動してください。SSHFS の実行ファイルは
-Home Manager が Nix から供給します。
-
-Adobe 製品本体は Creative Cloud から選択して導入します。1Password、Adobe、ATOK、
-Cloudflare、Office などのアカウント・ライセンス認証、macOS の権限許可、Cloudflare
-Zero Trust への端末登録、ATOK の入力ソース選択は各アプリの初回起動後に行います。
-
-## ネイティブ Arch Linux（fy-desktop）
-
-Nix を multi-user で導入し、`~/dotfiles` に clone してから適用します。
-先に下記の手順で GUI を入れておくと、KDE ランチャーと Git 署名も使えます。
-
-```sh
-cd ~/dotfiles
-. /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh
-NIX_CONFIG='extra-experimental-features = nix-command flakes' \
-  nix run home-manager/release-26.05 -- switch --flake .#uvu1@fy-desktop
-mise -C mise trust -a
-mise -C mise -E unix dotfiles apply --dry-run --verbose
-mise -C mise -E unix dotfiles apply
-mise -C mise -E unix install
-mise -C mise -E arch dotfiles apply --dry-run --verbose ~/.config/rio/config.toml ~/.config/rio/background.jpg
-mise -C mise -E arch dotfiles apply ~/.config/rio/config.toml ~/.config/rio/background.jpg
-bash scripts/sync-ai-config.sh
-```
-
-zsh をログインシェルにする場合は、`~/.nix-profile/bin/zsh` を
-`/etc/shells` に登録し、`chsh -s ~/.nix-profile/bin/zsh` を実行します。
-Git のコミット署名を使うには、1Password のデスクトップアプリにサインインし、
-同じ署名鍵を選び、開発者設定で SSH エージェントを有効にします。
-
-### GUI の導入・更新
-
-`arch/gui.packages` が Arch 公式リポジトリから入れる GUI の一覧です。
-
-```sh
-xargs -a arch/gui.packages sudo pacman -Syu --needed
-```
-
-`arch/gui-external.tsv` は 1Password、Discord Canary、Chrome Canary、Slack、
-Spotify、Vicinae、Zen Twilight、Zoom の入手先です。AUR は `PKGBUILD` と
-付属のインストールスクリプトを確認してから、一般ユーザーで `makepkg -si`
-を実行します。1Password は [開発元の手順](https://support.1password.com/install-linux/#arch-linux)
-に従い、署名鍵をインポートしてからビルドします。ベンダー配布の Arch
-パッケージは `sudo pacman -U` で導入します。
-
-公式リポジトリは `sudo pacman -Syu`、AUR はレシピを更新して `makepkg -si`、
-ベンダー配布は新しいパッケージの `pacman -U` で更新します。
-dotflow はユーザー設定の同期を担当します。
-
-Rio は共通設定と Moralerspace で herdr を起動します。KDE 上で Vicinae は
-ログイン時に起動し、`Alt+Space` で表示します。KRunner は `Alt+F2` で開けます。
+1Password、Adobe Creative Cloud、Discord Canary、Hidden Bar、Karabiner、Office、Obsidian、
+Raycast、Rio、Scroll Reverser、Slack、Spark、Spotify、Zen Twilight、Zoom を
+Homebrew Cask で導入・更新します。宣言から外したアプリや宣言にない package は削除しません。
+アプリの認証・ライセンス登録と macOS の権限許可は、初回起動後に行います。
 
 ## WSL Arch
 
@@ -399,7 +333,6 @@ systemctl is-active nix-daemon.socket
 
 ```sh
 nix run home-manager/release-26.05 -- switch --flake .#uvu1@arch-wsl
-wsl-fuse-setup
 wsl-ykman-setup --dry-run
 wsl-ykman-setup
 mise --version
@@ -409,9 +342,9 @@ chsh -s /home/uvu1/.nix-profile/bin/zsh uvu1
 getent passwd uvu1
 export MISE_EXPERIMENTAL=1
 mise -C mise trust -a
-# unix の toolset は ~/.config/mise/config.toml が正本で、cutover の apply が
-# それを symlink する。install はその後に実行する。
-bash scripts/cutover-unix.sh unix
+# 共有設定を配置してから、そのグローバル toolset を install する。
+mise -C mise -E unix dotfiles apply --dry-run
+mise -C mise -E unix dotfiles apply
 mise -C mise -E unix install
 mise -C mise -E unix ls --current
 ```
@@ -424,13 +357,6 @@ WSL では blink.cmp の Rust fuzzy matcher をビルドするため、Home Mana
 GCC と linker も導入します。また、Neovim のクリップボード連携に必要な
 `wl-copy` と `wl-paste` も導入します。`linker cc not found` が出た場合は
 Nix 構成を再適用した後、Neovim で blink.cmp を再ビルドします。
-
-SSHFS を使う前に `test -c /dev/fuse` を確認します。デバイスがない場合は
-WSL 側で FUSE を利用可能にしてから接続してください。SSHFS は Nix が供給し、
-認証には既存の Windows OpenSSH とその SSH 設定を使います。非特権ユーザーの
-マウントに必要な権限付き `fusermount3` は、`wsl-fuse-setup` が Nix で固定した
-実体から配置します。初回と版の変更時だけ sudo を使い、`dotflow update` では
-Home Manager の適用後に実行します。
 
 ### WSL で YubiKey を使う
 
@@ -480,112 +406,60 @@ PC/SC のエラーなら `systemctl status wsl-ykman-pcscd.service` を確認し
 初回切り替え後は、どのディレクトリからでも次の一コマンドで更新できます。
 
 ```sh
-dotfiles-update
+dotflow update
 ```
 
-`dotfiles-update` は互換aliasとして `dotflow update` を実行します。WSL profileは
-pull後に `home-manager switch --flake ~/dotfiles#uvu1@arch-wsl` を実行してから、
-`unix` mise環境をinstall・applyします。
+WSL profile は共有の `unix` 設定と Windows 向けの `wsl` 設定を配置し、
+Home Manager、YubiKey 設定、AI 設定、Takumi Guard も更新します。
 
 ## Neovim から SSH 先を編集
 
-macOS または WSL の Neovim で `<leader>mc`（`:RemoteDevConnect`）を実行し、
-SSH 接続先と作業ディレクトリを選びます。配置内容の確認後、`remote.nvim` が
-SSH 先の `~/.remote-nvim/releases/` に Neovim・設定・プラグイン・開発ツールを配置し、
-手元の UI を SSH 先の Neovim に接続します。LSP・整形・検索・ターミナルは SSH 先で動きます。
-SSH 先への Nix・mise・npm・Go コンパイラの導入は不要です。
+現行の接続方法と SSH 先の準備は [標準 SSH 開発手順](docs/nvim-remote-dev.md) を参照してください。
 
-`<leader>md` で手元へ戻り、`<leader>mr` で前回のセッションへ再接続します。
-手元へ戻っても SSH 先の Neovim と未保存バッファは残ります。
-`<leader>mp` は通信しない配置予定の表示、`<leader>mh` は環境の確認です。
+## Windows の Rio
 
-接続には Home Manager が用意する Unix 版 OpenSSH と `~/.ssh/config` を使います。
-WSL では Home Manager が `~/.ssh/config` を Windows 側の
-`/mnt/c/Users/uvu1/.ssh/config` へ symlink します。既存の `~/.ssh/config` と
-競合する場合は上書きせず停止します。鍵・agent は Linux 側の設定を使うため、
-config 内の Windows 固有パスは Linux からも使える指定にする必要があります。
-対象は Linux glibc / macOS の x86_64 / ARM64 です。初回準備、言語ごとの依存関係、
-更新と制約は [Neovim Remote development](docs/nvim-remote-dev.md) を参照してください。
+Rio 本体とフォントは Windows 側で別途導入します。このリポジトリが配布するのは次の 2 ファイルだけです。
 
-導入不要の SSHFS 接続も `:RemoteSSHFSConnect` / `:RemoteSSHFSDisconnect` で利用できます。
-こちらでは LSP が手元で動きます。
+- `/mnt/c/Users/uvu1/AppData/Local/rio/config.toml`: 共通 Rio 設定を Windows 用テンプレートで生成
+- `/mnt/c/Users/uvu1/AppData/Local/rio/background.jpg`: 背景画像をコピー
 
-## Windows
+初回は WSL で配置予定を確認してから適用します。以後は WSL の `dotflow update` に含まれます。
 
-このリポジトリを `$HOME\dotfiles` へcloneし、Windows PowerShellまたはPowerShell 7で
-bootstrapを実行します。Windows、WSLともに `$HOME\dotfiles` / `~/dotfiles` を
-適用元の正本とします。
-
-```powershell
-./scripts/bootstrap-windows.ps1
+```sh
+mise -C mise -E wsl dotfiles apply --dry-run /mnt/c/Users/uvu1/AppData/Local/rio/config.toml /mnt/c/Users/uvu1/AppData/Local/rio/background.jpg
+mise -C mise -E wsl dotfiles apply /mnt/c/Users/uvu1/AppData/Local/rio/config.toml /mnt/c/Users/uvu1/AppData/Local/rio/background.jpg
 ```
 
-bootstrapはWinGet Configuration機能を有効化し、`.config/configuration.winget` を
-検証・適用してから、単一の `windows` mise環境をinstallします。その後、dotfilesの
-dry-run、apply、status、`dotflow doctor`を順に実行します。既存dotfileと競合した場合は
-削除や強制上書きをせず停止します。
-
-WinGet Configurationはbootstrap基盤、Windows環境、ブラウザ、日常利用するGUIアプリを
-宣言し、bootstrap実行時に最新版へ更新します。YAMLからresourceを削除しても、既に
-導入済みのアプリは自動ではアンインストールされません。OS component、runtime、ゲーム、
-chezmoi、miseと重複するCLIは宣言対象外です。
-
-- bootstrap基盤: 1Password、7-Zip、Git、mise、PowerShell、Rio
-- Windows環境: WSL、Windows Terminal、PowerToys
-- ブラウザ: Chrome、Firefox Developer Edition/Nightly、Zen Browser/Twilight
-- 日常アプリ: Obsidian、Slack、Zoom、Spark、Spotify、Discord Canary
-- その他: Adobe Creative Cloud、Claude、Cloudflare WARP、Gyazo、ExplorerPatcher、
-  TranslucentTB
-
-### Windows の更新
-
-PowerShell profile を含めて初回切り替えした後は、新しい PowerShell 7 を開き、
-どのディレクトリからでも次の一コマンドで更新できます。
-
-```powershell
-dotfiles-update
-```
-
-`dotfiles-update` は互換aliasとして `dotflow update` を実行します。Windows profileは
-単一の `windows` mise環境をinstallし、Neovim、gitconfig、Rio、combined mise
-config、starship、PowerShell profileをまとめてapplyします。通常更新では重い
-`winget configure`を再実行しません。
-
-Windows の Git と Rio は winget で導入し、mise では管理しません。Nvim と
-Rio の設定は、Windows の symlink 権限に依存しない copy 配置です。Rio は WSL を開き、
-WSL 内で herdr を起動します。PowerShell は WSL から `pwsh.exe` として呼び出します。
+Rio は `wsl.exe` から WSL 内の zsh と herdr を起動します。Windows 向けの mise、
+PowerShell profile、Neovim、Git 設定、一般アプリの導入・更新は管理しません。
+配布を終了した既存設定やインストール済みアプリは自動削除しません。
 
 ### Windows のフォント
 
-Rio は macOS と同じ `Moralerspace Neon` を使います。winget では配布されていないため、
-初回だけ手動で導入します。
+Rio は macOS と同じ `Moralerspace Neon` を使います。ASCII 記号の表示補正には
+`JetBrainsMono Nerd Font` も必要です。両方を初回だけ手動で導入します。
 
 1. [yuru7/moralerspace の Releases](https://github.com/yuru7/moralerspace/releases) から
    `Moralerspace_v2.0.0.zip` を取得して展開する
 2. `MoralerspaceNeon-*.ttf`（Regular / Bold / Italic / BoldItalic）を選び、右クリックの
    「インストール」で導入する
-3. Rio を開き直す
+3. [Nerd Fonts](https://www.nerdfonts.com/font-downloads) の JetBrainsMono Nerd Font も導入する
+4. Rio を開き直す
 
 フォントが無い場合、Rio は既定のフォントで表示します。
 
 ## 検証
 
 ```sh
-nix --extra-experimental-features 'nix-command flakes' build .#darwinConfigurations.uvu1-mac.system
-nix --extra-experimental-features 'nix-command flakes' build '.#homeConfigurations."uvu1@arch-wsl".activationPackage'
+nix flake check --no-build --all-systems
+nix build --no-link --dry-run '.#darwinConfigurations."uvu1-mac".config.home-manager.users.uvu1.home.path'
 export MISE_EXPERIMENTAL=1
-mise -C mise -E unix dotfiles status --missing
-mise -C mise -E darwin dotfiles status --missing   # macOS のみ (karabiner, rio)
-```
-
-Windows では次を実行します。
-
-```powershell
-$env:MISE_EXPERIMENTAL = "1"
-mise -C mise -E windows ls --current
-mise -C mise -E windows dotfiles status --missing
-winget configure validate -f .config/configuration.winget
-winget configure test -f .config/configuration.winget --accept-configuration-agreements
+mise -C mise -E unix dotfiles status
+mise -C mise -E darwin dotfiles status   # macOS のみ
+mise -C mise -E wsl dotfiles status      # WSL のみ
 dotflow doctor
-Get-Command dotfiles-update
+mise/dotfiles/ai/scripts/check-ai-config.sh
 ```
+
+`--dry-run` はビルド予定だけを確認します。対応する macOS 環境では `--dry-run` を外して
+profile をビルドし、実際のファイル名衝突も検証してください。実機への適用は行いません。

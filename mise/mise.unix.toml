@@ -1,5 +1,5 @@
-# macOS / WSL / ネイティブ Linux 共通の unix dotfiles。
-# wsl / arch / macos profile が mise 環境 "unix" として読み込む。
+# macOS / WSL 共通の unix dotfiles。
+# wsl / macos profile が mise 環境 "unix" として読み込む。
 # unix の toolset は dotfiles/mise/config.unix.toml が唯一の正本。
 # それを ~/.config/mise/config.toml へ symlink するため、ここには toolset を
 # 重複して書かない。symlink なので pull した時点で toolset が反映され、
@@ -16,8 +16,6 @@
 "~/.codex/AGENTS.md" = { source = "dotfiles/ai/codex/AGENTS.md", mode = "symlink" }
 "~/.codex/herdr-agent-state.sh" = { source = "dotfiles/ai/codex/herdr-agent-state.sh", mode = "symlink" }
 "~/.codex/hooks.json" = { source = "dotfiles/ai/codex/hooks.json", mode = "symlink" }
-"~/.codex/mistral.config.toml" = { source = "dotfiles/ai/codex/mistral.config.toml", mode = "symlink" }
-"~/.codex/rules" = { source = "dotfiles/ai/codex/rules", mode = "symlink-each" }
 "~/.config/mise/config.toml" = { source = "dotfiles/mise/config.unix.toml", mode = "symlink" }
 # herdr は設定画面や onboarding で ~/.config/herdr に書き込むため、ディレクトリごとではなく
 # 管理するものだけをファイル単位で置く。

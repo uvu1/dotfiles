@@ -37,8 +37,6 @@
 
   users.users.uvu1.home = "/Users/uvu1";
 
-  services.tailscale.enable = true;
-
   # 設定はモジュールが settings から TOML を生成して --config-path で渡すため、
   # mise/dotfiles ではなくここで一元管理する。起動は launchd が担う。
   services.aerospace =
@@ -121,12 +119,9 @@
     casks = [
       "1password"
       "adobe-creative-cloud"
-      "cloudflare-warp"
       "discord@canary"
-      "google-chrome@canary"
       "hiddenbar"
       "karabiner-elements"
-      "macfuse"
       "microsoft-office"
       "obsidian"
       "raycast"
