@@ -50,20 +50,11 @@ codex() {
       -p?*) selected_profile=${arg#-p} ;;
     esac
   done
-  local endpoint api
-  case "$selected_profile" in
-    nekok)
-      endpoint=$(_codex_secret 'op://Private/Nekok Free-Codex/username') || return
-      api=$(_codex_secret 'op://Private/Nekok Free-Codex/credential') || return
-      # URL は TOML の値として解釈できないため、Codex が文字列として受け取る。
-      NEKO_API="$api" command codex --config "model_providers.nekok.base_url=$endpoint" "$@"
-      ;;
-    mistral)
-      api=$(_codex_secret 'op://Private/Mistral-Vibe API/credential') || return
-      MISTRAL_API_KEY="$api" command codex "$@"
-      ;;
-    *)
-      command codex "$@"
-      ;;
-  esac
+  if [[ "$selected_profile" == mistral ]]; then
+    local api
+    api=$(_codex_secret 'op://Private/Mistral-Vibe API/credential') || return
+    MISTRAL_API_KEY="$api" command codex "$@"
+  else
+    command codex "$@"
+  fi
 }
