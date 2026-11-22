@@ -33,7 +33,7 @@ miseが担うのは次の2つだけです。
    以下でだけ nix のフォールバックより前に出ます。
    gem製のLSPはインタプリタがビルド時のrubyに固定されるため、Gemfileが別のrubyを
    pinしているプロジェクトでは `mise.local.toml` に `gem:ruby-lsp` を宣言します
-   （詳細と症状は `docs/nvim-lsp-audit.md` の「既知の罠」）。
+   （詳細と症状は [Neovim 運用ノート](docs/agents/nvim.md)）。
 2. **vendor CLI。** Claude、Codex、herdr、agent-browser、OpenCode は mise で管理します。
    提供元の出荷に追従するため基本は `latest`、OpenCode はメジャー版 `2` を指定しています。
 
@@ -44,9 +44,8 @@ sheldonはmiseを `mise activate zsh`（PATH activation）で有効化します�
 同じツールを `nix/home.nix` とグローバルのmise toolsetの両方に宣言してはいけません。
 miseはinstallディレクトリをNix profileより前に置くので、mise側が黙って勝ちます。
 
-この分割は2026-07-31にmiseからnixへ移して成立したものです。nvimの設定を触る場合は
-`docs/nvim-tooling-migration.md` に変更点と版の差分、`lib/mise.lua` の `base_path()` が
-必須である理由がまとまっています。
+Neovim のツール解決・Ruby の注意点・検証手順は
+[運用ノート](docs/agents/nvim.md) にまとめています。
 
 PostgreSQL 本体と libpq（開発ヘッダー・`pg_config` を含む）はグローバル供給しません。
 必要なプロジェクトの Nix devShell 等で宣言します。既存 DB や導入済みパッケージの削除は行いません。
@@ -424,6 +423,8 @@ kubectl と Vault 本体は infra の mise toolset が供給します。
 ## Neovim から SSH 先を編集
 
 現行の接続方法と SSH 先の準備は [標準 SSH 開発手順](docs/nvim-remote-dev.md) を参照してください。
+通常の操作・設計と検証は [Neovim 運用ノート](docs/agents/nvim.md)、
+herdr の Claude との接続は [AI 連携手順](docs/nvim-ai-integration.md) を参照してください。
 
 ## Windows の Rio
 

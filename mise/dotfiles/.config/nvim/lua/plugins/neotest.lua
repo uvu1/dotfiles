@@ -140,7 +140,7 @@ return {
         -- quickfix は :grep と picker の <a-q> が使う場所。
         quickfix = { enabled = false },
 
-        -- 行内表示は tiny-inline-diagnostic が持っているので、
+        -- 行内表示は標準の diagnostic virtual_text が持っているので、
         -- neotest 側は sign だけにして二重に出さない。
         status = { virtual_text = false, signs = true },
 

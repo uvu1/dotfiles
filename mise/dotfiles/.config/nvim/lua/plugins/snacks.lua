@@ -206,7 +206,7 @@ return {
         desc = "Outgoing calls",
       },
 
-      -- ]] / [[ は lib/symbol-nav が使っているので参照移動は ]r / [r に置く。
+      -- 参照移動は ]r / [r。]] / [[ 等の標準 ftplugin の操作は上書きしない。
       { "]r", jump_reference(1), desc = "Next reference" },
       { "[r", jump_reference(-1), desc = "Prev reference" },
 

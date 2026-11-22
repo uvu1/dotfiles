@@ -276,14 +276,6 @@ return {
         },
       })
 
-      vim.api.nvim_create_autocmd("FileType", {
-        group = vim.api.nvim_create_augroup("ai-pane-completion", { clear = true }),
-        pattern = { "codecompanion", "pane-tabs-ai" },
-        callback = function(args)
-          vim.b[args.buf].completion = false
-        end,
-      })
-
       -- 有効サーバ集合の唯一の正本。実体は nix/home.nix の devTools が供給する
       -- （mason は廃止し、mise からも移した）。ここに無いサーバは起動しない。
       vim.lsp.enable({

@@ -56,25 +56,11 @@ return {
       },
 
       format_on_save = function(bufnr)
-        local ft = vim.bo[bufnr].filetype
-
-        if
-          vim.tbl_contains({
-            "codecompanion",
-            "pane-tabs-ai",
-            "snacks_terminal",
-            "terminal",
-            "prompt",
-          }, ft)
-        then
+        if not require("lib.buffer").is_file(bufnr) then
           return
         end
 
         local name = vim.api.nvim_buf_get_name(bufnr)
-        if name == "" then
-          return
-        end
-
         local ok, stat = pcall(vim.uv.fs_stat, name)
         if ok and stat and stat.size > 1024 * 1024 then
           return

@@ -175,7 +175,7 @@ return {
         vim.fn.sign_define(name, opts)
       end
 
-      -- .vscode/launch.json は 0.12 の nvim-dap が providers 経由で on-demand に
+      -- .vscode/launch.json は nvim-dap が providers 経由で on-demand に
       -- 読む（dap.lua の providers.configs["dap.launch.json"]）。
       -- load_launchjs は deprecated なので呼ばない。コメント付き launch.json は
       -- overseer が差し替える JSON5 デコーダが処理する。

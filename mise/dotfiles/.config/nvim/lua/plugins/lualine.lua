@@ -2,44 +2,55 @@ return {
   {
     "nvim-lualine/lualine.nvim",
     event = "VeryLazy",
-    -- mini.icons が mock_nvim_web_devicons() で nvim-web-devicons を代替する。
-    -- lualine と mini.icons はどちらも VeryLazy なので、mock が先に走るよう依存に置く。
-    -- aerial は winbar のパンくずに使う。lualine は setup() 時に
-    -- pcall(require, "lualine.components.aerial") で名前解決するため、rtp に
-    -- 無いと pcall が失敗して winbar に文字列 "aerial" がそのまま出る。
-    dependencies = { "nvim-mini/mini.icons", "stevearc/aerial.nvim" },
+    dependencies = { "nvim-mini/mini.icons" },
     config = function()
-      local statusline = require("statusline")
-      local sections = statusline.sections()
-
-      statusline.setup()
+      local editor = require("statusline.editor")
+      local pane = require("statusline.pane")
+      local runtime = require("statusline.runtime")
+      local is_editor = pane.cond("editor")
+      runtime.setup()
       vim.opt.laststatus = 2
 
+      local sections = {
+        lualine_a = {
+          { "mode", cond = pane.focused_cond("editor") },
+          { editor.explorer_files, cond = pane.cond("explorer") },
+        },
+        lualine_b = {
+          { editor.diagnostics, cond = is_editor },
+          { runtime.os_info, cond = is_editor },
+          { "filetype", fmt = editor.language, cond = is_editor },
+        },
+        lualine_c = {},
+        lualine_x = {
+          { editor.position, cond = is_editor },
+          { editor.indent, cond = is_editor },
+          { "encoding", fmt = editor.encoding, icon = "󰉿", cond = is_editor },
+          { "fileformat", symbols = { unix = "LF", dos = "CRLF", mac = "CR" }, icon = "󰌑", cond = is_editor },
+        },
+        lualine_y = {},
+        lualine_z = { { "datetime", style = "%H:%M", icon = "󰥔", cond = is_editor } },
+      }
       require("lualine").setup({
         options = {
-          theme = statusline.theme(),
+          -- 描画・色分け・時計・バッファの幅計算は組込に任せる。
+          theme = "auto",
           globalstatus = false,
-          always_divide_middle = false,
-          component_separators = "",
-          section_separators = "",
           refresh = {
-            statusline = 250,
-            tabline = 1000,
-            winbar = 1000,
-            refresh_time = 16,
             events = {
+              "WinEnter",
               "BufEnter",
               "BufWinEnter",
+              "BufWritePost",
+              "SessionLoadPost",
+              "FileChangedShellPost",
+              "VimResized",
+              "FileType",
               "CursorMoved",
               "CursorMovedI",
-              "DiagnosticChanged",
-              "FileChangedShellPost",
-              "FileType",
               "ModeChanged",
-              "SessionLoadPost",
-              "VimResized",
+              "DiagnosticChanged",
               "WinClosed",
-              "WinEnter",
               "WinNew",
               "WinResized",
             },
@@ -47,8 +58,10 @@ return {
         },
         sections = sections,
         inactive_sections = vim.deepcopy(sections),
-        tabline = statusline.tabline(),
-        winbar = statusline.winbar(),
+        tabline = {
+          lualine_a = { { "buffers", mode = 0, show_filename_only = true, symbols = { alternate_file = "" } } },
+        },
+        winbar = { lualine_c = { { "filename", path = 1, cond = is_editor } } },
         inactive_winbar = {},
       })
     end,

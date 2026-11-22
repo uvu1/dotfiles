@@ -1,12 +1,10 @@
-local clock = require("statusline.clock")
+-- 組込コンポーネントで表せない集計・補足情報だけを保持する。
 local pane = require("statusline.pane")
 local project = require("statusline.project")
 local runtime = require("statusline.runtime")
-local state = require("statusline.state")
-
 local M = {}
 
-local function diagnostics_count()
+function M.diagnostics()
   local counts = {
     [vim.diagnostic.severity.ERROR] = 0,
     [vim.diagnostic.severity.WARN] = 0,
@@ -54,124 +52,29 @@ local function diagnostics_count()
   return table.concat(parts, " ")
 end
 
-local function language()
-  local buf = pane.target_buf()
-  local ft = vim.bo[buf].filetype
-
-  if ft == "" then
-    ft = "text"
-  end
-
-  local ok, devicons = pcall(require, "nvim-web-devicons")
-  local icon = ok and devicons.get_icon_by_filetype(ft, { default = true }) or nil
-  local version = runtime.version(ft)
-
-  return (icon or "󰈙") .. " " .. ft .. (version ~= "" and " " .. version or "")
+function M.language(ft)
+  ft = ft ~= "" and ft or "text"
+  local version = runtime.version(ft, pane.target_buf())
+  return ft .. (version ~= "" and " " .. version or "")
 end
 
-local function cursor_position()
-  local win = pane.target_win()
-
-  if not win or not vim.api.nvim_win_is_valid(win) then
-    return ""
-  end
-
-  local pos = vim.api.nvim_win_get_cursor(win)
-
+-- 列番号は現行どおりバイト位置。日本語を含む行でも意味を変えない。
+function M.position()
+  local pos = vim.api.nvim_win_get_cursor(pane.target_win())
   return ("Ln%d, Col%d"):format(pos[1], pos[2] + 1)
 end
 
-local function indent_width()
+function M.indent()
   local buf = pane.target_buf()
   local width = vim.bo[buf].shiftwidth
-
   if width == 0 then
     width = vim.bo[buf].tabstop
   end
-
   return "󰌒 " .. (vim.bo[buf].expandtab and "Space " or "Tab ") .. width
 end
 
-local function file_encoding()
-  local buf = pane.target_buf()
-  local encoding = vim.bo[buf].fileencoding
-
-  if encoding == "" then
-    encoding = vim.o.encoding
-  end
-
-  return "󰉿 " .. encoding:upper()
-end
-
-local function line_ending()
-  local buf = pane.target_buf()
-  local formats = {
-    unix = "LF",
-    dos = "CRLF",
-    mac = "CR",
-  }
-
-  return "󰌑 " .. (formats[vim.bo[buf].fileformat] or vim.bo[buf].fileformat:upper())
-end
-
-local function current_mode()
-  local raw = vim.fn.mode(1)
-  local modes = {
-    n = { icon = "󰌌", label = "NORMAL" },
-    no = { icon = "󰌌", label = "O-PENDING" },
-    nov = { icon = "󰌌", label = "O-PENDING" },
-    noV = { icon = "󰌌", label = "O-PENDING" },
-    noCTRLV = { icon = "󰌌", label = "O-PENDING" },
-    niI = { icon = "󰌌", label = "NORMAL" },
-    niR = { icon = "󰌌", label = "NORMAL" },
-    niV = { icon = "󰌌", label = "NORMAL" },
-    i = { icon = "󰏫", label = "INSERT" },
-    ic = { icon = "󰏫", label = "INSERT" },
-    ix = { icon = "󰏫", label = "INSERT" },
-    v = { icon = "󰈈", label = "VISUAL" },
-    V = { icon = "󰈈", label = "V-LINE" },
-    ["\22"] = { icon = "󰈈", label = "V-BLOCK" },
-    s = { icon = "󰒉", label = "SELECT" },
-    S = { icon = "󰒉", label = "S-LINE" },
-    ["\19"] = { icon = "󰒉", label = "S-BLOCK" },
-    R = { icon = "󰛔", label = "REPLACE" },
-    Rc = { icon = "󰛔", label = "REPLACE" },
-    Rx = { icon = "󰛔", label = "REPLACE" },
-    Rv = { icon = "󰛔", label = "V-REPLACE" },
-    c = { icon = "", label = "COMMAND" },
-    cv = { icon = "", label = "EX" },
-    ce = { icon = "", label = "EX" },
-    r = { icon = "󰆐", label = "PROMPT" },
-    rm = { icon = "󰆐", label = "MORE" },
-    ["r?"] = { icon = "󰆐", label = "CONFIRM" },
-    t = { icon = "", label = "TERMINAL" },
-    ["!"] = { icon = "", label = "SHELL" },
-  }
-  local mode = modes[raw] or modes[raw:sub(1, 1)] or { icon = "󰘳", label = raw:upper() }
-
-  return mode.icon .. " " .. mode.label
-end
-
-local function current_mode_color()
-  local raw = vim.fn.mode(1)
-  local key = raw:sub(1, 1)
-  local backgrounds = {
-    n = state.colors.title,
-    i = "#9ED072",
-    v = "#B69CF6",
-    V = "#B69CF6",
-    ["\22"] = "#B69CF6",
-    s = "#F8BD96",
-    S = "#F8BD96",
-    ["\19"] = "#F8BD96",
-    R = "#F28FAD",
-    r = "#F28FAD",
-    c = "#89DCEB",
-    t = "#A6E3A1",
-    ["!"] = "#A6E3A1",
-  }
-
-  return { fg = state.colors.text, bg = backgrounds[key] or state.colors.active, gui = "bold" }
+function M.encoding(value)
+  return (value ~= "" and value or vim.o.encoding):upper()
 end
 
 function M.explorer_files()
@@ -187,46 +90,6 @@ function M.explorer_files()
   end
 
   return "󰈔 " .. count
-end
-
-function M.editor_diagnostics()
-  return diagnostics_count()
-end
-
-function M.editor_os()
-  return runtime.os_info()
-end
-
-function M.editor_language()
-  return language()
-end
-
-function M.editor_position()
-  return cursor_position()
-end
-
-function M.editor_indent()
-  return indent_width()
-end
-
-function M.editor_encoding()
-  return file_encoding()
-end
-
-function M.editor_line_ending()
-  return line_ending()
-end
-
-function M.editor_time()
-  return clock.current_time()
-end
-
-function M.focused_mode()
-  return current_mode()
-end
-
-function M.focused_mode_color()
-  return current_mode_color()
 end
 
 return M

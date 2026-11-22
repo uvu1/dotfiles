@@ -11,6 +11,17 @@ vim.opt.termguicolors = true
 vim.opt.wrap = false
 vim.opt.scrolloff = 8
 vim.opt.signcolumn = "yes"
+
+-- 標準の折り畳み。パーサが使えるバッファは treesitter.lua が expr に切り替える。
+vim.opt.foldmethod = "indent"
+vim.opt.foldexpr = "v:lua.vim.treesitter.foldexpr()"
+vim.opt.foldcolumn = "1"
+vim.opt.foldlevel = 99
+vim.opt.foldlevelstart = 99
+vim.opt.foldenable = true
+
+-- 診断は標準の行末表示。詳細は標準の <C-w>d または診断一覧から確認する。
+vim.diagnostic.config({ virtual_text = true, virtual_lines = false })
 -- kawaii-theme は CursorLine と Visual が同じ背景色なので、カーソル行の
 -- ハイライトが行選択（V）と見分けられない。行位置は relativenumber で足りる。
 vim.opt.cursorline = false
@@ -20,8 +31,7 @@ vim.opt.winblend = 20
 
 -- フロート枠の正本。blink・overseer・vim.lsp.util.open_floating_preview は
 -- border 未指定なら winborder を読むので、プラグイン側に "rounded" を書かない。
--- 追従しない例外が 2 つある: toggleterm（"single" ハードコード）と
--- noice（自前既定が "rounded"）。どちらも各ファイルにコメントを置いた。
+-- noice は自前の既定枠を持つため例外（plugins/noice.lua）。
 vim.opt.winborder = "rounded"
 vim.opt.pumborder = "rounded"
 
@@ -52,7 +62,7 @@ vim.opt.splitkeep = "screen"
 vim.opt.jumpoptions = "clean,view"
 
 -- 既定の blank と terminal を落とす。:mksession が explorer/picker の
--- スクラッチウィンドウと toggleterm の端末まで記録してしまい、
+-- スクラッチウィンドウや一時端末まで記録してしまい、
 -- 復元時に空の無名バッファや壊れた端末になるため。
 vim.opt.sessionoptions = "buffers,curdir,folds,help,tabpages,winsize,localoptions"
 

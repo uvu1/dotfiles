@@ -27,6 +27,7 @@
 
 Before editing a path below, read its note in `docs/agents/`; it holds that component's constraints and validation steps.
 
+- `mise/dotfiles/.config/nvim/`, `scripts/test_nvim_config.py`: `docs/agents/nvim.md`
 - `mise/dotfiles/ai/`, `scripts/sync-ai-config.*`: `docs/agents/ai-config.md`
 - `mise/dotfiles/.config/rio/`, fonts in `nix/darwin.nix`: `docs/agents/rio.md`
 - `mise/dotfiles/.config/zsh/optional/`: `docs/agents/project-shell.md`

@@ -72,7 +72,7 @@ return {
         haml = { "haml_lint" },
 
         -- ruby に rubocop は入れない。ruby-lsp が bundle 内の rubocop で診断を
-        -- 出すため、足すと二重診断になる（docs/nvim-lsp-audit.md Finding 4 と同型）。
+        -- 出すため、足すと二重診断になる（docs/agents/nvim.md を参照）。
       }
 
       -- linter → 走らせる条件。プロジェクトが採用していない流派の診断が出るのを
@@ -106,24 +106,11 @@ return {
       }
 
       local function run(bufnr)
+        if not require("lib.buffer").is_file(bufnr) then
+          return
+        end
+
         local ft = vim.bo[bufnr].filetype
-
-        if
-          vim.tbl_contains({
-            "codecompanion",
-            "pane-tabs-ai",
-            "snacks_terminal",
-            "terminal",
-            "prompt",
-          }, ft)
-        then
-          return
-        end
-
-        if vim.api.nvim_buf_get_name(bufnr) == "" then
-          return
-        end
-
         local names = lint.linters_by_ft[ft] or {}
         if #names == 0 then
           return

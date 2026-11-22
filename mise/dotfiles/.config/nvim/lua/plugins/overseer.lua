@@ -37,5 +37,14 @@ return {
       -- nvim_open_win に素通しするため winborder が効く。
       -- confirm = { border } は overseer が一度も読まない死んだ設定だったので削除した。
     },
+
+    config = function(_, opts)
+      local overseer = require("overseer")
+      overseer.setup(opts)
+      -- just の探索・引数入力・cwd は内蔵版へ任せ、出力の quickfix 連携だけ補う。
+      overseer.add_template_hook({ module = "^just$" }, function(task, util)
+        util.add_component(task, "on_output_quickfix")
+      end)
+    end,
   },
 }

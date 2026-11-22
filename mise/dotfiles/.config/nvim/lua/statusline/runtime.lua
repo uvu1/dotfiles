@@ -1,7 +1,9 @@
-local state = require("statusline.state")
-local util = require("statusline.util")
-
+local mise = require("lib.mise")
 local M = {}
+local cache, in_flight = {}, {}
+local generation = 0
+local ttl = 5 * 60 * 1000
+local os_cache
 
 local node_runtime = {
   commands = {
@@ -23,10 +25,10 @@ local runtime_specs = {
     end,
   },
   python = {
-    commands = {
-      { "python3", "--version" },
-      { "python", "--version" },
-    },
+    commands = { { "python", "--version" } },
+    argv = function(dir)
+      return vim.list_extend(require("lib.python").argv(dir), { "--version" })
+    end,
     parse = function(output)
       return output:match("Python%s+([%w%.%-]+)")
     end,
@@ -111,63 +113,130 @@ local runtime_specs = {
   },
 }
 
--- 検出中の filetype（二重 spawn 防止）
-local in_flight = {}
+-- ネストした mise 設定や言語プロジェクトも別の実行環境として扱う。
+local markers = {
+  "mise.toml",
+  ".mise.toml",
+  "mise.local.toml",
+  ".mise.local.toml",
+  ".tool-versions",
+  ".node-version",
+  ".python-version",
+  ".ruby-version",
+  "rust-toolchain.toml",
+  "rust-toolchain",
+  "package.json",
+  "pyproject.toml",
+  "setup.cfg",
+  "mypy.ini",
+  "pytest.ini",
+  "setup.py",
+  "Gemfile",
+  "go.mod",
+  "Cargo.toml",
+  ".git",
+}
 
---- ステータスライン描画をブロックしないよう vim.system をコールバックで回す。
---- 初回はキャッシュ（or 空文字）を即返し、完了後に再描画する。
-function M.version(ft)
+function M.clear()
+  cache, in_flight = {}, {}
+  generation = generation + 1
+end
+
+local function refresh()
+  local ok, lualine = pcall(require, "lualine")
+  if ok then
+    -- 更新イベントの管理は lualine のみ。非同期結果はそのキューへ渡す。
+    lualine.refresh({ place = { "statusline" }, scope = "tabpage" })
+  end
+end
+
+function M.version(ft, bufnr)
   local spec = runtime_specs[ft]
-
   if not spec then
     return ""
   end
-
-  local cached = state.runtime_cache[ft]
-
-  if cached and state.now() - cached.checked_at < state.runtime_cache_ttl then
+  -- root の平坦な marker リストは優先順探索になる。グループ化して最も近い設定を選ぶ。
+  local name = vim.api.nvim_buf_get_name(bufnr or 0)
+  local dir = name ~= "" and (vim.fs.root(name, { markers }) or vim.fs.dirname(name)) or vim.uv.cwd()
+  dir = mise.dir(dir)
+  if not dir then
+    return ""
+  end
+  local key = dir .. "\0" .. ft .. "\0" .. (ft == "python" and vim.env.VIRTUAL_ENV or "")
+  local cached = cache[key]
+  if cached and vim.uv.now() - cached.checked_at < ttl then
     return cached.version
   end
-
-  if not in_flight[ft] then
-    local cmd
-    for _, candidate in ipairs(spec.commands) do
-      if vim.fn.executable(candidate[1]) == 1 then
-        cmd = candidate
-        break
-      end
-    end
-
-    if not cmd then
-      state.runtime_cache[ft] = { version = "", checked_at = state.now() }
-    else
-      in_flight[ft] = true
-      vim.system(cmd, { text = true }, function(result)
-        local output = table.concat({ result.stdout or "", result.stderr or "" }, "\n")
-        state.runtime_cache[ft] = {
-          version = util.trim(spec.parse(output) or ""),
-          checked_at = state.now(),
-        }
-        in_flight[ft] = nil
-        vim.schedule(util.refresh_statusline)
-      end)
-    end
+  if in_flight[key] then
+    return cached and cached.version or ""
   end
 
+  in_flight[key] = true
+  local started_generation = generation
+  local function finish(version)
+    if generation ~= started_generation then
+      return
+    end
+    cache[key] = { version = version, checked_at = vim.uv.now() }
+    in_flight[key] = nil
+    refresh()
+  end
+  local function detect(index)
+    local command = spec.commands[index]
+    if not command then
+      finish("")
+      return
+    end
+    -- project 内だけに入っているコマンドもあるため、継承 PATH の executable で除外しない。
+    local ok = pcall(
+      vim.system,
+      spec.argv and spec.argv(dir) or mise.argv(command, dir),
+      {
+        cwd = dir,
+        text = true,
+        env = mise.spawn_env(),
+        timeout = 3000,
+      },
+      vim.schedule_wrap(function(result)
+        if generation ~= started_generation then
+          return
+        end
+        local output = (result.stdout or "") .. "\n" .. (result.stderr or "")
+        local version = result.code == 0 and spec.parse(output) or nil
+        if version then
+          finish(vim.trim(version))
+        else
+          detect(index + 1)
+        end
+      end)
+    )
+    if not ok then
+      detect(index + 1)
+    end
+  end
+  detect(1)
   return cached and cached.version or ""
 end
 
+function M.setup()
+  vim.api.nvim_create_autocmd("BufWritePost", {
+    group = vim.api.nvim_create_augroup("StatuslineRuntime", { clear = true }),
+    pattern = vim.list_extend(vim.deepcopy(markers), { "mise.*.toml", ".mise.*.toml" }),
+    callback = M.clear,
+  })
+end
+
 function M.os_info()
-  if state.os_cache then
-    return state.os_cache
+  if os_cache then
+    return os_cache
   end
 
   local function cache(value)
-    state.os_cache = value
+    os_cache = value
     return value
   end
 
-  local uname = state.uv.os_uname()
+  local uname = vim.uv.os_uname()
   local sysname = uname.sysname
 
   if sysname == "Darwin" then
@@ -187,7 +256,7 @@ function M.os_info()
         local key, value = line:match("^([%w_]+)=(.*)$")
 
         if key and value then
-          values[key] = util.trim(value:gsub('^"', ""):gsub('"$', ""))
+          values[key] = vim.trim(value:gsub('^"', ""):gsub('"$', ""))
         end
       end
     end

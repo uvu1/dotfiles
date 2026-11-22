@@ -18,7 +18,6 @@ return {
       { "<leader>s", group = "Symbols" },
       { "<leader>d", group = "Git/Diff" },
       { "<leader>c", group = "Code/Contest" },
-      { "<leader>t", group = "Terminal" },
       { "<leader>r", group = "Run" },
       { "<leader>a", group = "AI" },
       { "<leader>u", group = "UI" },

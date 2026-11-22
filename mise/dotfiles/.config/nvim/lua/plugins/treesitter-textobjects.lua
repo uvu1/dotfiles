@@ -1,5 +1,4 @@
--- textobjects は select のみ導入（vaf/dif 等）。move は LSP 版（lib/symbol-nav の
--- ]m/[m）に一本化したので、旧 ]f/[f/]F/[F（旧 API で破損）は廃止。
+-- 構文選択（vaf/dif 等）だけを提供する。前後移動は標準 ftplugin に任せる。
 -- af/if/ac/ic は同梱 ftplugin と衝突しないため vim.g.no_plugin_maps は設定しない。
 local function select(query)
   return function()

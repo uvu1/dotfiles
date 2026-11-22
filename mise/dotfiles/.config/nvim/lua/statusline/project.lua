@@ -1,22 +1,13 @@
 local pane = require("statusline.pane")
-local state = require("statusline.state")
 
 local M = {}
 
 function M.dirname(path)
-  if vim.fs and vim.fs.dirname then
-    return vim.fs.dirname(path)
-  end
-
-  return vim.fn.fnamemodify(path, ":h")
+  return vim.fs.dirname(path)
 end
 
 function M.find_git_root(path)
   if not path or path == "" then
-    return nil
-  end
-
-  if not (vim.fs and vim.fs.find) then
     return nil
   end
 
@@ -33,11 +24,7 @@ function M.normalize_path(path)
     return ""
   end
 
-  if vim.fs and vim.fs.normalize then
-    return vim.fs.normalize(path)
-  end
-
-  return path
+  return vim.fs.normalize(path)
 end
 
 function M.path_is_inside(path, root)
@@ -62,7 +49,7 @@ end
 function M.root()
   local buf = pane.target_buf()
   local name = vim.api.nvim_buf_get_name(buf)
-  local cwd = state.uv.cwd()
+  local cwd = vim.uv.cwd()
   local base = name ~= "" and M.dirname(name) or cwd
   local git_root = M.find_git_root(base)
 

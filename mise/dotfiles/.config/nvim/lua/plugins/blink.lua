@@ -26,10 +26,6 @@ return {
     ---@module "blink.cmp"
     ---@type blink.cmp.Config
     opts = {
-      enabled = function()
-        return not vim.tbl_contains({ "codecompanion", "pane-tabs-ai" }, vim.bo.filetype)
-      end,
-
       keymap = {
         preset = "super-tab",
 
@@ -49,15 +45,7 @@ return {
         ["<CR>"] = { "accept", "fallback" },
       },
 
-      snippets = {
-        preset = "default",
-      },
-
       completion = {
-        keyword = {
-          range = "prefix",
-        },
-
         list = {
           selection = {
             preselect = false,
@@ -76,7 +64,6 @@ return {
         menu = {
           winblend = 20,
           draw = {
-            treesitter = {},
             columns = {
               { "kind_icon" },
               { "label", "label_description", gap = 1 },
@@ -87,7 +74,6 @@ return {
 
         documentation = {
           auto_show = false,
-          auto_show_delay_ms = 500,
           treesitter_highlighting = false,
           window = {
             winblend = 20,
@@ -114,12 +100,6 @@ return {
             max_items = 80,
             score_offset = 10,
           },
-          path = {
-            score_offset = 3,
-          },
-          snippets = {
-            score_offset = -1,
-          },
           buffer = {
             score_offset = -5,
           },
@@ -128,21 +108,9 @@ return {
 
       fuzzy = {
         implementation = "prefer_rust",
-        max_typos = function(keyword)
-          return math.floor(#keyword / 4)
-        end,
-        frecency = {
-          enabled = true,
-        },
-        use_proximity = true,
-        sorts = {
-          "score",
-          "sort_text",
-        },
       },
 
       cmdline = {
-        enabled = true,
         keymap = {
           preset = "cmdline",
           ["<CR>"] = { "fallback" },
