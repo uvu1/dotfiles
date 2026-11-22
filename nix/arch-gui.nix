@@ -1,6 +1,6 @@
-{ lib, pkgs, unstable, ... }:
+{ lib, pkgs, ... }:
 let
-  vicinaeExe = lib.getExe unstable.vicinae;
+  vicinae = "/usr/bin/vicinae";
   shortcut = pkgs.writeShellApplication {
     name = "vicinae-kde-shortcut";
     runtimeInputs = [ pkgs.systemd ];
@@ -8,18 +8,7 @@ let
   };
 in
 {
-  home.packages = with unstable; [
-    discord-canary
-    (callPackage ./packages/chrome-canary.nix { })
-    (callPackage ./packages/zen-twilight.nix { })
-    obsidian
-    rio
-    slack
-    spotify
-    zoom-us
-    vicinae
-    moralerspace
-  ];
+  home.packages = [ pkgs.moralerspace ];
 
   fonts.fontconfig.enable = true;
 
@@ -27,7 +16,7 @@ in
     [Desktop Entry]
     Type=Application
     Name=Vicinae
-    Exec=${vicinaeExe} toggle
+    Exec=${vicinae} toggle
     Icon=vicinae
   '';
 
@@ -35,10 +24,11 @@ in
     Unit = {
       Description = "Vicinae launcher";
       PartOf = [ "graphical-session.target" ];
+      ConditionPathIsExecutable = vicinae;
     };
     Service = {
       Type = "exec";
-      ExecStart = "${vicinaeExe} server";
+      ExecStart = "${vicinae} server";
       ExecStartPost = "-${lib.getExe shortcut}";
       Restart = "on-failure";
     };

@@ -281,6 +281,7 @@ Zero Trust への端末登録、ATOK の入力ソース選択は各アプリの�
 ## ネイティブ Arch Linux（fy-desktop）
 
 Nix を multi-user で導入し、`~/dotfiles` に clone してから適用します。
+先に下記の手順で GUI を入れておくと、KDE ランチャーと Git 署名も使えます。
 
 ```sh
 cd ~/dotfiles
@@ -301,11 +302,27 @@ zsh をログインシェルにする場合は、`~/.nix-profile/bin/zsh` を
 Git のコミット署名を使うには、1Password のデスクトップアプリにサインインし、
 同じ署名鍵を選び、開発者設定で SSH エージェントを有効にします。
 
-Home Manager は Zen Twilight、Chrome Canary、Discord Canary、Obsidian、Rio、
-Slack、Spotify、Zoom、Vicinae を導入します。Rio は共通設定と Moralerspace で
-herdr を起動します。KDE 上で Vicinae はログイン時に起動し、`Alt+Space` で
-表示します。KRunner は `Alt+F2` で開けます。ブラウザーの配布物は
-`nix/packages/` のバージョンとハッシュを合わせて更新します。
+### GUI の導入・更新
+
+`arch/gui.packages` が Arch 公式リポジトリから入れる GUI の一覧です。
+
+```sh
+xargs -a arch/gui.packages sudo pacman -Syu --needed
+```
+
+`arch/gui-external.tsv` は 1Password、Discord Canary、Chrome Canary、Slack、
+Spotify、Vicinae、Zen Twilight、Zoom の入手先です。AUR は `PKGBUILD` と
+付属のインストールスクリプトを確認してから、一般ユーザーで `makepkg -si`
+を実行します。1Password は [開発元の手順](https://support.1password.com/install-linux/#arch-linux)
+に従い、署名鍵をインポートしてからビルドします。ベンダー配布の Arch
+パッケージは `sudo pacman -U` で導入します。
+
+公式リポジトリは `sudo pacman -Syu`、AUR はレシピを更新して `makepkg -si`、
+ベンダー配布は新しいパッケージの `pacman -U` で更新します。
+dotflow はユーザー設定の同期を担当します。
+
+Rio は共通設定と Moralerspace で herdr を起動します。KDE 上で Vicinae は
+ログイン時に起動し、`Alt+Space` で表示します。KRunner は `Alt+F2` で開けます。
 
 ## WSL Arch
 

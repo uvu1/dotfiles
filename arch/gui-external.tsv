@@ -1,0 +1,9 @@
+package	method	source
+1password	aur	https://aur.archlinux.org/1password.git
+discord-canary	vendor	https://discord.com/api/download/canary?platform=linux&format=pkg.tar.zst
+google-chrome-canary	aur	https://aur.archlinux.org/google-chrome-canary.git
+slack-desktop	aur	https://aur.archlinux.org/slack-desktop.git
+spotify	aur	https://aur.archlinux.org/spotify.git
+vicinae-bin	aur	https://aur.archlinux.org/vicinae-bin.git
+zen-twilight-bin	aur	https://aur.archlinux.org/zen-twilight-bin.git
+zoom	vendor	https://zoom.us/client/latest/zoom_x86_64.pkg.tar.xz

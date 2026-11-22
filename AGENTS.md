@@ -4,6 +4,7 @@
 
 - Treat this repository's `master` branch as the source of truth. `chezmoi-master` is migration history only.
 - Keep every globally available tool in Nix and Home Manager: the base environment, language servers, linters, formatters, everyday CLIs, and the fallback language runtimes. `flake.lock` is what pins them.
+- On native Arch, install GUI applications with pacman. Record the official repository packages in `arch/gui.packages` and the AUR or vendor sources in `arch/gui-external.tsv`. Keep package installation separate from dotflow.
 - Keep mise for per-project version switching plus the vendor CLIs that must track upstream weekly (`claude`, `cloudflared`, `aqua:openai/codex`, `herdr`). Declare project runtimes in that project's own `mise.toml` or idiomatic version file, never in the global toolset.
 - Keep ordinary dotfiles in `mise/`.
 - Keep update orchestration in `.dotflow.toml` and `scripts/`; do not duplicate it in shell startup files.

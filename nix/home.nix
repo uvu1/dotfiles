@@ -8,19 +8,10 @@ let
   unstable = import inputs.nixpkgs-unstable {
     system = pkgs.stdenv.hostPlatform.system;
     config.allowUnfreePredicate = p:
-      builtins.elem (lib.getName p) ([
-        "1password"
+      builtins.elem (lib.getName p) [
         "1password-cli"
         "copilot-language-server"
-      ] ++ lib.optionals isNativeLinux [
-        "discord-canary"
-        "discord-canary-unwrapped"
-        "google-chrome-canary"
-        "obsidian"
-        "slack"
-        "spotify"
-        "zoom"
-      ]);
+      ];
   };
   misePackage = unstable.mise;
 
@@ -242,8 +233,6 @@ let
   };
 in
 {
-  _module.args.unstable = unstable;
-
   home.stateVersion = "26.05";
 
   home.packages = [
@@ -264,8 +253,6 @@ in
     pkgs.libpq.pg_config
   ] ++ devTools ++ debugTools ++ cliTools ++ runtimes ++ lib.optionals (!wsl) [
     unstable._1password-cli
-  ] ++ lib.optionals isNativeLinux [
-    unstable._1password-gui
   ] ++ lib.optionals pkgs.stdenv.isLinux [
     dotfilesUpdate
     pkgs.gcc

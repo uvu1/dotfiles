@@ -8,7 +8,7 @@
 {% if os() == "linux" and get_env(name="WSL_DISTRO_NAME", default="") != "" %}
     program = "/mnt/c/Users/uvu1/AppData/Local/Microsoft/WindowsApps/op-ssh-sign-wsl.exe"
 {% elif os() == "linux" %}
-    program = "{{ env.HOME }}/.nix-profile/bin/op-ssh-sign"
+    program = "/opt/1Password/op-ssh-sign"
 {% elif os() == "macos" %}
     program = "/Applications/1Password.app/Contents/MacOS/op-ssh-sign"
 {% elif os() == "windows" %}
