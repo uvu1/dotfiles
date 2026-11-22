@@ -10,12 +10,18 @@ return {
     },
 
     build = function()
-      if not require("remote_dev.profile").enabled then
-        require("blink.cmp").build():wait(60000)
+      if vim.fn.executable("cargo") == 1 then
+        -- ネイティブ実装は任意。ビルド失敗時も補完自体は Lua で利用できる。
+        local ok, err = require("blink.cmp").build():pwait(60000)
+        if not ok then
+          vim.notify("blink.cmp: Lua補完を使います。" .. tostring(err), vim.log.levels.WARN)
+        end
       end
     end,
 
-    event = { "InsertEnter", "CmdlineEnter" },
+    -- plugin/blink-cmp.lua が LSP capabilities を登録する。LSP 開始前に読む。
+    lazy = false,
+    priority = 100,
 
     ---@module "blink.cmp"
     ---@type blink.cmp.Config
@@ -121,7 +127,7 @@ return {
       },
 
       fuzzy = {
-        implementation = require("remote_dev.profile").enabled and "lua" or "rust",
+        implementation = "prefer_rust",
         max_typos = function(keyword)
           return math.floor(#keyword / 4)
         end,

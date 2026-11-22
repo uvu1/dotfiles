@@ -36,11 +36,7 @@ return {
         -- haml はパーサが upstream に存在しない。Vim 同梱の syntax/haml.vim で
         -- ハイライトされる（下の pcall が start の失敗を吸収する）。
       }
-      local remote = require("remote_dev.profile").enabled
-      if
-        not remote
-        or (vim.env.NVIM_REMOTE_CHECK ~= "1" and vim.fn.executable("cc") == 1 and vim.fn.executable("tree-sitter") == 1)
-      then
+      if vim.fn.executable("cc") == 1 and vim.fn.executable("tree-sitter") == 1 then
         require("nvim-treesitter").install(langs)
       end
 

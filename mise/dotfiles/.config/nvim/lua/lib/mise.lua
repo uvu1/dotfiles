@@ -31,9 +31,6 @@ local FAIL_FAST = {
 --- なので、その時は継承した PATH をそのまま使う。
 --- @return string
 local function base_path()
-  if require("remote_dev.profile").enabled then
-    return vim.env.PATH
-  end
   local orig = vim.env.__MISE_ORIG_PATH
 
   if type(orig) == "string" and orig ~= "" then
@@ -70,19 +67,22 @@ end
 
 --- @return boolean
 function M.available()
-  return not require("remote_dev.profile").enabled and vim.fn.executable("mise") == 1
+  return vim.fn.executable("mise") == 1
 end
 
 --- `mise x -C <dir> -- <argv...>`。dir が無い、または mise が無い場合は素の argv。
 --- @param argv string[]
 --- @param dir string|nil
+--- @param tools? string[] 処理系だけを明示的に上書きするmiseのtool request
 --- @return string[]
-function M.argv(argv, dir)
+function M.argv(argv, dir, tools)
   if not dir or not M.available() then
     return argv
   end
 
-  return vim.list_extend({ "mise", "x", "-C", dir, "--" }, argv)
+  local command = vim.list_extend({ "mise", "x", "-C", dir }, tools or {})
+  command[#command + 1] = "--"
+  return vim.list_extend(command, argv)
 end
 
 --- 起動直後の異常終了を通知する。mise の stderr は :LspLog にしか出ないため、
@@ -104,16 +104,6 @@ local function notify_early_exit(dispatchers, label, dir)
       -- on_exit は fast event context で呼ばれるので notify は schedule する。
       if code ~= 0 and vim.uv.hrtime() - started < 5e9 then
         vim.schedule(function()
-          if require("remote_dev.profile").enabled then
-            vim.notify(
-              ("%s が起動できなかった (exit %d)。:RemoteDevHealth / :LspLogで確認してください。Rubyのgem等はプロジェクトのbundleに用意します。"):format(
-                label,
-                code
-              ),
-              vim.log.levels.ERROR
-            )
-            return
-          end
           vim.notify(
             ("%s が起動できなかった (exit %d)。`mise x -C %s -- %s` を手で実行して原因を見る。"):format(
               label,
@@ -136,6 +126,7 @@ end
 --- @field local_bin? string root 直下で優先探索するディレクトリ（例 "node_modules/.bin"）
 --- @field bundled? string Gemfile.lock に載っていれば bundle exec 経由にする gem 名
 --- @field env? table<string, string> 追加の環境変数
+--- @field node? boolean SSH先のエディタ用Nodeでnpmサーバを実行する
 
 --- `vim.lsp.config` の `cmd` 関数を作る。root_dir 解決後に呼ばれるので、
 --- プロジェクト単位の分岐をここに書ける。
@@ -160,6 +151,20 @@ function M.lsp_cmd(argv, opts)
       end
     end
 
+    local tools = {}
+    if opts.node then
+      local environment = require("config.environment")
+      local node = environment.tool("node")
+      if node then
+        -- pnpm等のnode_modules/.binはシェルスクリプトの場合もある。
+        -- Nodeで直接読まず、miseの標準path requestで処理系だけ固定する。
+        tools[1] = "node@path:" .. vim.fs.dirname(vim.fs.dirname(node))
+        if resolved[1] == label then
+          resolved[1] = environment.tool(label) or label
+        end
+      end
+    end
+
     -- gem はプロジェクトの Gemfile に載っている方が正しい（設定が参照する
     -- plugin gem はそこにしか無い）。node_modules/.bin と同じ発想。
     if dir and opts.bundled and require("lib.project").bundles(dir, opts.bundled) then
@@ -168,7 +173,7 @@ function M.lsp_cmd(argv, opts)
 
     -- vim.lsp.rpc.start の env は base_env() とのマージなのでキーの削除はできないが、
     -- PATH の上書きはできる。それだけで mise に一から解決させられる。
-    return vim.lsp.rpc.start(M.argv(resolved, dir), notify_early_exit(dispatchers, label, dir), {
+    return vim.lsp.rpc.start(M.argv(resolved, dir, tools), notify_early_exit(dispatchers, label, dir), {
       cwd = dir,
       env = vim.tbl_extend("force", FAIL_FAST, { PATH = base_path() }, opts.env or {}),
     })

@@ -1,4 +1,4 @@
--- 引数なし起動時に snacks explorer を自動オープン（旧 config/autocmd/vimenter.lua）
+-- 引数なし起動時はExplorerを開く。標準SSHの新規セッションは先に作業場所を選ぶ。
 vim.api.nvim_create_autocmd("VimEnter", {
   callback = function()
     if vim.fn.argc() > 0 then
@@ -6,7 +6,12 @@ vim.api.nvim_create_autocmd("VimEnter", {
     end
 
     vim.schedule(function()
-      require("lib.explorer").focus_or_open({ enter = true })
+      local explorer = require("lib.explorer")
+      if vim.env.NVIM_APPNAME == "nvim-remote" then
+        explorer.choose_directory()
+      else
+        explorer.focus_or_open({ enter = true })
+      end
     end)
   end,
 })

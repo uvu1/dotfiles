@@ -181,7 +181,7 @@ return {
         },
       })
 
-      if require("remote_dev.profile").enabled then
+      do
         -- lspconfig's Rust root detection itself invokes rustc and cargo.
         -- Missing project runtimes should leave the file editable.
         local root_dir = vim.lsp.config.rust_analyzer.root_dir
@@ -192,7 +192,7 @@ return {
               if not warned then
                 warned = true
                 vim.notify(
-                  "Rust LSPにはSSH先のrustcとcargoが必要です。:RemoteDevHealthでPATHを確認してください",
+                  "Rust LSPにはrustcとcargoが必要です。:checkhealth vim.lspでPATHを確認してください",
                   vim.log.levels.WARN
                 )
               end
@@ -237,8 +237,35 @@ return {
       -- 絶対パスに書き換えているため（buildNpmPackage の patchShebangs）、
       -- PATH 上の node には依存しない。空 env でも起動することを実測済み。
       vim.lsp.config("basedpyright", {
-        cmd = mise.lsp_cmd({ "basedpyright-langserver", "--stdio" }),
+        cmd = mise.lsp_cmd({ "basedpyright-langserver", "--stdio" }, { node = true }),
       })
+
+      if require("config.environment").remote then
+        -- npmのshebangをプロジェクトの古いNodeで動かさない。
+        for name, command in pairs({
+          cssls = "vscode-css-language-server",
+          eslint = "vscode-eslint-language-server",
+          html = "vscode-html-language-server",
+          jsonls = "vscode-json-language-server",
+          tailwindcss = "tailwindcss-language-server",
+          ts_ls = "typescript-language-server",
+          yamlls = "yaml-language-server",
+        }) do
+          vim.lsp.config(name, {
+            cmd = mise.lsp_cmd({ command, "--stdio" }, { node = true, local_bin = "node_modules/.bin" }),
+          })
+        end
+        local tsc = require("config.environment").tool("tsc")
+        if tsc then
+          vim.lsp.config("ts_ls", {
+            init_options = {
+              tsserver = {
+                fallbackPath = vim.fs.dirname(vim.fs.dirname(vim.uv.fs_realpath(tsc) or tsc)) .. "/lib/tsserver.js",
+              },
+            },
+          })
+        end
+      end
 
       -- eslint は lspconfig の root_dir が設定ファイルの実在を要求するので、
       -- biome / tailwind のような追加ゲートは不要。整形は conform に任せて切る。

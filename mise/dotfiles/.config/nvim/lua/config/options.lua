@@ -57,7 +57,7 @@ vim.opt.jumpoptions = "clean,view"
 vim.opt.sessionoptions = "buffers,curdir,folds,help,tabpages,winsize,localoptions"
 
 -- for WSL
-if require("remote_dev.profile").enabled then
+if require("config.environment").remote then
   -- OSC52 writes reach the local TUI. Paste with the terminal's normal paste
   -- shortcut; querying OSC52 is unsupported by some terminals and can block.
   local clipboard = { {}, "v" }
@@ -111,7 +111,7 @@ end
 -- append にして、既に載っている具体パスの解決を優先させる。
 do
   local shims = vim.fs.joinpath(vim.uv.os_homedir(), ".local/share/mise/shims")
-  if not require("remote_dev.profile").enabled and vim.uv.fs_stat(shims) and not vim.env.PATH:find(shims, 1, true) then
+  if vim.uv.fs_stat(shims) and not vim.env.PATH:find(shims, 1, true) then
     vim.env.PATH = vim.env.PATH .. ":" .. shims
   end
 end

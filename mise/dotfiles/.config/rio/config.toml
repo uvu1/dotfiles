@@ -40,6 +40,15 @@ family = "Moralerspace Neon"
 # Monaspace のコード用リガチャは ss01〜ss10 に分かれていて既定では無効。calt はテクスチャ
 # ヒーリング。Monaspace の README の推奨設定に ss10（#[ など）を足したもの。
 features = ["calt", "liga", "ss01", "ss02", "ss03", "ss04", "ss05", "ss06", "ss07", "ss08", "ss09", "ss10"]
+# Monaspace 系のリガチャーが左のセルへ重なる rio #1651 の回避策。
+# 英数字・日本語は Neon を保ち、ASCII 記号だけ JetBrains Mono に任せる。
+# calt でコード用リガチャーを有効化する。symbol-map の end は範囲に含まれない。
+symbol-map = [
+  { start = "0021", end = "0030", font-family = "JetBrainsMono Nerd Font" },
+  { start = "003A", end = "0041", font-family = "JetBrainsMono Nerd Font" },
+  { start = "005B", end = "0061", font-family = "JetBrainsMono Nerd Font" },
+  { start = "007B", end = "007F", font-family = "JetBrainsMono Nerd Font" },
+]
 
 [colors]
 # rio の既定のカーソル色はマゼンタ (#F712FF)。IME の変換中の文字列もカーソル色の

@@ -19,6 +19,17 @@ return {
     cmd = { "ConformInfo" },
 
     opts = {
+      formatters = require("config.environment").remote
+          and {
+            prettier = {
+              command = function(self, ctx)
+                local command = require("conform.util").from_node_modules("prettier")(self, ctx)
+                return command == "prettier" and (require("config.environment").tool("prettier") or command) or command
+              end,
+              env = require("config.environment").node_env(),
+            },
+          }
+        or {},
       formatters_by_ft = {
         typescript = web_formatters,
         typescriptreact = web_formatters,

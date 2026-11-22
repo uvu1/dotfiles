@@ -135,7 +135,7 @@ return {
           cwd = dir,
           filter = function(linter)
             if
-              require("remote_dev.profile").enabled
+              require("config.environment").remote
               and type(linter.cmd) == "string"
               and vim.fn.executable(linter.cmd) == 0
               and not (linter.name == "haml_lint" and dir and project.bundles(dir, "haml_lint"))

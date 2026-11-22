@@ -17,6 +17,13 @@ vim.keymap.set("n", "<M-]>", "<Cmd>bnext<CR>", opts("next buffer"))
 -- clear search highlight
 vim.keymap.set("n", "<Esc>", "<cmd>nohlsearch<CR>", opts("Clear search highlights"))
 
+-- ホスト選択・配置・トンネル・再接続は 0.13 の標準機能に任せる。
+vim.keymap.set("n", "<leader>mc", ":connect ssh://", opts("Connect over SSH"))
+vim.keymap.set("n", "<leader>mr", "<cmd>connect<cr>", opts("Select server or SSH host"))
+vim.keymap.set("n", "<leader>mp", function()
+  require("lib.explorer").choose_directory()
+end, opts("Choose working directory"))
+
 -- UI トグル（<leader>u）。Snacks.toggle:map() が which-key のアイコン・色・
 -- 説明の反転まで面倒を見るので vim.keymap.set は使わない。
 -- snacks は lazy = false、Snacks は遅延 __index のグローバルなので、
