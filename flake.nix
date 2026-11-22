@@ -39,7 +39,7 @@
             home.username = "uvu1";
             home.homeDirectory = "/home/uvu1";
           }
-        ];
+        ] ++ nixpkgs.lib.optional (!wsl) ./nix/arch-gui.nix;
       };
     in
     {

@@ -42,6 +42,10 @@ add_environment = "unix"
 [[profiles.arch.environments]]
 mise_environment = "unix"
 
+[[profiles.arch.environments]]
+mise_environment = "arch"
+targets = ["~/.config/rio/config.toml", "~/.config/rio/background.jpg"]
+
 [[profiles.arch.after_sync]]
 program = "home-manager"
 args = ["switch", "--flake", "{repo}#uvu1@fy-desktop"]

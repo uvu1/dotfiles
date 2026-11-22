@@ -291,6 +291,8 @@ mise -C mise trust -a
 mise -C mise -E unix dotfiles apply --dry-run --verbose
 mise -C mise -E unix dotfiles apply
 mise -C mise -E unix install
+mise -C mise -E arch dotfiles apply --dry-run --verbose ~/.config/rio/config.toml ~/.config/rio/background.jpg
+mise -C mise -E arch dotfiles apply ~/.config/rio/config.toml ~/.config/rio/background.jpg
 bash scripts/sync-ai-config.sh
 ```
 
@@ -298,6 +300,12 @@ zsh をログインシェルにする場合は、`~/.nix-profile/bin/zsh` を
 `/etc/shells` に登録し、`chsh -s ~/.nix-profile/bin/zsh` を実行します。
 Git のコミット署名を使うには、1Password のデスクトップアプリにサインインし、
 同じ署名鍵を選び、開発者設定で SSH エージェントを有効にします。
+
+Home Manager は Zen Twilight、Chrome Canary、Discord Canary、Obsidian、Rio、
+Slack、Spotify、Zoom、Vicinae を導入します。Rio は共通設定と Moralerspace で
+herdr を起動します。KDE 上で Vicinae はログイン時に起動し、`Alt+Space` で
+表示します。KRunner は `Alt+F2` で開けます。ブラウザーの配布物は
+`nix/packages/` のバージョンとハッシュを合わせて更新します。
 
 ## WSL Arch
 
