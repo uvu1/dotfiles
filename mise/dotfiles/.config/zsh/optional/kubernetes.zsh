@@ -1,4 +1,4 @@
-function kube_context_fzf() {
+function _dotfiles_kube_context_fzf() {
   local context
   local fzf_status
 
@@ -25,11 +25,11 @@ function kube_context_fzf() {
   zle -R
 }
 
-function kube_context_or_kill_line() {
+function _dotfiles_kube_context_or_kill_line() {
   if [[ -z "${BUFFER//[[:space:]]/}" ]]; then
     BUFFER=""
     CURSOR=0
-    kube_context_fzf
+    _dotfiles_kube_context_fzf
   else
     BUFFER=""
     CURSOR=0
@@ -37,12 +37,5 @@ function kube_context_or_kill_line() {
   fi
 }
 
-function kube_bindkeys() {
-  bindkey -r $'\C-k'
-  bindkey $'\C-k' kube_context_or_kill_line
-}
-
-zle -N kube_context_fzf
-zle -N kube_context_or_kill_line
-
-kube_bindkeys
+zle -N _dotfiles_kube_context_fzf
+zle -N _dotfiles_kube_context_or_kill_line

@@ -3,7 +3,9 @@ autoload -Uz compinit
 ZSH_COMPDUMP="${XDG_CACHE_HOME:-$HOME/.cache}/zsh/zcompdump"
 mkdir -p "${ZSH_COMPDUMP:h}"
 
-if [[ -r "$ZSH_COMPDUMP" ]]; then
+if (( $+functions[compdef] )); then
+  : # infra の入場 hook が先に初期化している場合は再実行しない。
+elif [[ -r "$ZSH_COMPDUMP" ]]; then
   compinit -C -d "$ZSH_COMPDUMP"
 else
   compinit -d "$ZSH_COMPDUMP"
@@ -29,14 +31,6 @@ function _source_cached_completion() {
   fi
 }
 
-_source_cached_completion kubectl kubectl completion zsh
 _source_cached_completion gh gh completion -s zsh
-
-# vault cli
-if (( $+commands[vault] )); then
-  autoload -Uz bashcompinit
-  bashcompinit
-  complete -o nospace -C "$commands[vault]" vault
-fi
 
 unfunction _source_cached_completion

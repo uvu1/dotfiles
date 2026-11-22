@@ -19,6 +19,7 @@
 - Put the remaining shared macOS/WSL mise entries in `mise/dotfiles/mise/config.unix.toml`. It is the single source of truth and is symlinked to `~/.config/mise/config.toml`, so never duplicate the toolset in `mise/mise.unix.toml`. Editing it takes effect immediately, so land the matching Nix change first.
 - Put shared macOS/WSL dotfiles in `mise/mise.unix.toml`; keep only OS-specific entries in `mise.darwin.toml` (currently karabiner and rio).
 - Do not add project-only tools such as `bun`, `uv`, PostgreSQL, or libpq to the global toolsets.
+- Keep Kubernetes/Vault shell UI opt-in under `mise/dotfiles/.config/zsh/optional/`. The infra repository loads it through mise enter/leave hooks; do not activate it globally.
 - Do not track credentials, OAuth state, histories, sessions, caches, generated memories, installation IDs, or machine-local trust decisions.
 - Preserve unrelated worktree changes and avoid destructive Git operations.
 
@@ -28,6 +29,7 @@ Before editing a path below, read its note in `docs/agents/`; it holds that comp
 
 - `mise/dotfiles/ai/`, `scripts/sync-ai-config.*`: `docs/agents/ai-config.md`
 - `mise/dotfiles/.config/rio/`, fonts in `nix/darwin.nix`: `docs/agents/rio.md`
+- `mise/dotfiles/.config/zsh/optional/`: `docs/agents/project-shell.md`
 - `mise/dotfiles/.config/herdr/`, `mise/dotfiles/.config/starship.toml`, the herdr hook scripts: `docs/agents/herdr.md`
 - `services.aerospace` in `nix/darwin.nix`: `docs/agents/aerospace.md`
 - `scripts/sync-takumi-guard.sh`: `docs/agents/takumi-guard.md`

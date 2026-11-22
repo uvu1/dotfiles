@@ -412,6 +412,15 @@ dotflow update
 WSL profile は共有の `unix` 設定と Windows 向けの `wsl` 設定を配置し、
 Home Manager、YubiKey 設定、AI 設定、Takumi Guard も更新します。
 
+## infra 専用のシェル設定
+
+Kubernetes の Ctrl-K、`k` alias、補完・プロンプト表示と Vault 補完は、通常のシェルでは
+有効化しません。infra リポジトリの `mise.toml` の zsh `enter` / `leave` hook から
+`~/.config/zsh/optional/infra.zsh` を読み込みます。プロジェクト配下と各 worktree で有効になり、
+退出すると以前の alias・キーバインド・補完・`STARSHIP_CONFIG` に戻ります。
+kubectl と Vault 本体は infra の mise toolset が供給します。
+詳細は [プロジェクト限定シェル設定](docs/agents/project-shell.md) を参照してください。
+
 ## Neovim から SSH 先を編集
 
 現行の接続方法と SSH 先の準備は [標準 SSH 開発手順](docs/nvim-remote-dev.md) を参照してください。
@@ -459,6 +468,7 @@ mise -C mise -E darwin dotfiles status   # macOS のみ
 mise -C mise -E wsl dotfiles status      # WSL のみ
 dotflow doctor
 mise/dotfiles/ai/scripts/check-ai-config.sh
+python3 scripts/test_project_shell.py
 ```
 
 `--dry-run` はビルド予定だけを確認します。対応する macOS 環境では `--dry-run` を外して
