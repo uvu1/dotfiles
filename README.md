@@ -440,7 +440,7 @@ mise -C mise -E wsl dotfiles apply "$wezterm_dir"/{appearance.lua,keybinds.lua,r
 ```
 
 WezTerm は macOS ではローカルの zsh、Windows では `wsl.exe` 経由で WSL 内の zsh を起動します。
-WezTerm のタブは Ctrl+T で開き、Ctrl+W で閉じ、Ctrl+Shift+1〜9 で切り替えます。
+WezTerm のタブは Ctrl+B を押してから、t で開き、w で閉じ、1〜9 で切り替えます。
 `herdr --remote <接続先>` でリモートの Herdr に接続し、Ctrl+1〜9 で Herdr のタブを切り替えます。
 Windows 側に以前の `%USERPROFILE%/.wezterm.lua` がある場合は、移行前にどの設定を読み込むか確認してください。
 配布を終了した既存設定やインストール済みアプリは自動削除しません。

@@ -3,6 +3,7 @@ local act = wezterm.action
 
 local function apply(config)
   config.disable_default_key_bindings = true
+  config.leader = { key = "b", mods = "CTRL", timeout_milliseconds = 1000 }
 
   local ctrl_shift = "CTRL|SHIFT"
   local search = act.Search({ CaseInSensitiveString = "" })
@@ -62,12 +63,13 @@ local function apply(config)
     { key = "]", mods = "ALT", action = act.SendString("\x1b[93;3u") },
     -- 従来の入力では Ctrl+Shift と Ctrl を区別できないので、コピーは CSI u で送る。
     { key = "x", mods = ctrl_shift, action = act.SendString("\x1b[120;6u") },
-    { key = "t", mods = "CTRL", action = act.SpawnTab("CurrentPaneDomain") },
-    { key = "w", mods = "CTRL", action = act.CloseCurrentTab({ confirm = true }) },
+    { key = "t", mods = "LEADER", action = act.SpawnTab("CurrentPaneDomain") },
+    { key = "w", mods = "LEADER", action = act.CloseCurrentTab({ confirm = true }) },
+    { key = "b", mods = "LEADER|CTRL", action = act.SendKey({ key = "b", mods = "CTRL" }) },
   }
   for tab = 1, 9 do
     local key = "phys:" .. tab
-    table.insert(config.keys, { key = key, mods = ctrl_shift, action = act.ActivateTab(tab - 1) })
+    table.insert(config.keys, { key = key, mods = "LEADER", action = act.ActivateTab(tab - 1) })
     -- Herdr のクライアントに Ctrl+Q プレフィックスとタブ番号を送る。
     table.insert(config.keys, { key = key, mods = "CTRL", action = act.SendString("\x11" .. tab) })
   end
