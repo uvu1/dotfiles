@@ -32,14 +32,13 @@
     let
       linuxSystem = "x86_64-linux";
       darwinSystem = "aarch64-darwin";
-      wslHome = home-manager.lib.homeManagerConfiguration {
+      linuxHome = { username, homeDirectory, wsl }: home-manager.lib.homeManagerConfiguration {
         pkgs = import nixpkgs { system = linuxSystem; };
-        extraSpecialArgs = { inherit inputs; wsl = true; };
+        extraSpecialArgs = { inherit inputs wsl; };
         modules = [
           ./nix/home.nix
           {
-            home.username = "uvu1";
-            home.homeDirectory = "/home/uvu1";
+            home = { inherit username homeDirectory; };
           }
         ];
       };
@@ -55,11 +54,23 @@
         ];
       };
 
-      homeConfigurations."uvu1@arch-wsl" = wslHome;
+      homeConfigurations = {
+        "uvu1@arch-wsl" = linuxHome {
+          username = "uvu1";
+          homeDirectory = "/home/uvu1";
+          wsl = true;
+        };
+        "dev@pve-dev" = linuxHome {
+          username = "dev";
+          homeDirectory = "/home/dev";
+          wsl = false;
+        };
+      };
 
       checks.${darwinSystem}.darwin-system = self.darwinConfigurations."uvu1-mac".system;
       checks.${linuxSystem} = {
         home-activation = self.homeConfigurations."uvu1@arch-wsl".activationPackage;
+        pve-dev-home-activation = self.homeConfigurations."dev@pve-dev".activationPackage;
       };
     };
 }

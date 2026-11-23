@@ -1,12 +1,12 @@
 # dotfiles
 
-macOS と Arch WSL の開発環境を Nix、Home Manager、nix-darwin、mise dotfiles で管理します。
+macOS、Arch WSL、Ubuntu ホスト `pve-dev` の開発環境を Nix、Home Manager、nix-darwin、mise dotfiles で管理します。
 設定の正本はこのリポジトリの `master` です。ネイティブ Arch は管理しません。
 Windows には WezTerm の設定と背景画像だけを WSL から配布します。
 
 ## 構成
 
-- `flake.nix`: macOS の nix-darwin、WSL Arch の Home Manager standalone、mise 用 nixpkgs-unstable の固定
+- `flake.nix`: macOS の nix-darwin、Arch WSL と `pve-dev` の Home Manager standalone、mise 用 nixpkgs-unstable の固定
 - `nix/`: Nix が管理する基盤と、グローバルに使う全ツール（LSP・リンタ・フォーマッタ・日常CLI・フォールバックランタイム）
 - `mise/`: プロジェクト単位のバージョン切り替え、vendor CLI、OS 固有の toolset・mise dotfiles
 - `mise/dotfiles/`: 通常配置へ移植した設定ファイル
@@ -410,6 +410,18 @@ dotflow update
 
 WSL profile は共有の `unix` 設定と Windows 向けの `wsl` 設定を配置し、
 Home Manager、YubiKey 設定、AI 設定、Takumi Guard も更新します。
+
+## Ubuntu (`pve-dev`)
+
+`dev@pve-dev` は x86_64 Linux の `dev` ユーザー (`/home/dev`) 向けの Home Manager プロファイルです。
+Nix と Home Manager が導入済みの状態で、リポジトリルートから適用します。
+
+```sh
+NIX_CONFIG='extra-experimental-features = nix-command flakes' \
+  home-manager switch --flake '.#dev@pve-dev'
+```
+
+dotfiles の配置状況は `mise -C mise -E unix dotfiles status` で確認できます。
 
 ## infra 専用のシェル設定
 

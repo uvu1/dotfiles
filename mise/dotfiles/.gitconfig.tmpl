@@ -1,6 +1,7 @@
 [user]
     name = uvu1
     email = 53385458+uvu1@users.noreply.github.com
+{% if os() == "macos" or env.WSL_DISTRO_NAME is defined %}
     signingkey = ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKBASQWjEFevq1IhdQ2aft+weTImIFDfrjPKKOBiqL8r
 [gpg]
     format = ssh
@@ -12,6 +13,7 @@
 {% endif %}
 [commit]
     gpgsign = true
+{% endif %}
 [init]
     defaultBranch = main
 [ghq]
