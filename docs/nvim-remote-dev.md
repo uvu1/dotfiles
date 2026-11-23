@@ -11,18 +11,22 @@ LSP・整形・検索はSSH先で実行する。SSH先にNixは必要ない。
 当該inputだけ更新する場合は`nix flake update neovim-nightly-overlay`を使い、
 評価・プロファイルビルド・設定テストを通してから適用する。
 
-WSLではNixのnvimラッパが子プロセスのPATHにUnix版OpenSSHを前置する。
-シェルから直接使う既存のWindows版sshラッパは維持する。
+WSLではシェルとGitがNixのOpenSSHを使い、nvimラッパも子プロセスのPATHで同じOpenSSHを優先する。
 Windows agentの共有にはNix管理の`wsl2-ssh-agent`を使い、Home Managerのuser serviceで起動する。
 Unix SSHの`IdentityAgent`が共有socketを参照するため、既存の`SSH_AUTH_SOCK`を変更しない。
 秘密鍵をコピーせず、Windows agentの鍵で認証する。
 標準SSH接続はWindowsネイティブのOpenSSHには対応しない。
 
-Windows側のSSH configはDrvFS上で0777に見えるため、Unix側へのsymlinkにはしない。
-Home Manager適用時にWindowsのconfigを読み、`~/.ssh/config`へ0600で配置する。
-ホスト情報や認証設定の内容はリポジトリ・Nix storeへ取り込まない。
-Unix側だけの指定は`~/.ssh/config.local`へ書く。適用時もこのファイルは変更しない。
-Windows configの更新は次のHome Manager適用時に反映する。
+共通の接続先は `mise/dotfiles/.ssh/config.shared` に置き、mise の `unix` 環境が
+`~/.ssh/config.shared` にリンクする。macOS では既存の `~/.ssh/config` の
+最初の `Host` または `Match` より前に `Include ~/.ssh/config.shared` を追加する。
+WSL の `~/.ssh/config` は Home Manager が 0600 で生成する。先頭で `config.local` を
+読み込み、その後に共通の定義を展開する。共通設定の変更は次の Home Manager 適用時に反映し、
+Neovim のホスト一覧にも表示される。WSL のホスト鍵は `~/.ssh/known_hosts` で管理する。
+
+旧設定から切り替える前に、引き続き使うローカルホスト（`infra` など）の定義を
+`~/.ssh/config.local` に移す。利用を終えた `ubuntu` のブロックは必要に応じて
+同ファイルから外す。`dev` は共通設定にあり、接続後も agent を利用できる。
 
 Windowsからだけ到達できるホストには、`config.local`で標準のProxyCommandを使える。
 以下はWindows SSHで対象へ接続し、そのホスト自身のSSHポートへ転送する例。

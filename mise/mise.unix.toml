@@ -25,3 +25,4 @@
 "~/.config/starship.toml" = { source = "dotfiles/.config/starship.toml", mode = "symlink" }
 "~/.config/zsh" = { source = "dotfiles/.config/zsh", mode = "symlink" }
 "~/.zshrc" = { source = "dotfiles/.zshrc", mode = "symlink" }
+"~/.ssh/config.shared" = { source = "dotfiles/.ssh/config.shared", mode = "symlink" }
