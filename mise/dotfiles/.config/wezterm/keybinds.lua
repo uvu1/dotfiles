@@ -61,12 +61,14 @@ local function apply(config)
     { key = "Enter", mods = "SHIFT", action = act.SendString("\x1b\r") },
     { key = "[", mods = "ALT", action = act.SendString("\x1b[91;3u") },
     { key = "]", mods = "ALT", action = act.SendString("\x1b[93;3u") },
-    -- 従来の入力では Ctrl+Shift と Ctrl を区別できないので、コピーは CSI u で送る。
-    { key = "x", mods = ctrl_shift, action = act.SendString("\x1b[120;6u") },
     { key = "t", mods = "LEADER", action = act.SpawnTab("CurrentPaneDomain") },
     { key = "w", mods = "LEADER", action = act.CloseCurrentTab({ confirm = true }) },
     { key = "b", mods = "LEADER|CTRL", action = act.SendKey({ key = "b", mods = "CTRL" }) },
   }
+  -- Herdr のタブ操作とコピーモードに Ctrl+Shift を CSI u で送る。
+  for _, key in ipairs({ "t", "w", "x" }) do
+    table.insert(config.keys, { key = key, mods = ctrl_shift, action = act.SendString("\x1b[" .. key:byte() .. ";6u") })
+  end
   for tab = 1, 9 do
     local key = "phys:" .. tab
     table.insert(config.keys, { key = key, mods = "LEADER", action = act.ActivateTab(tab - 1) })
