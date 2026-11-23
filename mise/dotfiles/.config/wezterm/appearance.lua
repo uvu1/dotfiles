@@ -3,7 +3,7 @@ local wezterm = require("wezterm")
 local function apply(config, windows)
   config.initial_cols = 120
   config.initial_rows = 32
-  config.font_size = 14.0
+  config.font_size = windows and 14.0 or 18.0
   config.font = wezterm.font_with_fallback({
     { family = "JetBrains Mono", weight = "Medium" },
     windows and { family = "Hiragino Maru Gothic ProN" } or { family = "Hiragino Sans", weight = "Medium" },
