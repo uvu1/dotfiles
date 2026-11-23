@@ -1,0 +1,73 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+script_dir=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
+ai_dir=$(CDPATH= cd -- "$script_dir/.." && pwd)
+repo_root=$(CDPATH= cd -- "$ai_dir/../../.." && pwd)
+
+required_paths=(
+  "$repo_root/AGENTS.md"
+  "$repo_root/CLAUDE.md"
+  "$ai_dir/common/AGENTS.md"
+  "$ai_dir/codex/AGENTS.md"
+  "$ai_dir/codex/config.toml"
+  "$ai_dir/claude/CLAUDE.md"
+  "$ai_dir/claude/settings.json"
+  "$ai_dir/claude/statusline.sh"
+  "$ai_dir/claude/hooks/herdr-agent-state.sh"
+  "$ai_dir/codex/herdr-agent-state.sh"
+  "$ai_dir/codex/hooks.json"
+  "$ai_dir/skills/common/herdr/SKILL.md"
+  "$ai_dir/skills/codex/herdr"
+  "$ai_dir/skills/claude/herdr"
+  "$ai_dir/skills/common/grill-me/SKILL.md"
+  "$ai_dir/skills/codex/grill-me"
+  "$ai_dir/skills/claude/grill-me"
+  "$ai_dir/skills/common/mtg-note/SKILL.md"
+  "$ai_dir/skills/codex/mtg-note"
+  "$ai_dir/skills/claude/mtg-note"
+)
+
+for path in "${required_paths[@]}"; do
+  if [[ ! -e "$path" ]]; then
+    echo "missing required AI configuration: $path" >&2
+    exit 1
+  fi
+done
+
+jq empty "$ai_dir/claude/settings.json" "$ai_dir/codex/hooks.json"
+for script in "$ai_dir/claude/statusline.sh" "$ai_dir/claude/hooks/herdr-agent-state.sh" "$ai_dir/codex/herdr-agent-state.sh"; do
+  sh -n "$script"
+done
+
+for config in "$ai_dir"/codex/*.toml; do
+  nix eval --impure --expr \
+    "builtins.fromTOML (builtins.readFile \"$config\")" \
+    >/dev/null
+done
+
+for skill in "$ai_dir"/skills/common/*/SKILL.md; do
+  rg -q '^name: [a-z0-9-]+$' "$skill"
+  rg -q '^description: .+$' "$skill"
+done
+
+if find "$ai_dir" -type f \
+  \( -name 'auth.json' -o -name 'history.jsonl' -o -name 'settings.local.json' \
+     -o -name 'CLAUDE.local.md' -o -name '*.sqlite' -o -name '*.sqlite-shm' \
+     -o -name '*.sqlite-wal' \) \
+  | rg -q .; then
+  echo "machine-local AI state found under $ai_dir" >&2
+  exit 1
+fi
+
+if rg -n --hidden \
+  "(api[_-]?key|access[_-]?token|auth[_-]?token|authorization|password)[\"']?[[:space:]]*[:=][[:space:]]*[\"'][^\$<{][^\"']+[\"']" \
+  "$ai_dir/common" "$ai_dir/codex" "$ai_dir/claude" "$ai_dir/skills"; then
+  echo "possible hard-coded credential found in managed AI configuration" >&2
+  exit 1
+fi
+
+git -C "$repo_root" diff --check
+bash -n "$repo_root/scripts/sync-ai-config.sh"
+python3 "$repo_root/scripts/test_sync_ai_config.py"
+echo "AI configuration checks passed"

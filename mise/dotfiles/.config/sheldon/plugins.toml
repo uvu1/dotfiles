@@ -1,0 +1,97 @@
+shell = "zsh"
+
+[templates]
+defer = "{% for file in files %}zsh-defer source \"{{ file }}\"\n{% endfor %}"
+
+[plugins]
+# mise より先に前置する。mise activate は起動時の PATH を __MISE_ORIG_PATH に
+# 捕まえ、以後のフックはそれを土台に組み直すため、後ろに置くと ~/.local/bin
+# （home.nix の wslCommands が置く Windows コマンドのラッパ）が失われうる。
+#
+# WSL が足す Windows の PATH（/mnt/c 配下）は zsh の中だけで外す。9P 越しの
+# 走査が遅く、mise activate と初回 hook で約 80ms、$commands のハッシュで約 40ms、
+# starship の os モジュールでプロンプト毎に約 18ms かかっていた。名前で呼ぶ
+# Windows コマンドは home.nix の wslCommands に足す。mise activate は既存の
+# __MISE_ORIG_PATH を土台にするので、親プロセスから継承した値からも外す。
+[plugins.wsl-local-bin]
+inline = '''
+if [[ -n "${WSL_DISTRO_NAME:-}" ]]; then
+  typeset -U path PATH
+  path=("$HOME/.local/bin" ${path:#/mnt/[a-z]/*})
+  [[ -n "${__MISE_ORIG_PATH:-}" ]] && __MISE_ORIG_PATH=${(j.:.)${(s.:.)__MISE_ORIG_PATH}:#/mnt/[a-z]/*}
+fi
+'''
+
+# shims ではなく PATH activation を使う。shim は版が未解決のとき PATH の後方へ
+# フォールスルーせず `No version is set for shim: <tool>` で止まるので、
+# グローバルのツールを nix profile に置き mise をプロジェクト単位の切り替えだけに
+# 使う構成と両立しない。この出力は即座に PATH を設定してからフックを登録するため、
+# 下の dotflow shell-init の時点で dotflow は解決できる。
+[plugins.mise]
+inline = 'eval "$(mise activate zsh)"'
+
+# shell-init は `dotflow cd` 用の wrapper に加えて起動時の `dotflow check` も出力する。
+# check は network に触れず手元の origin/master と HEAD を比べ、遅れていれば
+# `dotflow update` を促す（fetch は前回から 6 時間以上経ったときだけ裏で走る）。
+# 通知をプロンプトより前に出すため defer しない。
+[plugins.dotflow]
+inline = 'eval "$(dotflow shell-init zsh)"'
+
+# chpwd/precmd hook を登録するため defer しない（遅延すると初回のディレクトリで
+# .envrc が読まれない）。direnv 本体は Nix の programs.direnv が提供する。
+[plugins.direnv]
+inline = 'eval "$(direnv hook zsh)"'
+
+[plugins.starship]
+inline = 'eval "$(starship init zsh)"'
+
+[plugins.zsh-defer]
+github = "romkatv/zsh-defer"
+
+[plugins.zsh-autosuggestions]
+github = "zsh-users/zsh-autosuggestions"
+apply = ["defer"]
+
+[plugins.fzf]
+github = "junegunn/fzf"
+apply = ["defer"]
+
+[plugins.fzf-tab]
+github = "Aloxaf/fzf-tab"
+apply = ["defer"]
+
+[plugins.zsh-syntax-highlighting]
+github = "zsh-users/zsh-syntax-highlighting"
+apply = ["defer"]
+
+[plugins.zsh-completions]
+github = "zsh-users/zsh-completions"
+apply = ["defer"]
+
+# local
+[plugins.aliases]
+local = "~/.config/zsh"
+use = ["aliases.zsh"]
+apply = ["defer"]
+
+[plugins.completion]
+local = "~/.config/zsh"
+use = ["completion.zsh"]
+apply = ["defer"]
+
+[plugins.ghq]
+local = "~/.config/zsh"
+use = ["ghq.zsh"]
+apply = ["defer"]
+
+[plugins.history]
+local = "~/.config/zsh"
+use = ["history.zsh"]
+apply = ["defer"]
+
+# zoxide の初期化はシェル設定の最後に置くことが求められ、補完登録には compinit が
+# 必要なので、completion を含む他のプラグインより後に置く。
+[plugins.zoxide]
+local = "~/.config/zsh"
+use = ["zoxide.zsh"]
+apply = ["defer"]

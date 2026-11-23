@@ -1,0 +1,3 @@
+setopt interactive_comments
+eval "$(sheldon source)"
+

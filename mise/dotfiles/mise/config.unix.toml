@@ -1,0 +1,51 @@
+# macOS(darwin) と WSL(linux) 共通で ~/.config/mise/config.toml へ配布するグローバル設定。
+#
+# グローバルに使うツール（LSP・リンタ・フォーマッタ・日常 CLI・フォールバックの
+# 言語ランタイム）は nix/home.nix が唯一の供給元で、flake.lock で固定されている。
+# npm backend が `#!/usr/bin/env node` を固定できずプロジェクトの node で LSP が
+# 動いてしまう問題と、`latest` 指定による macOS / WSL の版ズレを避けるため移した。
+#
+# ここに残すのは 2 つだけ。
+#   1. dotflow: dotfiles の更新経路そのもの。sheldon が shell-init を eval する。
+#   2. vendor CLI: サービスに接続するクライアントで提供元の出荷に追従したいもの。
+#
+# 同じツールを nix と両方に宣言しないこと。mise は install ディレクトリを nix profile
+# より前に置くので mise 側が黙って勝ち、nix の宣言が死ぬ。
+[settings]
+experimental = true
+# .ruby-version / .node-version / Gemfile をプロジェクトのバージョン指定として読む。
+# [tools] からランタイムを外してもこれが project 側の宣言元を有効にするので、
+# kintai の node 18.12.1 / ruby 3.2.2 のような固定は従来どおり効く。
+idiomatic_version_file_enable_tools = ["ruby", "node"]
+# sheldon は shims ではなく `mise activate zsh` で有効化する。このモードは
+# command_not_found_handler を登録するため、未導入のツールを黙って入れさせない
+# （nvim の lua/lib/mise.lua の MISE_EXEC_AUTO_INSTALL=0 と同じ方針）。
+not_found_auto_install = false
+
+[tools]
+"github:uvu1/dotflow" = "0.2.0"
+
+# --- vendor CLI ---------------------------------------------------------------
+# 再現性より鮮度を優先して latest のままにする。nix に移すと nixpkgs の追従待ちで
+# codex / claude の更新通知が出続ける（nixpkgs は upstream より数リリース遅れる）。
+claude = "latest"
+# レジストリ既定の npm:@openai/codex は bin/codex が
+# lib/node_modules/@openai/codex/bin/codex.js への symlink で `#!/usr/bin/env node`。
+# プロジェクトの node で動いてしまうため、GitHub リリースのネイティブバイナリを
+# 配る aqua backend を明示する。node 依存も shebang の穴も消える。
+"aqua:openai/codex" = "latest"
+# AI エージェント用のブラウザ自動化 CLI。実際の描画をスクリーンショットで確認する
+# ために使う（今は ai/skills/claude/agent-browser の Claude 用 skill だけを配線）。
+# mise registry に別名が無く、npm 版は
+# bin が `#!/usr/bin/env node` の shim（engines: node>=24）なので codex と同じく
+# aqua backend で GitHub リリースのネイティブバイナリを取る。
+"aqua:vercel-labs/agent-browser" = "latest"
+# AI エージェント向けのターミナル多重化。WezTerm の中で動かし、分割・タブ・ワークスペース・
+# セッション永続化を担わせる（.config/herdr/config.toml）。nixpkgs 未収録で、公式 flake は
+# rust-overlay ごとソースビルドになるため、公式が案内する mise の registry 経由で
+# リリースバイナリを取る。v0.x で更新が速いので latest で追従する。
+herdr = "latest"
+# AI coding agent。registry の既定 backend は npm:@opencode/cli なので、codex と同じく
+# GitHub リリースのネイティブバイナリを配る aqua backend を明示する。
+# GitHub の latest 印は v1 系に付いたままなので、公式 README が案内する v2 系を追う。
+"aqua:anomalyco/opencode" = "2"

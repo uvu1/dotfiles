@@ -1,0 +1,62 @@
+-- nvim-treesitter (main ブランチ) のトップレベル spec。
+-- 従来は他プラグインの dependencies 経由でのみ取得され、パーサが 1 つも
+-- インストールされていなかった（Neovim 同梱の 7 つのみ）。ここで install() を
+-- 呼び、Neovim が自動有効化しない treesitter を FileType で自分で start する。
+return {
+  {
+    "nvim-treesitter/nvim-treesitter",
+    branch = "main",
+    lazy = false,
+    config = function()
+      -- main ブランチに ensure_installed は無い。install() が未導入分のみ取得する（async）。
+      local langs = {
+        "lua",
+        "python",
+        "rust",
+        "typescript",
+        "tsx",
+        "javascript",
+        "json",
+        "yaml",
+        "css",
+        "html",
+        "bash",
+        "markdown",
+        "markdown_inline",
+        "toml",
+        -- jsonc はパーサが存在しない（json が jsonc filetype も担当する）。
+        "ruby",
+        "embedded_template", -- eruby
+        "go",
+        "gomod",
+        "gosum",
+        "gowork",
+        "c",
+        "cpp",
+        -- haml はパーサが upstream に存在しない。Vim 同梱の syntax/haml.vim で
+        -- ハイライトされる（下の pcall が start の失敗を吸収する）。
+      }
+      if vim.fn.executable("cc") == 1 and vim.fn.executable("tree-sitter") == 1 then
+        require("nvim-treesitter").install(langs)
+      end
+
+      -- Neovim は treesitter を自動有効化しない（同梱 ftplugin で start するのは
+      -- help/lua/markdown/query のみ）。通常バッファで自分で start する。
+      vim.api.nvim_create_autocmd("FileType", {
+        group = vim.api.nvim_create_augroup("treesitter-start", { clear = true }),
+        callback = function(args)
+          if vim.bo[args.buf].buftype ~= "" then
+            return
+          end
+
+          local lang = vim.treesitter.language.get_lang(args.match) or args.match
+          -- パーサ未着（install は async）や二重 start は pcall で吸収する。
+          local started = pcall(vim.treesitter.start, args.buf, lang)
+          vim.api.nvim_buf_call(args.buf, function()
+            vim.wo.foldmethod = started and "expr" or "indent"
+          end)
+        end,
+      })
+    end,
+  },
+}

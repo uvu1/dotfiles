@@ -1,0 +1,6 @@
+# Windows の WezTerm 設定と背景画像を WSL から配布する。
+[dotfiles]
+"/mnt/c/Users/uvu1/.config/wezterm/appearance.lua" = { source = "dotfiles/.config/wezterm/appearance.lua", mode = "copy" }
+"/mnt/c/Users/uvu1/.config/wezterm/keybinds.lua" = { source = "dotfiles/.config/wezterm/keybinds.lua", mode = "copy" }
+"/mnt/c/Users/uvu1/.config/wezterm/resources/background.jpg" = { source = "dotfiles/.config/wezterm/resources/background.jpg", mode = "copy" }
+"/mnt/c/Users/uvu1/.config/wezterm/wezterm.lua" = { source = "dotfiles/.config/wezterm/wezterm.lua", mode = "copy" }

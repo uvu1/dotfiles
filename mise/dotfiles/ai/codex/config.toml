@@ -1,0 +1,22 @@
+#:schema https://developers.openai.com/codex/config-schema.json
+model = "gpt-6.2-sol"
+model_reasoning_effort = "medium"
+approval_policy = "on-request"
+approvals_reviewer = "auto_review"
+sandbox_mode = "workspace-write"
+
+# nest した値は dotted key で書くこと(理由は AGENTS.md)。
+# herdr の integration（hooks.json の SessionStart）を動かすために hooks を有効にする。
+features.hooks = true
+# grill-me などで Default mode でも request_user_input（選択式の質問）を使えるようにする。開発中のフラグ。
+features.default_mode_request_user_input = true
+
+# 作業場所と残量を確認しやすい順に表示する。
+tui.status_line = [
+  "model-with-reasoning",
+  "current-dir",
+  "git-branch",
+  "context-remaining",
+  "five-hour-limit",
+]
+tui.status_line_use_colors = true

@@ -1,0 +1,28 @@
+# macOS / WSL 共通の unix dotfiles。
+# wsl / macos profile が mise 環境 "unix" として読み込む。
+# unix の toolset は dotfiles/mise/config.unix.toml が唯一の正本。
+# それを ~/.config/mise/config.toml へ symlink するため、ここには toolset を
+# 重複して書かない。symlink なので pull した時点で toolset が反映され、
+# mise use -g などのローカル変更も repo の差分として現れる。
+[dotfiles]
+"~/.agents/skills" = { source = "dotfiles/ai/skills/codex", mode = "symlink-each" }
+"~/.claude/CLAUDE.md" = { source = "dotfiles/ai/claude/CLAUDE.md", mode = "symlink" }
+"~/.claude/settings.json" = { source = "dotfiles/ai/claude/settings.json", mode = "symlink" }
+"~/.claude/skills" = { source = "dotfiles/ai/skills/claude", mode = "symlink-each" }
+"~/.claude/statusline.sh" = { source = "dotfiles/ai/claude/statusline.sh", mode = "symlink" }
+# herdr の integration。herdr integration install は ~/.claude/settings.json（repo への symlink）に
+# 絶対パスを書き込むため使わず、herdr が生成する hook script を取り込んで配る。
+"~/.claude/hooks/herdr-agent-state.sh" = { source = "dotfiles/ai/claude/hooks/herdr-agent-state.sh", mode = "symlink" }
+"~/.codex/AGENTS.md" = { source = "dotfiles/ai/codex/AGENTS.md", mode = "symlink" }
+"~/.codex/herdr-agent-state.sh" = { source = "dotfiles/ai/codex/herdr-agent-state.sh", mode = "symlink" }
+"~/.codex/hooks.json" = { source = "dotfiles/ai/codex/hooks.json", mode = "symlink" }
+"~/.config/mise/config.toml" = { source = "dotfiles/mise/config.unix.toml", mode = "symlink" }
+# herdr は設定画面や onboarding で ~/.config/herdr に書き込むため、ディレクトリごとではなく
+# 管理するものだけをファイル単位で置く。
+"~/.config/herdr/config.toml" = { source = "dotfiles/.config/herdr/config.toml", mode = "symlink" }
+"~/.config/herdr/scripts" = { source = "dotfiles/.config/herdr/scripts", mode = "symlink" }
+"~/.config/sheldon" = { source = "dotfiles/.config/sheldon", mode = "symlink" }
+"~/.config/starship.toml" = { source = "dotfiles/.config/starship.toml", mode = "symlink" }
+"~/.config/zsh" = { source = "dotfiles/.config/zsh", mode = "symlink" }
+"~/.zshrc" = { source = "dotfiles/.zshrc", mode = "symlink" }
+"~/.ssh/config.shared" = { source = "dotfiles/.ssh/config.shared", mode = "symlink" }

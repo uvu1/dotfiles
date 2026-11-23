@@ -1,0 +1,127 @@
+-- neovim-unwrapped は provider を使えない。python3 の検出だけで .py を開くたびに
+-- 約 140ms かかっていたため、4 つとも検出させない。
+for _, provider in ipairs({ "python3", "ruby", "perl", "node" }) do
+  vim.g["loaded_" .. provider .. "_provider"] = 0
+end
+
+vim.opt.number = true
+vim.opt.relativenumber = true
+
+vim.opt.termguicolors = true
+vim.opt.wrap = false
+vim.opt.scrolloff = 8
+vim.opt.signcolumn = "yes"
+
+-- 標準の折り畳み。パーサが使えるバッファは treesitter.lua が expr に切り替える。
+vim.opt.foldmethod = "indent"
+vim.opt.foldexpr = "v:lua.vim.treesitter.foldexpr()"
+vim.opt.foldcolumn = "1"
+vim.opt.foldlevel = 99
+vim.opt.foldlevelstart = 99
+vim.opt.foldenable = true
+
+-- 診断は標準の行末表示。詳細は標準の <C-w>d または診断一覧から確認する。
+vim.diagnostic.config({ virtual_text = true, virtual_lines = false })
+-- kawaii-theme は CursorLine と Visual が同じ背景色なので、カーソル行の
+-- ハイライトが行選択（V）と見分けられない。行位置は relativenumber で足りる。
+vim.opt.cursorline = false
+
+vim.opt.pumblend = 20
+vim.opt.winblend = 20
+
+-- フロート枠の正本。blink・overseer・vim.lsp.util.open_floating_preview は
+-- border 未指定なら winborder を読むので、プラグイン側に "rounded" を書かない。
+-- noice は自前の既定枠を持つため例外（plugins/noice.lua）。
+vim.opt.winborder = "rounded"
+vim.opt.pumborder = "rounded"
+
+vim.opt.tabstop = 2
+vim.opt.shiftwidth = 2
+vim.opt.expandtab = true
+vim.opt.smartindent = true
+
+vim.opt.updatetime = 300
+
+-- 再起動をまたいで undo を残す。
+-- 'confirm' は入れない。未保存バッファでの :q は vim 既定どおり E37 で失敗させる
+-- （プロンプトを出すと :q / :q! の使い分けという vim の操作感が変わるため）。
+vim.opt.undofile = true
+
+vim.opt.clipboard = "unnamedplus"
+
+vim.opt.ignorecase = true
+vim.opt.smartcase = true
+
+vim.opt.splitbelow = true
+vim.opt.splitright = true
+
+-- 下部に端末やタスク一覧が開いても本文のスクロール位置をずらさない。
+vim.opt.splitkeep = "screen"
+
+-- view を足すと <C-o>/<C-i> がスクロール位置ごと復元する（VSCode の Alt+Left/Right）。
+vim.opt.jumpoptions = "clean,view"
+
+-- 既定の blank と terminal を落とす。:mksession が explorer/picker の
+-- スクラッチウィンドウや一時端末まで記録してしまい、
+-- 復元時に空の無名バッファや壊れた端末になるため。
+vim.opt.sessionoptions = "buffers,curdir,folds,help,tabpages,winsize,localoptions"
+
+-- for WSL
+if require("config.environment").remote then
+  -- OSC52 writes reach the local TUI. Paste with the terminal's normal paste
+  -- shortcut; querying OSC52 is unsupported by some terminals and can block.
+  local clipboard = { {}, "v" }
+  local function copy(register)
+    local write = require("vim.ui.clipboard.osc52").copy(register)
+    return function(lines, regtype)
+      clipboard = { lines, regtype }
+      write(lines)
+    end
+  end
+  local function paste()
+    return clipboard
+  end
+  vim.g.clipboard = {
+    name = "Remote OSC52",
+    copy = {
+      ["+"] = copy("+"),
+      ["*"] = copy("*"),
+    },
+    paste = {
+      ["+"] = paste,
+      ["*"] = paste,
+    },
+  }
+elseif vim.fn.has("wsl") == 1 then
+  if vim.fn.executable("wl-copy") == 0 then
+    print("wl-copy is not installed, clipboard integration will not work")
+  else
+    vim.g.clipboard = {
+      name = "wl-clipboard(wsl)",
+      copy = {
+        ["+"] = "wl-copy --foreground --type text/plain",
+        ["*"] = "wl-copy --foreground --primary --type text/plain",
+      },
+      paste = {
+        ["+"] = function()
+          return vim.fn.systemlist('wl-paste --no-newline|sed -e "s/\r$//"', { "" }, 1)
+        end,
+        ["*"] = function()
+          return vim.fn.systemlist('wl-paste --no-newline --primary|sed -e "s/\r$//"', { "" }, 1)
+        end,
+      },
+      cache_enabled = true,
+    }
+  end
+end
+
+-- LSP / formatter の実体は nix profile にあり、デスクトップランチャ等から起動しても
+-- そこは PATH に載る。ここで補うのは mise がグローバルに宣言している分（dotflow と
+-- vendor CLI）だけで、シェルを経由しない起動でもそれらを解決できるようにする。
+-- append にして、既に載っている具体パスの解決を優先させる。
+do
+  local shims = vim.fs.joinpath(vim.uv.os_homedir(), ".local/share/mise/shims")
+  if vim.uv.fs_stat(shims) and not vim.env.PATH:find(shims, 1, true) then
+    vim.env.PATH = vim.env.PATH .. ":" .. shims
+  end
+end
