@@ -28,9 +28,7 @@ split_horizontal = "prefix+minus"
 goto = "prefix+space"
 
 # prefix+c は下の copy-last-output に使うので t にする。
-# WezTerm の Ctrl+Shift+T / Ctrl+Shift+W / Ctrl+数字 は prefix+t / prefix+shift+x（close_tab 既定）/
-# prefix+数字（switch_tab 既定）を送っている（wezterm/wezterm.lua）。prefix・new_tab・close_tab・
-# switch_tab を変えるときは WezTerm 側も揃えること。
+# WezTerm の Ctrl+数字は Herdr の既定の prefix+数字に対応する（wezterm/keybinds.lua）。
 new_tab = "prefix+t"
 
 workspace_picker = "prefix+w"
