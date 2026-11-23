@@ -16,8 +16,10 @@ mise_environment = "unix"
 [[profiles.wsl.environments]]
 mise_environment = "wsl"
 targets = [
-  "/mnt/c/Users/uvu1/AppData/Local/rio/config.toml",
-  "/mnt/c/Users/uvu1/AppData/Local/rio/background.jpg",
+  "/mnt/c/Users/uvu1/.config/wezterm/appearance.lua",
+  "/mnt/c/Users/uvu1/.config/wezterm/keybinds.lua",
+  "/mnt/c/Users/uvu1/.config/wezterm/resources/background.jpg",
+  "/mnt/c/Users/uvu1/.config/wezterm/wezterm.lua",
 ]
 
 [[profiles.wsl.after_sync]]
@@ -50,8 +52,7 @@ mise_environment = "unix"
 mise_environment = "darwin"
 targets = [
   "~/.config/karabiner",
-  "~/.config/rio/config.toml",
-  "~/.config/rio/background.jpg",
+  "~/.config/wezterm",
 ]
 
 [[profiles.macos.after_sync]]

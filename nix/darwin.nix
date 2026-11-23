@@ -44,7 +44,7 @@
       # ワークスペース名 → 自動で送るアプリの Bundle ID。
       # ctrl+opt+<小文字> で移動、ctrl+opt+shift+<小文字> でフォーカス中のウィンドウを送る。
       workspaces = {
-        T = [ "com.raphaelamorim.rio" ];
+        T = [ "com.github.wez.wezterm" ];
         B = [ "app.zen-browser.zen" ];
         C = [
           "com.tinyspeck.slackmacgap"
@@ -126,11 +126,10 @@
       "obsidian"
       "raycast"
       "readdle-spark"
-      # nixpkgs は stable / unstable とも 0.4.7 で upstream (0.5.x) から大きく遅れるため cask で入れる。
-      "rio"
       "scroll-reverser"
       "slack"
       "spotify"
+      "wezterm@nightly"
       "zen@twilight"
       "zoom"
     ];
@@ -143,9 +142,6 @@
 
   fonts.packages = [
     pkgs.nerd-fonts.jetbrains-mono
-    # rio 用。rio はフォントごとの拡大率を調整できず、fallback のヒラギノは英字と高さが
-    # 揃わないため、Monaspace + IBM Plex Sans JP + Nerd Fonts の合成フォントを使う。
-    pkgs.moralerspace
   ];
 
   home-manager = {

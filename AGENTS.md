@@ -7,7 +7,7 @@
 - Keep mise for per-project version switching plus the vendor CLIs that must track upstream weekly (`claude`, `aqua:openai/codex`, `herdr`, `aqua:vercel-labs/agent-browser`, `aqua:anomalyco/opencode`). Declare project runtimes in that project's own `mise.toml` or idiomatic version file, never in the global toolset.
 - Keep ordinary dotfiles in `mise/`.
 - Keep update orchestration in `.dotflow.toml` and `scripts/`; do not duplicate it in shell startup files.
-- Preserve the environment split: shared `unix` for macOS and WSL, `darwin` for macOS-only dotfiles (karabiner, rio), and `wsl` for Rio settings copied into Windows from WSL. Native Arch and native Windows development environments are not managed. Keep Windows interop in the WSL Home Manager profile.
+- Preserve the environment split: shared `unix` for macOS and WSL, `darwin` for macOS-only dotfiles (Karabiner and the WezTerm config symlink), and `wsl` for WezTerm settings copied into Windows from WSL. Native Arch and native Windows development environments are not managed. Keep Windows interop in the WSL Home Manager profile.
 
 ## Changes
 
@@ -17,7 +17,7 @@
 - Sheldon activates mise with `mise activate zsh` (PATH activation), not `--shims`. Shims abort with `No version is set for shim: <tool>` instead of falling through to the Nix profile, which would break every fallback runtime. Keep `wsl-local-bin` ordered before the mise plugin so `~/.local/bin` survives in `__MISE_ORIG_PATH`.
 - On WSL, `wsl-local-bin` drops the Windows PATH (`/mnt/<drive>/...`) inside zsh, because scanning it over 9P cost about 80 ms before the first prompt and 40 ms after it. Expose a Windows command that must be callable by name through the `wslCommands` map in `nix/home.nix`, which writes a `~/.local/bin` wrapper; never re-add `/mnt/c` directories to PATH.
 - Put the remaining shared macOS/WSL mise entries in `mise/dotfiles/mise/config.unix.toml`. It is the single source of truth and is symlinked to `~/.config/mise/config.toml`, so never duplicate the toolset in `mise/mise.unix.toml`. Editing it takes effect immediately, so land the matching Nix change first.
-- Put shared macOS/WSL dotfiles in `mise/mise.unix.toml`; keep only OS-specific entries in `mise.darwin.toml` (currently karabiner and rio).
+- Put shared macOS/WSL dotfiles in `mise/mise.unix.toml`; keep only OS-specific entries in `mise.darwin.toml` (currently Karabiner and the WezTerm config symlink).
 - Do not add project-only tools such as `bun`, `uv`, PostgreSQL, or libpq to the global toolsets.
 - Keep Kubernetes/Vault shell UI opt-in under `mise/dotfiles/.config/zsh/optional/`. The infra repository loads it through mise enter/leave hooks; do not activate it globally.
 - Do not track credentials, OAuth state, histories, sessions, caches, generated memories, installation IDs, or machine-local trust decisions.
@@ -29,7 +29,7 @@ Before editing a path below, read its note in `docs/agents/`; it holds that comp
 
 - `mise/dotfiles/.config/nvim/`, `scripts/test_nvim_config.py`: `docs/agents/nvim.md`
 - `mise/dotfiles/ai/`, `scripts/sync-ai-config.*`: `docs/agents/ai-config.md`
-- `mise/dotfiles/.config/rio/`, fonts in `nix/darwin.nix`: `docs/agents/rio.md`
+- `mise/dotfiles/.config/wezterm/`: `docs/agents/wezterm.md`
 - `mise/dotfiles/.config/zsh/optional/`: `docs/agents/project-shell.md`
 - `mise/dotfiles/.config/herdr/`, `mise/dotfiles/.config/starship.toml`, the herdr hook scripts: `docs/agents/herdr.md`
 - `services.aerospace` in `nix/darwin.nix`: `docs/agents/aerospace.md`

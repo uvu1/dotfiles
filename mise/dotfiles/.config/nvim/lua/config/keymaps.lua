@@ -10,7 +10,7 @@ vim.keymap.set({ "n", "t" }, "<C-k>", "<Cmd>wincmd k<CR>", opts("move to upper w
 
 -- buffer navigation（並びは tabline の buffers と同じ listed バッファの番号順）。
 -- 従来のエンコードでは Alt+[ / Alt+] が CSI / OSC の開始と区別できないので、
--- rio が CSI u で送っている（.config/rio/config.toml）。
+-- WezTerm が CSI u で送っている（.config/wezterm/wezterm.lua）。
 vim.keymap.set("n", "<M-[>", "<Cmd>bprevious<CR>", opts("previous buffer"))
 vim.keymap.set("n", "<M-]>", "<Cmd>bnext<CR>", opts("next buffer"))
 

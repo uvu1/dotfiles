@@ -1,6 +1,6 @@
 # herdr の設定（全項目は `herdr --default-config`、検証は `herdr config check`）。
-# rio の中で動かし、分割・タブ・ワークスペース・セッション永続化を任せる。
-# macOS は rio が zsh から、Windows は rio が WSL の zsh から起動する（rio/config.toml）。
+# WezTerm の中で動かし、分割・タブ・ワークスペース・セッション永続化を任せる。
+# macOS は zsh、Windows は WSL の zsh で起動する（wezterm/wezterm.lua）。
 #
 # herdr は設定画面や onboarding でこのファイルを書き戻すため、~/.config/herdr へは
 # ディレクトリごとではなくファイル単位で symlink している（mise/mise.unix.toml）。
@@ -28,9 +28,9 @@ split_horizontal = "prefix+minus"
 goto = "prefix+space"
 
 # prefix+c は下の copy-last-output に使うので t にする。
-# rio の Ctrl+Shift+T / Ctrl+Shift+W / Ctrl+数字 は prefix+t / prefix+shift+x（close_tab 既定）/
-# prefix+数字（switch_tab 既定）を送っている（rio/config.toml）。prefix・new_tab・close_tab・
-# switch_tab を変えるときは rio 側も揃えること。
+# WezTerm の Ctrl+Shift+T / Ctrl+Shift+W / Ctrl+数字 は prefix+t / prefix+shift+x（close_tab 既定）/
+# prefix+数字（switch_tab 既定）を送っている（wezterm/wezterm.lua）。prefix・new_tab・close_tab・
+# switch_tab を変えるときは WezTerm 側も揃えること。
 new_tab = "prefix+t"
 
 workspace_picker = "prefix+w"

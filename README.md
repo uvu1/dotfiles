@@ -2,7 +2,7 @@
 
 macOS と Arch WSL の開発環境を Nix、Home Manager、nix-darwin、mise dotfiles で管理します。
 設定の正本はこのリポジトリの `master` です。ネイティブ Arch は管理しません。
-Windows には Rio の設定と背景画像だけを WSL から配布します。
+Windows には WezTerm の設定と背景画像だけを WSL から配布します。
 
 ## 構成
 
@@ -17,7 +17,7 @@ Windows には Rio の設定と背景画像だけを WSL から配布します�
 - `docs/`: 運用手順とコンポーネントの注意点
 
 macOS と WSL は共通の `unix` mise 環境を利用します。macOS は `darwin` 環境で
-Karabiner と Rio を配置し、WSL は `wsl` 環境で Windows の Rio 設定を配置します。
+Karabiner と WezTerm を配置し、WSL は `wsl` 環境で Windows の WezTerm 設定を配置します。
 Windows 側のアプリ導入、PowerShell、開発ツールは管理しません。
 
 ### nix と mise の責務
@@ -225,7 +225,7 @@ dotflow update --dry-run
 - WSL から
   `/mnt/c/Users/uvu1/AppData/Local/Microsoft/WindowsApps/op-ssh-sign-wsl.exe`
   を実行できること
-- Windows では OpenSSH Client と Rio、必要なフォントを別途導入すること
+- Windows では OpenSSH Client と WezTerm Nightly を別途導入すること
 
 ## macOS
 
@@ -239,8 +239,8 @@ mise -C mise trust -a
 # 共有設定を配置してから、そのグローバル toolset を install する。
 mise -C mise -E unix dotfiles apply --dry-run
 mise -C mise -E unix dotfiles apply
-mise -C mise -E darwin dotfiles apply --dry-run ~/.config/karabiner ~/.config/rio/config.toml ~/.config/rio/background.jpg
-mise -C mise -E darwin dotfiles apply ~/.config/karabiner ~/.config/rio/config.toml ~/.config/rio/background.jpg
+mise -C mise -E darwin dotfiles apply --dry-run ~/.config/karabiner ~/.config/wezterm
+mise -C mise -E darwin dotfiles apply ~/.config/karabiner ~/.config/wezterm
 mise -C mise -E unix install
 mise -C mise -E unix ls --current
 ```
@@ -253,7 +253,7 @@ sudo darwin-rebuild switch --flake .#uvu1-mac
 
 この適用では `nix-homebrew` が Apple Silicon 用 Homebrew を `/opt/homebrew` に導入し、
 1Password、Adobe Creative Cloud、Discord Canary、Hidden Bar、Karabiner、Office、Obsidian、
-Raycast、Rio、Scroll Reverser、Slack、Spark、Spotify、Zen Twilight、Zoom を
+Raycast、Scroll Reverser、Slack、Spark、Spotify、WezTerm Nightly、Zen Twilight、Zoom を
 Homebrew Cask で導入・更新します。宣言から外したアプリや宣言にない package は削除しません。
 アプリの認証・ライセンス登録と macOS の権限許可は、初回起動後に行います。
 
@@ -426,37 +426,23 @@ kubectl と Vault 本体は infra の mise toolset が供給します。
 通常の操作・設計と検証は [Neovim 運用ノート](docs/agents/nvim.md)、
 herdr の Claude との接続は [AI 連携手順](docs/nvim-ai-integration.md) を参照してください。
 
-## Windows の Rio
+## Windows の WezTerm
 
-Rio 本体とフォントは Windows 側で別途導入します。このリポジトリが配布するのは次の 2 ファイルだけです。
-
-- `/mnt/c/Users/uvu1/AppData/Local/rio/config.toml`: 共通 Rio 設定を Windows 用テンプレートで生成
-- `/mnt/c/Users/uvu1/AppData/Local/rio/background.jpg`: 背景画像をコピー
+Windows 側に [WezTerm Nightly](https://wezterm.org/install/windows.html) を導入します。
+macOS と共通の Lua 設定と背景画像を WSL から `%USERPROFILE%/.config/wezterm/` にコピーします。
 
 初回は WSL で配置予定を確認してから適用します。以後は WSL の `dotflow update` に含まれます。
 
 ```sh
-mise -C mise -E wsl dotfiles apply --dry-run /mnt/c/Users/uvu1/AppData/Local/rio/config.toml /mnt/c/Users/uvu1/AppData/Local/rio/background.jpg
-mise -C mise -E wsl dotfiles apply /mnt/c/Users/uvu1/AppData/Local/rio/config.toml /mnt/c/Users/uvu1/AppData/Local/rio/background.jpg
+wezterm_dir=/mnt/c/Users/uvu1/.config/wezterm
+mise -C mise -E wsl dotfiles apply --dry-run "$wezterm_dir"/{appearance.lua,keybinds.lua,resources/background.jpg,wezterm.lua}
+mise -C mise -E wsl dotfiles apply "$wezterm_dir"/{appearance.lua,keybinds.lua,resources/background.jpg,wezterm.lua}
 ```
 
-Rio は `wsl.exe` から WSL 内の zsh と herdr を起動します。Windows 向けの mise、
-PowerShell profile、Neovim、Git 設定、一般アプリの導入・更新は管理しません。
+WezTerm は `wsl.exe` から WSL 内の zsh と Herdr を起動します。タブ・分割・ワークスペースは
+Herdr で管理し、Ctrl+Shift+T / W と Ctrl+1〜9 は WezTerm が Herdr に転送します。
+Windows 側に以前の `%USERPROFILE%/.wezterm.lua` がある場合は、移行前にどの設定を読み込むか確認してください。
 配布を終了した既存設定やインストール済みアプリは自動削除しません。
-
-### Windows のフォント
-
-Rio は macOS と同じ `Moralerspace Neon` を使います。ASCII 記号の表示補正には
-`JetBrainsMono Nerd Font` も必要です。両方を初回だけ手動で導入します。
-
-1. [yuru7/moralerspace の Releases](https://github.com/yuru7/moralerspace/releases) から
-   `Moralerspace_v2.0.0.zip` を取得して展開する
-2. `MoralerspaceNeon-*.ttf`（Regular / Bold / Italic / BoldItalic）を選び、右クリックの
-   「インストール」で導入する
-3. [Nerd Fonts](https://www.nerdfonts.com/font-downloads) の JetBrainsMono Nerd Font も導入する
-4. Rio を開き直す
-
-フォントが無い場合、Rio は既定のフォントで表示します。
 
 ## 検証
 
