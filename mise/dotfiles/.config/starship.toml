@@ -2,13 +2,13 @@
 add_newline = true
 
 format = """
-${os}in $directory$username$git_branch$git_status$git_state$python$nodejs$rust$golang$lua$cpp$cmd_duration$time
+$os  in $directory$username$git_branch$git_status$git_state$python$nodejs$rust$golang$lua$cpp$cmd_duration$time
 $character"""
 
 [os]
 disabled = false
 style = "bold green"
-format = "$symbol "
+format = "$symbol"
 
 [os.symbols]
 Windows = ""
