@@ -18,11 +18,11 @@ Unix SSHの`IdentityAgent`が共有socketを参照するため、既存の`SSH_A
 標準SSH接続はWindowsネイティブのOpenSSHには対応しない。
 
 共通の接続先は `mise/dotfiles/.ssh/config.shared` に置き、mise の `unix` 環境が
-`~/.ssh/config.shared` にリンクする。macOS では既存の `~/.ssh/config` の
-最初の `Host` または `Match` より前に `Include ~/.ssh/config.shared` を追加する。
-WSL の `~/.ssh/config` は Home Manager が 0600 で生成する。先頭で `config.local` を
-読み込み、その後に共通の定義を展開する。共通設定の変更は次の Home Manager 適用時に反映し、
-Neovim のホスト一覧にも表示される。WSL のホスト鍵は `~/.ssh/known_hosts` で管理する。
+`~/.ssh/config.shared` にリンクする。Home Manager は macOS と WSL の
+`~/.ssh/config` に `Include ~/.ssh/config.shared` を設定する。macOS では
+既存の設定を優先し、WSL では先に `config.local` を読み込む。共通設定の編集は
+次回の SSH 実行時に反映される。Neovim のホスト補完に出ない共通ホストも、
+`:connect ssh://dev` のように直接指定できる。WSL のホスト鍵は `~/.ssh/known_hosts` で管理する。
 
 旧設定から切り替える前に、引き続き使うローカルホスト（`infra` など）の定義を
 `~/.ssh/config.local` に移す。利用を終えた `ubuntu` のブロックは必要に応じて
